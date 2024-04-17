@@ -1,0 +1,7 @@
+devcontainer.env
+.vscode
+node_modules
+.env.example
+.env
+.vs
+.github
