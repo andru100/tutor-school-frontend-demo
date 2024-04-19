@@ -1,22 +1,28 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import Breadcrumb from './Breadcrumb';
 import {Teacher, LessonEvent, CalendarEvent} from './types';
 import { BackButton } from "./BackButton";
 import { useLocation } from 'react-router-dom';
+import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
+import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
 
 interface Props {
   events: Teacher["calendarEvents"];
-  goBackToDash: () => void;
-  //TODO add functionality to update / delete calender events
-  handleUpdateLesson: (lessonData: LessonEvent[], calendarData: CalendarEvent[]) => void;
-  handleDeleteLesson: (id: number) => void;
+  goBackToDash: string;
+  searchTerm: string;
   
 }
 
 
 const Calendar:  React.FC = () => {
+
+  //TODO add functionality to update delete from calendar and add search to reduce events by student name
+  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
+
+  const { handleUpdateLesson, handleDeleteLesson, handleUpdateHomework, handleDeleteHomework, handleUploadHomework, handleUpdateAssessment, handleDeleteAssessment } = context;
+  
   const location = useLocation();
-  const { events, goBackToDash, handleUpdateLesson, handleDeleteLesson } = location.state as Props;
+  const { events, goBackToDash, searchTerm } = location.state as Props;
   const [currentDate, setCurrentDate] = useState(new Date());
   const [eventsByDate, setEventsByDate] = useState<{ [key: string]: CalendarEvent[] }>({});
 

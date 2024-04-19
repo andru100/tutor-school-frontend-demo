@@ -1,18 +1,23 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { LessonEvent, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
+import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
 
 interface Props {
     lessons: LessonEvent[];
-    handleUpdateLesson: (update: LessonEvent[], calendarData: CalendarEvent[]) => void;
-    handleDeleteLesson: (id: number) => void;
     backToParent: string;
 };
 
 
-const CompleteLessons: React.FC<Props> = ({lessons, handleDeleteLesson, handleUpdateLesson, backToParent}) => {
+const CompleteLessons: React.FC<Props> = ({lessons, backToParent}) => {
+
+  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
+
+  const { handleUpdateLesson, handleDeleteLesson} = context;
+  
 
   const [upcomingLessons, setUpcomingLessons] = useState(lessons);
 

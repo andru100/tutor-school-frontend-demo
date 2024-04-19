@@ -1,23 +1,28 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext} from "react"
 import { HomeworkAssignment, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
+import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
 
 interface Props {
     homework: HomeworkAssignment[];
-    handleDeleteHomework: (id: number) => void;
-    handleUpdateHomework: (update: HomeworkAssignment[], calendarData: CalendarEvent[]) => void;
     backToParent: string;
 };
 
-const SubmittedHomework: React.FC<Props> = ({homework, handleDeleteHomework, handleUpdateHomework, backToParent}) => {
+const SubmittedHomework: React.FC<Props> = ({homework, backToParent}) => {
+
+  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
+
+  const { handleUpdateHomework, handleDeleteHomework} = context;
+  
   const [upcomingHomework, setUpcomingHomework] = useState(homework);
 
   const navigate = useNavigate();
 
   const handleEditHomework = ( homework: HomeworkAssignment) => {
-    navigate('/edit-homework', { state: { homework, handleUpdateHomework, backToParent } });
+    navigate('/edit-homework', { state: { homework, backToParent } });
   };
 
   useEffect(() => {

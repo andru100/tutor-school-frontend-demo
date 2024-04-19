@@ -9,7 +9,7 @@ import { SignUpData, GoogleTokenData} from "/src/dashboard/types.tsx";
 import { NavigateButtonAuth } from './NavigateButtonAuth.tsx';
 import toast from 'react-hot-toast';
 import { CreateRole } from './CreateRole.tsx';
-import {handleFetchResponse} from '/src/dashboard/HandleFetchResponse.tsx'
+import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
@@ -18,6 +18,7 @@ interface Props {
 const SignUp: React.FC = () => {
 
   const [email, setEmail] = useState("");
+  const { handleFetchResponse } = useFetchWithErrorHandling();
 
   const navigate = useNavigate();
 

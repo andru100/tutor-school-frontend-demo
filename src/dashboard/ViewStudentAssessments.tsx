@@ -13,15 +13,13 @@ import { useLocation } from 'react-router-dom';
 
 interface Props {
   student: Student;
-  goBackToDash: () => void; 
-  handleDeleteAssessment: (id: number) => void;
-  handleUpdateAssessment: (update: StudentAssessmentAssignment[], calendarData: CalendarEvent[]) => void;
+  goBackToDash: string; 
   searchTerm: string;
 }
 
 const ViewStudentAssessments: React.FC = () => {
   const location = useLocation();
-  const { student, handleDeleteAssessment, handleUpdateAssessment, searchTerm, goBackToDash } = location.state as Props;
+  const { student, goBackToDash, searchTerm} = location.state as Props;
 
   const [filteredAssessment, setFilteredAssessment] = useState<Student["assessments"]>([]);
 
@@ -51,7 +49,7 @@ const ViewStudentAssessments: React.FC = () => {
   
         {/* Row 2 for AssignedAssessments */}
         <div className="row-start-2 col-span-full">
-          <AssignedAssessments assessment={assignedAssessments}  handleUpdateAssessment={handleUpdateAssessment} handleDeleteAssessment={handleDeleteAssessment} backToParent={'/view-student-assessments'} />
+          <AssignedAssessments assessment={assignedAssessments}  backToParent={'/view-student-assessments'} />
         </div>
   
         {/* Row 3 for SubmittedAssessments */}
@@ -61,7 +59,7 @@ const ViewStudentAssessments: React.FC = () => {
   
         {/* Row 4 for CompleteAssessments */}
         <div className="row-start-4 col-span-full">
-          <CompleteAssessment assessment={completedAssessments} handleUpdateAssessment={handleUpdateAssessment}  handleDeleteAssessment={handleDeleteAssessment} backToParent={'/view-student-assessments'} />
+          <CompleteAssessment assessment={completedAssessments} backToParent={'/view-student-assessments'} />
         </div>
       </div>
     </>

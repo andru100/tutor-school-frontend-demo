@@ -12,15 +12,13 @@ import {Teacher, Student, LessonEvent, CalendarEvent} from './types';
 interface Props {
   lessons: LessonEvent[];
   students: Student[];
-  goBackToDash: () => void;
-  handleDeleteLesson: (id: number) => void;
-  handleUpdateLesson: (update: LessonEvent[], calendarData: CalendarEvent[]) => void;
+  goBackToDash: string;
   searchTerm: string;
 }
 
 const ViewTeacherLessons: React.FC = () => {
   const location = useLocation();
-  const { lessons, students, searchTerm, goBackToDash, handleDeleteLesson, handleUpdateLesson } = location.state as Props;
+  const { lessons, students, searchTerm, goBackToDash } = location.state as Props;
 
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [filteredLessons, setFilteredLessons] = useState<LessonEvent[]>([]);

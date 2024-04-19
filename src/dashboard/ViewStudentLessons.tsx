@@ -12,17 +12,14 @@ import { useLocation } from 'react-router-dom';
 
 interface Props {
   student: Student;
-  goBackToDash: () => void; 
-  handleDeleteLesson: (id: number) => void;
-  handleUpdateLesson: (update: LessonEvent[], calendarData: CalendarEvent[]) => void;
+  goBackToDash: string; 
   searchTerm: string;
   
 }
 
 const Lessons: React.FC = () => {
   const location = useLocation();
-  const { student, handleDeleteLesson, handleUpdateLesson, searchTerm, goBackToDash } = location.state as Props;
-  const [lessonId, setLessonId] = useState(0)
+  const { student, goBackToDash, searchTerm} = location.state as Props;
   const [filteredLessons, setFilteredLessons] = useState<Student["lessonEvents"]>([]);
 
     useEffect(() => {
@@ -49,12 +46,12 @@ const Lessons: React.FC = () => {
     
           {/* Row 2 for AssignedLessons */}
           <div className="row-start-2 col-span-full">
-            <AssignedLessons lessons={assignedLessons}  handleDeleteLesson={handleDeleteLesson} handleUpdateLesson={handleUpdateLesson} backToParent={'/view-student-lessons'} />
+            <AssignedLessons lessons={assignedLessons}  backToParent={'/view-student-lessons'} />
           </div>
     
           {/* Row 3 for CompleteLessons */}
           <div className="row-start-3 col-span-full">
-            <CompleteLessons lessons={completedLessons}  handleDeleteLesson={handleDeleteLesson} handleUpdateLesson={handleUpdateLesson} backToParent={'/view-student-lessons'} />
+            <CompleteLessons lessons={completedLessons}  backToParent={'/view-student-lessons'} />
           </div>
         </div>
       </>

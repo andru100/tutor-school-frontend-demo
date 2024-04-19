@@ -7,13 +7,11 @@ import { useLocation } from 'react-router-dom';
 
 interface Props {
   studentsData: Student[];
-  goBackToDash: () => void; 
-  searchTerm: string;
 }
 
 const ViewStudents: React.FC = () => {
   const location = useLocation();
-  const { studentsData, goBackToDash, searchTerm } = location.state as Props;
+  const { studentsData} = location.state as Props;
   const [studentID, setStudentID] = useState("");
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
 

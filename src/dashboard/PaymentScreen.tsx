@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useLocation } from 'react-router-dom';
+import { useLocation , useNavigate} from 'react-router-dom';
 import { BackButton } from "./BackButton";
 import {loadStripe} from '@stripe/stripe-js';
 import {
@@ -8,7 +8,7 @@ import {
 } from '@stripe/react-stripe-js';
 
 interface Props {
-    goBackToDash: () => void;
+    goBackToDash: string;
     
  }
 
@@ -76,9 +76,11 @@ export const Return: React.FC<Props> = ({goBackToDash}) => {
         });
     }, []);
 
+    const navigate = useNavigate();
+
     if (status === 'open') {
         return (
-            goBackToDash()
+            navigate(goBackToDash)
           //setPage('paymentreturn')
         )
     }

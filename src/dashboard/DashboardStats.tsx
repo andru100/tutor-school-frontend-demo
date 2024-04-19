@@ -13,14 +13,11 @@ import { useLocation } from 'react-router-dom';
 
 interface Props {
   student: Student;
-  goBackToDash: string; 
   searchTerm: string;
 }
 
 
-const Stats: React.FC = () => {
-  const location = useLocation();
-  const { student, goBackToDash, searchTerm } = location.state as Props;
+const DashboardStats: React.FC<Props> = ({student, searchTerm }) => {
 
   if (!student.assessments || student.assessments.length === 0) {
     return <p>Student has no assessments. To get started take your first assessment</p>;
@@ -148,4 +145,4 @@ const Stats: React.FC = () => {
 }
 
 
-export default Stats;
+export default DashboardStats;

@@ -1,9 +1,11 @@
 import { toast } from 'react-hot-toast';
-import { handleFetchResponse } from '/src/dashboard/HandleFetchResponse.tsx';
+import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
+
 
 
 // Utility function to resend the confirmation email
 export const sendEmailConfirmCode = async (email: string) => {
+    const { handleFetchResponse } = useFetchWithErrorHandling();
     try {
         const resendRequest = {
             email: email

@@ -1,20 +1,26 @@
 import React from 'react'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { Student, StudentAssessmentAssignment, CalendarEvent } from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
+import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
 
 
 interface Props {
   student: Student;
   backToParent: string;
-  handleUpdateAssessment: (update: StudentAssessmentAssignment[], calendarData: CalendarEvent[]) => void;
 }
 
 const AssignAssessment: React.FC = () => {
+
+  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
+
+  const { handleUpdateAssessment } = context;
+  
   const location = useLocation();
-  const { student, backToParent, handleUpdateAssessment } = location.state as Props;
+  const { student, backToParent } = location.state as Props;
 
   const [assessmentData, setAssessmentData] = useState<StudentAssessmentAssignment>({ 
     id: null,

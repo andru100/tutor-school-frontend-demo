@@ -13,15 +13,13 @@ import { useLocation } from 'react-router-dom';
 
 interface Props {
   student: Student;
-  goBackToDash: () => void; 
-  handleUpdateHomework: (update: HomeworkAssignment[], calendarData: CalendarEvent[]) => void;
-  handleDeleteHomework: (id: number) => void;
+  goBackToDash: string; 
   searchTerm: string;
 }
 
 const ViewStudentHomework: React.FC = () => {
   const location = useLocation();
-  const { student, handleDeleteHomework, searchTerm, goBackToDash, handleUpdateHomework } = location.state as Props;
+  const { student, goBackToDash, searchTerm} = location.state as Props;
   const [filteredHomework, setFilteredHomework] = useState<HomeworkAssignment[]>([]);
 
   useEffect(() => {
@@ -51,17 +49,17 @@ const ViewStudentHomework: React.FC = () => {
 
         {/* Row 2 for AssignedHomework */}
         <div className="row-start-2 col-span-full">
-          <AssignedHomework homework={assignedHomework} handleUpdateHomework={handleUpdateHomework} handleDeleteHomework={handleDeleteHomework} backToParent={'/view-student-homework'} />
+          <AssignedHomework homework={assignedHomework} backToParent={'/view-student-homework'} />
         </div>
 
         {/* Row 3 for SubmittedHomework */}
         <div className="row-start-3 col-span-full">
-          <SubmittedHomework homework={submittedHomework} handleUpdateHomework={handleUpdateHomework} handleDeleteHomework={handleDeleteHomework} backToParent={'/view-student-homework'} />
+          <SubmittedHomework homework={submittedHomework} backToParent={'/view-student-homework'} />
         </div>
 
         {/* Row 4 for CompleteHomework */}
         <div className="row-start-4 col-span-full">
-          <CompleteHomework homework={completedHomework} handleUpdateHomework={handleUpdateHomework} handleDeleteHomework={handleDeleteHomework} backToParent={'/view-student-homework'} />
+          <CompleteHomework homework={completedHomework} backToParent={'/view-student-homework'} />
         </div>
       </div>
     </>

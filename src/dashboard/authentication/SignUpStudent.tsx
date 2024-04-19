@@ -7,7 +7,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { AdminCreateTeacherData} from "/src/dashboard/types.tsx";
 import { NavigateButtonAuth } from './NavigateButtonAuth';
 import {NavigateCancelButton} from './NavigateCancelButton'
-import {handleFetchResponse} from '/src/dashboard/HandleFetchResponse.tsx'
+import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
 
 interface Props {
   goBackToSignUp: () => void;
@@ -15,6 +15,7 @@ interface Props {
 const SignUpStudent: React.FC = () => {
   const location = useLocation();
   const { goBackToSignUp } = location.state as Props;
+  const { handleFetchResponse } = useFetchWithErrorHandling();
 
   const navigate = useNavigate();
 

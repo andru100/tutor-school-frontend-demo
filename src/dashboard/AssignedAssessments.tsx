@@ -1,19 +1,28 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import {  StudentAssessmentAssignment, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
+import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
 
 interface Props {
     assessment: StudentAssessmentAssignment[];
-    handleDeleteAssessment: (id: number) => void;
-    handleUpdateAssessment: (update: StudentAssessmentAssignment[], calendarData: CalendarEvent[]) => void;
     backToParent: string;
 };
 
 
-const AssignedAssessments: React.FC<Props> = ({assessment, handleDeleteAssessment, handleUpdateAssessment, backToParent}) => {
+const AssignedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
   const [upcomingAssessments, setUpcomingAssessments] = useState(assessment);
+
+  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
+
+  const { handleUpdateAssessment, handleDeleteAssessment } = context;
+  
+  if (!context) {
+    throw new Error('Component must be used within a StudentUpdatesContext.Provider or TeacherUpdatesContext.Provider');
+  }
+  
 
   useEffect(() => {
     setUpcomingAssessments(assessment);

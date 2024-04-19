@@ -12,9 +12,7 @@ interface Props {
   updateUserProfileInfo: (newUserInfo: { role: string, name: string, profileImgUrl: string | null }) => void;
 }
 
-const Settings: React.FC = () => {
-  const location = useLocation();
-  const { userProfileInfo, updateUserProfileInfo } = location.state as Props;
+const Settings: React.FC<Props> = ({ userProfileInfo, updateUserProfileInfo }) => {
 
   const [adminUserData, setAdminUserData] = useState<ApplicationUser>({} as ApplicationUser);
   const [role, setRole] = useState<string>('')

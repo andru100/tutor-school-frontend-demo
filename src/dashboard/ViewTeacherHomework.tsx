@@ -16,15 +16,13 @@ import { BackButton } from "./BackButton.tsx";
 interface Props {
   homework: HomeworkAssignment[]
   students: Student[]
-  goBackToDash: () => void; 
-  handleUpdateHomework: (update: HomeworkAssignment[], calendarData: CalendarEvent[]) => void;
-  handleDeleteHomework: (id: number) => void;
+  goBackToDash: string; 
   searchTerm: string;
 }
 
 const ViewTeacherHomework: React.FC = () => {
   const location = useLocation();
-  const { homework, students, searchTerm, goBackToDash, handleUpdateHomework, handleDeleteHomework } = location.state as Props;
+  const { homework, students, searchTerm, goBackToDash} = location.state as Props;
   const [homeworkId, setHomeworkId] = useState(0)
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
 

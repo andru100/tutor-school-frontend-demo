@@ -6,7 +6,8 @@ import { useGoogleLogin} from '@react-oauth/google';
 import { LoginData, GoogleTokenData} from "/src/dashboard/types.tsx";
 import toast from 'react-hot-toast';
 import { NavigateButtonAuth } from './NavigateButtonAuth';
-import {handleFetchResponse} from '/src/dashboard/HandleFetchResponse.tsx'
+import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
+
 
 interface Props {
  
@@ -15,7 +16,9 @@ interface Props {
 const SignIn: React.FC = () => {
 
 
+
   const [email, setEmail] = useState("")
+  const { handleFetchResponse } = useFetchWithErrorHandling();
 
   const navigate = useNavigate();
 

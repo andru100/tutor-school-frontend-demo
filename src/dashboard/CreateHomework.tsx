@@ -1,21 +1,27 @@
 import React from 'react'
-import { useState } from "react"
+import { useState, useContext } from "react"
 import { Student, HomeworkAssignment, CalendarEvent, HomeworkStream} from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
+import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
 
 
 interface Props {
   student: Student;
   backToParent: string;
-  handleUpdateHomework: (update: HomeworkAssignment[], calendarData: CalendarEvent[]) => void;
 }
 
 
 const CreateHomework: React.FC = () => {
+
+  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
+
+  const { handleUpdateHomework } = context;
+  
   const location = useLocation();
-  const { student, backToParent, handleUpdateHomework } = location.state as Props;
+  const { student, backToParent } = location.state as Props;
   const navigate = useNavigate()
 
   const [homeworkData, setHomeworkData] = useState<HomeworkAssignment>({

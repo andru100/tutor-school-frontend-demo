@@ -14,15 +14,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 interface Props {
   assessments: StudentAssessmentAssignment[]
   students: Student[]
-  goBackToDash: () => void; 
-  handleUpdateAssessment: (update: StudentAssessmentAssignment[], calendarData: CalendarEvent[]) => void;
-  handleDeleteAssessment: (id: number) => void;
+  goBackToDash: string; 
   searchTerm: string;
 }
 
 const ViewTeacherAssessments: React.FC = () => {
   const location = useLocation();
-  const { students, assessments, searchTerm, goBackToDash, handleDeleteAssessment, handleUpdateAssessment } = location.state as Props;
+  const { students, assessments, searchTerm, goBackToDash } = location.state as Props;
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
 
   const [filteredAssessment, setFilteredAssessment] = useState<StudentAssessmentAssignment[]>([]);

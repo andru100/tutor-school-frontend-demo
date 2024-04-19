@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { NavigateButtonAuth } from './NavigateButtonAuth';
 import { NavigateCancelButton } from './NavigateCancelButton';
 import { AdminCreateTeacherData } from "/src/dashboard/types.tsx";
-import { handleFetchResponse} from '../HandleFetchResponse';
+import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface Props {
