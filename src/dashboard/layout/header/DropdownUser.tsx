@@ -2,17 +2,19 @@ import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { ApplicationUser } from '/src/dashboard/types.tsx';
 import UserOne from '/src/dashboard/images/user/user-01.png';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
-  landingPage: (page: string) => void;
   userProfileInfo: { role: string; name: string; profileImgUrl: string | null };
 }
 
-const DropdownUser: React.FC<Props> = ({landingPage, userProfileInfo}) => {
+const DropdownUser: React.FC<Props> = ({userProfileInfo}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
+
+  const navigate = useNavigate();
 
   // close on click outside
   useEffect(() => {
@@ -57,7 +59,7 @@ const DropdownUser: React.FC<Props> = ({landingPage, userProfileInfo}) => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         console.log('Logout successful');
-        landingPage("signin")
+        navigate('/signin')
       } else {
         console.log('Error in backend session termination, user has been signed out locally:', await response.text());
       }
@@ -65,6 +67,10 @@ const DropdownUser: React.FC<Props> = ({landingPage, userProfileInfo}) => {
       toast.error('A  n error occurred, please try again. If thhe problem persists, please contact support')
       console.error('Error during logout:', error);
     }
+  };
+
+  const handleNavigate = () => {
+    navigate(`/settings`);
   };
 
   return (
@@ -162,7 +168,7 @@ const DropdownUser: React.FC<Props> = ({landingPage, userProfileInfo}) => {
             </span>
           </li>
           <li>
-            <button onClick = {()=> landingPage("settings")}
+            <button onClick={handleNavigate}
               //to="/settings"
               
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"

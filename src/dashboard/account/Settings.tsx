@@ -5,18 +5,22 @@ import UserOne from '/src/dashboard/images/user/user-01.png';
 import {ApplicationUser, InfoRequest} from '/src/dashboard/types.tsx'
 import toast from 'react-hot-toast';
 import { NavigateButtonAuth } from "/src/dashboard/authentication/NavigateButtonAuth.tsx";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface Props {
-  landingPage: (page: string) => void;
   userProfileInfo: { role: string; name: string; profileImgUrl: string | null };
   updateUserProfileInfo: (newUserInfo: { role: string, name: string, profileImgUrl: string | null }) => void;
 }
 
-const Settings: React.FC<Props> = ({landingPage, userProfileInfo, updateUserProfileInfo}) => {
+const Settings: React.FC = () => {
+  const location = useLocation();
+  const { userProfileInfo, updateUserProfileInfo } = location.state as Props;
 
   const [adminUserData, setAdminUserData] = useState<ApplicationUser>({} as ApplicationUser);
   const [role, setRole] = useState<string>('')
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -44,12 +48,12 @@ const Settings: React.FC<Props> = ({landingPage, userProfileInfo, updateUserProf
         } else {
           toast.error("Unable to retrieve user data, please sign in");
           console.error("Error fetching user data, response code: ", response.status);
-          landingPage("signin")
+          navigate('/signin');
         }
       } catch (error) {
         toast.error("An error occurred while fetching user data");
         console.error('Error fetching user data :', error);
-        landingPage("signin");
+        navigate('/signin');
       }
     };
     fetchData();
@@ -216,7 +220,7 @@ const Settings: React.FC<Props> = ({landingPage, userProfileInfo, updateUserProf
       <div className="mx-auto max-w-270">
         <Breadcrumb pageName="Settings"/>
         <div style={{ marginBottom: '20px' }}>
-          <NavigateButtonAuth landingPage={landingPage} page={role === 'Teacher' ? 'teacherDash' : 'studentDash' } />
+          <NavigateButtonAuth page={role === 'Teacher' ? 'teacherDash' : 'studentDash' } />
         </div>
         <div className="grid grid-cols-5 gap-8">
           <div className="col-span-5 xl:col-span-3">

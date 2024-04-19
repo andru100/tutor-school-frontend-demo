@@ -2,6 +2,7 @@ import LogoDark from './logo-dark.svg';
 import Logo from './logo.svg';
 import React from 'react';
 import toast from 'react-hot-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { AdminCreateTeacherData} from "/src/dashboard/types.tsx";
 import { NavigateButtonAuth } from './NavigateButtonAuth';
@@ -10,9 +11,12 @@ import {handleFetchResponse} from '/src/dashboard/HandleFetchResponse.tsx'
 
 interface Props {
   goBackToSignUp: () => void;
-  landingPage: (page: string) => void;
 }
-const SignUpStudent: React.FC<Props> = ({landingPage, goBackToSignUp}) => {
+const SignUpStudent: React.FC = () => {
+  const location = useLocation();
+  const { goBackToSignUp } = location.state as Props;
+
+  const navigate = useNavigate();
 
   const signUp = async (Data: AdminCreateTeacherData) => {
     try{
@@ -28,14 +32,15 @@ const SignUpStudent: React.FC<Props> = ({landingPage, goBackToSignUp}) => {
         body: JSON.stringify(Data)
       });
 
-      const fetchHandled = await handleFetchResponse(response, landingPage);
+      const fetchHandled = await handleFetchResponse(response);
       const responseData = await fetchHandled.json();
 
       localStorage.setItem('accessToken', responseData.accessToken);
       localStorage.setItem('refreshToken', responseData.refreshToken);
 
       toast.success("That's it, you're all signed up!");
-      landingPage("studentDash");
+      navigate('/studentDash');
+      
     } catch (error) {
       console.error("Error during signup:", error);
       // The error message has already been displayed by handleFetchResponse
@@ -477,10 +482,10 @@ const SignUpStudent: React.FC<Props> = ({landingPage, goBackToSignUp}) => {
                     <div className="mt-6 text-center">
                       <div className="mt-6 flex justify-between">
                         <div className="flex-1 text-center pr-2">
-                          <NavigateCancelButton backTO={goBackToSignUp}/>
+                          <NavigateCancelButton />
                         </div>
                         <div className="ml-auto text-center pl-2">
-                          <NavigateButtonAuth landingPage={landingPage} page={"signin"}/>
+                          <NavigateButtonAuth  page={"signin"}/>
                         </div>
                       </div>
 

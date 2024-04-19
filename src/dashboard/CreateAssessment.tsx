@@ -3,15 +3,19 @@ import { useState, useEffect } from "react"
 import { Student, StudentAssessmentAssignment, CalendarEvent } from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
 interface Props {
   student: Student;
-  backToAssessment: (req: string, id: number,) => void; 
+  backToParent: string;
   handleUpdateAssessment: (update: StudentAssessmentAssignment[], calendarData: CalendarEvent[]) => void;
 }
 
-const AssignAssessment: React.FC<Props> = ({ student, backToAssessment, handleUpdateAssessment }) => {
+const AssignAssessment: React.FC = () => {
+  const location = useLocation();
+  const { student, backToParent, handleUpdateAssessment } = location.state as Props;
+
   const [assessmentData, setAssessmentData] = useState<StudentAssessmentAssignment>({ 
     id: null,
     title: "",
@@ -30,7 +34,7 @@ const AssignAssessment: React.FC<Props> = ({ student, backToAssessment, handleUp
     answers: null
   });
 
-
+  const navigate = useNavigate();
  
 
   const handleSubmit = async (event) => {
@@ -58,19 +62,13 @@ const AssignAssessment: React.FC<Props> = ({ student, backToAssessment, handleUp
       console.log('Mutation response:', result);
       handleUpdateAssessment(result.assessments, result.calendarEvents)
       toast.success('Assessment assigned successfully');
-      handleCancel()
+      navigate(backToParent)
     } catch (error) {
       toast.error('An error occurred while creating the assessment');
       console.error('Error creating assessment:', error);
     }
   };
 
-
-  const handleCancel = () => {
-    backToAssessment("default", 0);
-  };
-
-  
 
   const convertToCamelCase = (input) => {
     return input.charAt(0).toLowerCase() + input.slice(1);
@@ -104,7 +102,7 @@ const AssignAssessment: React.FC<Props> = ({ student, backToAssessment, handleUp
                     Create Assessment
                   </h4>
                 </div>
-                <CancelButton handleCancel={handleCancel}/>
+                <CancelButton backToParent={backToParent}/>
               </div>
             </div>
 

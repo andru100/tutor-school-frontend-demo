@@ -7,14 +7,16 @@ import { NavigateButtonAuth } from './NavigateButtonAuth.tsx';
 import { NavigateCancelButton } from './NavigateCancelButton.tsx';
 import {LoginData} from "/src/dashboard/types.tsx";
 import {sendPasswordResetCode} from './SendPasswordResetCode.tsx'
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
-  landingPage: (page: string) => void;
 }
-const ForgotPassword: React.FC<Props> = ({landingPage}) => {
+const ForgotPassword: React.FC = () => {
 
-  const [page, setPage] = useState("Signin");
   const [email, setEmail] = useState("");
+
+  const navigate = useNavigate();
+  
 
 
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -25,22 +27,15 @@ const ForgotPassword: React.FC<Props> = ({landingPage}) => {
     const resendRequest = {
       email: emailAddress
     };
-    const requestSuccess = await sendPasswordResetCode(resendRequest, landingPage);
+    const requestSuccess = await sendPasswordResetCode(resendRequest);
   
     if (requestSuccess) {
-      setPage('confirm');
+      navigate('/forgot-password-confirm');
     } else {
     console.log("Unable to send request. User needs to try signing up or contact support.");
     }
   };
 
-  if (page === "signup") {
-    landingPage('signup')
-  }
-
-  if (page === "confirm") {
-    return <ForgotPasswordConfirm landingPage={landingPage} email={email}/>;
-  }
 
   return (
     <>
@@ -234,10 +229,10 @@ const ForgotPassword: React.FC<Props> = ({landingPage}) => {
 
               <div className="w-full flex justify-between">
                     <div className="text-center" style={{ maxWidth: "48%" }}>
-                        <NavigateButtonAuth landingPage={landingPage} page={"signin"}/>
+                        <NavigateButtonAuth  page={"signin"}/>
                     </div>
                     <div className="text-center" style={{ maxWidth: "48%" }}>
-                        <NavigateButtonAuth landingPage={landingPage} page={"signup"}/>
+                        <NavigateButtonAuth  page={"signup"}/>
                     </div>
                 </div>
             </div>

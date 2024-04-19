@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { HomeworkAssignment, HomeworkUploadTxtData, CalendarEvent } from './types';
 import toast from 'react-hot-toast';
+import { Navigate, useLocation } from 'react-router-dom';
 
 interface Props {
   homework: HomeworkAssignment;
-  backToHomework: (req: string, id: number) => void;
+  backToParent: string;
   handleUpdateHomework: (update: HomeworkAssignment[], calendarData: CalendarEvent[]) => void;
 }
 
-const HomeworkStudio: React.FC<Props> = ({ homework, backToHomework, handleUpdateHomework }) => {
+const HomeworkStudio: React.FC = () => {
+  const location = useLocation();
+  const { homework, backToParent, handleUpdateHomework } = location.state as Props;
+  const navigate = useNavigate()
   const [textSubmission, setTextSubmission] = useState('');
+
 
   const handleTextSubmit = async () => {
     const accessToken = localStorage.getItem('accessToken') || null;
@@ -44,6 +49,7 @@ const HomeworkStudio: React.FC<Props> = ({ homework, backToHomework, handleUpdat
     }
   };
 
+
   // Reuse handleUpload from AssignedHomework.tsx for file and image uploads
   // Ensure handleUpload is modified to accept a parameter for endpoint URL
   const handleUploadDocument = async (id: number)  => {
@@ -72,7 +78,7 @@ const HomeworkStudio: React.FC<Props> = ({ homework, backToHomework, handleUpdat
             const updated = await response.json();
             handleUpdateHomework(updated.homeworkAssignments, updated.calendarEvents )
             toast.success('Document uploaded successfully');
-            backToHomework('home', id);
+            navigate(backToParent)
           } else {
             toast.error('Error uploading document');
           }
@@ -125,9 +131,13 @@ const HomeworkStudio: React.FC<Props> = ({ homework, backToHomework, handleUpdat
     }
   };
 
+  const handleCancel = () => {
+    navigate(backToParent)
+  }
+
   const BackToHomeworkButton = () => {
     return (
-      <button type="button" onClick={() => backToHomework('home', homework.id ?? 0)} className="w-full flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 transition-colors duration-200 bg-white border rounded-lg gap-x-2 sm:w-auto dark:hover:bg-gray-800 dark:bg-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:border-gray-700">
+      <button type="button" onClick={handleCancel} className="w-full flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 transition-colors duration-200 bg-white border rounded-lg gap-x-2 sm:w-auto dark:hover:bg-gray-800 dark:bg-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:border-gray-700">
         <svg className="w-5 h-5 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
         </svg>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LogoDark from './logo-dark.svg';
 import Logo from './logo.svg';
 import { useGoogleLogin} from '@react-oauth/google';
@@ -8,21 +9,18 @@ import { NavigateButtonAuth } from './NavigateButtonAuth';
 import {handleFetchResponse} from '/src/dashboard/HandleFetchResponse.tsx'
 
 interface Props {
-  landingPage: (page: string) => void;
-  goToIncompleteRegistration: ( startPage: string, email?: string) => void;
  
 }
 
-const SignIn: React.FC<Props> = ({landingPage, goToIncompleteRegistration}) => {
+const SignIn: React.FC = () => {
 
-  const [page, setPage] = useState("Signin");
+
   const [email, setEmail] = useState("")
+
+  const navigate = useNavigate();
 
   const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
 
-  const goBackToSignin = () => {
-    setPage('signin');
-  };
 
   const googleSignIn = useGoogleLogin({
     onSuccess: codeResponse => {
@@ -46,7 +44,7 @@ const SignIn: React.FC<Props> = ({landingPage, goToIncompleteRegistration}) => {
         body: JSON.stringify(loginData)
       });
   
-      const fetchHandled = await handleFetchResponse(response, landingPage);
+      const fetchHandled = await handleFetchResponse(response);
       const responseData = await fetchHandled.json();
   
       localStorage.setItem('accessToken', responseData.accessToken);
@@ -64,15 +62,14 @@ const SignIn: React.FC<Props> = ({landingPage, goToIncompleteRegistration}) => {
       console.log("role check response is", roledata);
   
       // Updated part to handle the new responsefe
-
       if (roledata.entrypoint === 'CreateRole') {
-        goToIncompleteRegistration("selectSubscription");
+        navigate('/choose-subscription');
       } else if (roledata.entrypoint === 'ConfirmEmail') {
-        goToIncompleteRegistration("confirmEmail", loginData.email);
+        navigate('/confirm-email', { state: { email: loginData.email } });
       } else if (roledata.entrypoint === "Teacher") {
-        landingPage("teacherDash");
+        navigate('/teacher-dashboard');
       } else if (roledata.entrypoint === "Student") {
-        landingPage("studentDash");
+        navigate('/student-dashboard');
       }
   
     } catch (error) {
@@ -98,7 +95,7 @@ const SignIn: React.FC<Props> = ({landingPage, goToIncompleteRegistration}) => {
           body: JSON.stringify(tokenData)
       });
   
-      const fetchHandled = await handleFetchResponse(response, landingPage);
+      const fetchHandled = await handleFetchResponse(response);
       const responseData = await fetchHandled.json();
   
       localStorage.setItem('accessToken', responseData.accessToken);
@@ -119,13 +116,11 @@ const SignIn: React.FC<Props> = ({landingPage, goToIncompleteRegistration}) => {
       // Updated part to handle the new responsefe
 
       if (roledata.entrypoint === 'CreateRole') {
-        goToIncompleteRegistration("createRole");
-      } else if (roledata.entrypoint === 'ConfirmEmail') {
-        goToIncompleteRegistration("confirmEmail");
-      } else if (roledata.entrypoint === "Teacher") {
-        landingPage("teacherDash");
+        navigate('/choose-subscription');
+      }  else if (roledata.entrypoint === "Teacher") {
+        navigate('/teacher-dashboard');
       } else if (roledata.entrypoint === "Student") {
-        landingPage("studentDash");
+        navigate('/student-dashboard');
       }
   
     } catch (error) {
@@ -412,10 +407,10 @@ const SignIn: React.FC<Props> = ({landingPage, goToIncompleteRegistration}) => {
                 
                 <div className="mt-6 flex justify-between">
                   <div className="flex-1 text-center pr-2">
-                    <NavigateButtonAuth landingPage={landingPage} page="signup"/>
+                    <NavigateButtonAuth  page="signup"/>
                   </div>
                   <div className="ml-auto text-center pl-2">
-                    <NavigateButtonAuth landingPage={landingPage} page="forgot"/>
+                    <NavigateButtonAuth  page="forgot"/>
                   </div>
                 </div>
             </div>

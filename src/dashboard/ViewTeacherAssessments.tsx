@@ -9,6 +9,7 @@ import EditAssessment from "./EditAssessment";
 import Exam from "./Exam";
 import {CalendarEvent, Student, StudentAssessmentAssignment} from './types'
 import { BackButton } from "./BackButton";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface Props {
   assessments: StudentAssessmentAssignment[]
@@ -19,68 +20,23 @@ interface Props {
   searchTerm: string;
 }
 
-const ViewTeacherAssessments: React.FC<Props> = ({students, assessments, searchTerm, goBackToDash, handleUpdateAssessment, handleDeleteAssessment}) => {
-  const [page, setPage] = useState('home');
-  const [assignmentId, setAssignmentId] = useState(0)
+const ViewTeacherAssessments: React.FC = () => {
+  const location = useLocation();
+  const { students, assessments, searchTerm, goBackToDash, handleDeleteAssessment, handleUpdateAssessment } = location.state as Props;
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
 
   const [filteredAssessment, setFilteredAssessment] = useState<StudentAssessmentAssignment[]>([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setFilteredAssessment(assessments.filter(assessment => assessment.title && assessment.title.toLowerCase().includes(searchTerm.toLowerCase())));
   }, [searchTerm, assessments]);
   
-  const handleBackToAssessment = (req: string, id: number) => {
-    setAssignmentId(id);
-    setPage(req);
-  };
 
 
   if (!students) {
     return <p>Loading assessment data...</p>; // Or a loading indicator
-  }
-    
-  if (page === 'create') {
-    if (selectedStudent) {
-      return (
-        <>
-          <Breadcrumb pageName={"Assign homework to " + selectedStudent.name} />
-          <CreateAssessment student={selectedStudent} backToAssessment={handleBackToAssessment} handleUpdateAssessment={handleUpdateAssessment}/>
-          
-        </>
-      );
-    }
-  }
-  
-  if (page === 'edit') {
-    
-    // if (assessments) {
-    const assessmentEvent = assessments?.find(event => event.id === assignmentId);
-    if (assessmentEvent) {  
-        console.log("bout to open edit assessments data is :", assessmentEvent)
-        return (
-            <>
-                <Breadcrumb pageName={"Edit assessment for " + assessmentEvent.id} />
-                <EditAssessment assessment={assessmentEvent} backToAssessment={handleBackToAssessment} handleUpdateAssessment={handleUpdateAssessment}/>
-            </>
-        );
-    } else {
-        console.log("Error: assessment Event is undefined");
-    }
-  }
-
-  if (page === 'exam') {
-    const assessmentEvent = assessments?.find(event => event.id === assignmentId);
-    if (assessmentEvent) {
-        return (
-            <>
-                <Breadcrumb pageName={assessmentEvent.id + " "+ assessmentEvent.title + " exam"} />
-                <Exam assignment={assessmentEvent} backToAssessment={handleBackToAssessment}  handleUpdateAssessment={handleUpdateAssessment}/>
-            </>
-        );
-    } else {
-        console.log("Error: assessment Event is undefined");
-    }
   }
 
   
@@ -120,6 +76,10 @@ const completedAssessments = selectedStudent
       assessment.isSubmitted && 
       assessment.isGraded
     ) ?? null;
+
+    const handleNavigateCreate = () => {
+      navigate('/create-assessment', { state: { handleUpdateAssessment } });
+    };
   
 
     return (
@@ -137,22 +97,22 @@ const completedAssessments = selectedStudent
                 ))}
               </select>
             </div>
-            <div className="ml-auto"><button onClick={() => setPage("create")} className="inline-flex items-center justify-center rounded-full bg-primary py-2 px-6 text-left font-medium text-white hover:bg-opacity-90 lg:px-4 xl:px-6">Create</button></div>
+            <div className="ml-auto"><button onClick={handleNavigateCreate} className="inline-flex items-center justify-center rounded-full bg-primary py-2 px-6 text-left font-medium text-white hover:bg-opacity-90 lg:px-4 xl:px-6">Create</button></div>
           </div>
     
           {/* Row 2 for AssignedAssessments */}
           <div className="row-start-2 col-span-full">
-            <AssignedAssessment assessment={assignedAssessments} backToAssessment={handleBackToAssessment} handleDeleteAssessment={handleDeleteAssessment}/>
+            <AssignedAssessment assessment={assignedAssessments} handleUpdateAssessment={handleUpdateAssessment} handleDeleteAssessment={handleDeleteAssessment} backToParent={'/view-teacher-assessments'} />
           </div>
     
           {/* Row 3 for SubmittedAssessments */}
           <div className="row-start-3 col-span-full">
-            <SubmittedAssessment assessment={submittedAssessments} backToAssessment={handleBackToAssessment} handleDeleteAssessment={handleDeleteAssessment}/>
+            <SubmittedAssessment assessment={submittedAssessments} handleUpdateAssessment={handleUpdateAssessment} handleDeleteAssessment={handleDeleteAssessment} backToParent={'/view-teacher-assessments'} />
           </div>
     
           {/* Row 4 for CompleteAssessments */}
           <div className="row-start-4 col-span-full">
-            <CompleteAssessment assessment={completedAssessments} backToAssessment={handleBackToAssessment} handleDeleteAssessment={handleDeleteAssessment}/>
+            <CompleteAssessment assessment={completedAssessments} handleUpdateAssessment={handleUpdateAssessment} handleDeleteAssessment={handleDeleteAssessment} backToParent={'/view-teacher-assessments'} />
           </div>
         </div>
       </>

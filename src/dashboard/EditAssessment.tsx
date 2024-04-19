@@ -3,18 +3,20 @@ import { useState } from "react"
 import { StudentAssessmentAssignment, CalendarEvent } from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
 interface Props {
+  backToParent: string;
   assessment: StudentAssessmentAssignment;
-  backToAssessment: (req: string, id: number,) => void; // Define the type of the backToLessons function
   handleUpdateAssessment: (update: StudentAssessmentAssignment[], calendarData: CalendarEvent[]) => void;
 }
 
-const EditAssessment: React.FC<Props> = ({assessment, backToAssessment, handleUpdateAssessment }) => {
+const EditAssessment: React.FC = () => {
+  const location = useLocation();
+  const { assessment, handleUpdateAssessment, backToParent } = location.state as Props;
   const [assessmentData, setAssessmentData] = useState<StudentAssessmentAssignment>(assessment);
-
-  console.log("in edit assessment, assessment prop is :", assessment, "assessmentData is :", assessmentData)
+  const navigate = useNavigate();
 
   const formattedDueDate = new Date(assessmentData.dueDate).toISOString().slice(0, 16);
 
@@ -41,16 +43,13 @@ const EditAssessment: React.FC<Props> = ({assessment, backToAssessment, handleUp
       console.log('Mutation response:', result);
       handleUpdateAssessment(result.assessments, result.calendarEvents)
       
-      handleCancel()
-    } catch (error) {
+      navigate(backToParent)
+      } catch (error) {
       console.error('Error creating assessment:', error);
     }
   };
 
 
-  const handleCancel = () => {
-    backToAssessment("default", 0);
-  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -71,7 +70,7 @@ const EditAssessment: React.FC<Props> = ({assessment, backToAssessment, handleUp
                       View Assessment
                     </h4>
                   </div>
-                  <CancelButton handleCancel={handleCancel}/>
+                  <CancelButton backToParent={backToParent}/>
                 </div>
               </div>
 

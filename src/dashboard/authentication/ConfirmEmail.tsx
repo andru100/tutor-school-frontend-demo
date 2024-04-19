@@ -8,25 +8,24 @@ import { NavigateButtonAuth } from './NavigateButtonAuth';
 import { sendEmailConfirmCode } from '/src/dashboard/authentication/SendEmailConfirmCode.tsx';
 import {ResendEmailConfirmButton} from '/src/dashboard/authentication/ResendEmailConfirmButton.tsx'
 import { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
 interface Props {
-   
-  setPage: (page: string) => void;
-  goBackToSignUp: () => void;
-  landingPage: (page: string) => void;
   email: string;
 }
 
-const ConfirmEmail: React.FC<Props> = ({setPage, goBackToSignUp, email}) => {
-
-  console.log("yeah i got called");
+const ConfirmEmail: React.FC = () => {
+  const location = useLocation();
+  const { email } = location.state as Props;
 
   useEffect(() => {
       // Call the utility function on component mount
       console.log("requesting initial confirm email code ")
-      sendEmailConfirmCode(email, setPage);
+      sendEmailConfirmCode(email);
   }, []);
+
+  const navigate = useNavigate();
 
 
   const confirmEmail = async (loginData: LoginData) => {
@@ -46,7 +45,7 @@ const ConfirmEmail: React.FC<Props> = ({setPage, goBackToSignUp, email}) => {
         console.log("signin response is: ", data)
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken);
-        setPage("selectSubscription")
+        navigate('/selectSubscription')
       } else {
         const error = await response.json();
         console.log("Error confirming email address, response status code:", response.status);
@@ -297,7 +296,7 @@ const ConfirmEmail: React.FC<Props> = ({setPage, goBackToSignUp, email}) => {
               <div className="mt-6 text-center">
                   <div className="mt-6 flex justify-between">
                     <div className="flex-1 text-center pr-2">
-                      <NavigateCancelButton backTO={goBackToSignUp}/>
+                      <NavigateCancelButton/>
                     </div>
                     <div className="ml-auto text-center pl-2">
                       <ResendEmailConfirmButton email={email}/>

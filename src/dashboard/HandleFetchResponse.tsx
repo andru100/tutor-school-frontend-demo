@@ -1,9 +1,13 @@
 // utils.ts or wherever you prefer to keep utility functions
 
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 
-export const handleFetchResponse = async (response: Response, landingPage: (page: string) => void) => {
+export const handleFetchResponse = async (response: Response) => {
+
+  const navigate = useNavigate();
+
   if (response.ok) {
     return response;
   }
@@ -16,7 +20,7 @@ export const handleFetchResponse = async (response: Response, landingPage: (page
       break;
     case 401:
       errorMessage = "Unauthorized: Please check your details.";
-      landingPage('signin')
+      navigate('/choose-subscription');
       break;
     case 403:
       errorMessage = "You don't have sufficient privileges to perform this action.";

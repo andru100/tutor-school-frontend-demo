@@ -1,11 +1,14 @@
 import {Student} from './types'
+import { useLocation } from 'react-router-dom';
 
 
 interface Props {
   lessons: Student["lessonEvents"];
 }
 
-const Billing: React.FC<Props> = ({lessons}) => {
+const Billing: React.FC = () => {
+  const location = useLocation();
+  const { lessons } = location.state as Props;
 
 
   return (

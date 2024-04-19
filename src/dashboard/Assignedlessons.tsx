@@ -1,23 +1,33 @@
 import { useState, useEffect } from "react"
-import { Student, LessonEvent } from "./types"
+import { Student, LessonEvent, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
     lessons: Student["lessonEvents"];
-    backToLessons: (req: string, id: number) => void; // Define the type of the onBackToList function
     handleDeleteLesson: (id: number) => void;
+    handleUpdateLesson: (update: LessonEvent[], calendarData: CalendarEvent[]) => void;
+    backToParent: string;
 };
 
 
 
-const AssignedLessons: React.FC<Props> = ({lessons, backToLessons, handleDeleteLesson}) => {
+const AssignedLessons: React.FC<Props> = ({lessons, handleDeleteLesson, handleUpdateLesson, backToParent}) => {
 
   //const [upcomingLessons, setUpcomingLessons] = useState(lessons);
 
   // useEffect(() => {
   //   setUpcomingLessons(lessons);
   // }, [lessons]);
+
+  const navigate = useNavigate();
+
+  
+  const handleEditLesson = ( lesson: LessonEvent) => {
+    navigate('/edit-lesson', { state: { lesson, handleUpdateLesson, backToParent } });
+  };
+
 
   const handleDelete = async (lessonId: number) => {
     console.log("lesson delete id is ", lessonId)
@@ -76,7 +86,7 @@ const AssignedLessons: React.FC<Props> = ({lessons, backToLessons, handleDeleteL
             <td className="py-5 px-4 dark:border-strokedark">
               <div className="flex items-center space-x-3.5">
                 {/* Actions */}
-                <button className="hover:text-primary" onClick={() => backToLessons("edit", event.id)}>
+                <button className="hover:text-primary" onClick={() => handleEditLesson(event)}>
                   <svg
                     className="fill-current"
                     width="18"

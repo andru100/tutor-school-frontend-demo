@@ -4,7 +4,7 @@ import {handleFetchResponse} from '/src/dashboard/HandleFetchResponse.tsx'
 
 const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS;
 
-export async function sendPasswordResetCode(resendRequest: ResendRequest, landingPage: (page: string) => void): Promise<boolean> {
+export async function sendPasswordResetCode(resendRequest: ResendRequest): Promise<boolean> {
   try {
     console.log("sending reset request. logindata in sendPasswordResetCode is: " + resendRequest.email) 
     const response = await fetch(`${serverAddress}/api/account/forgotPassword`, {
@@ -16,7 +16,7 @@ export async function sendPasswordResetCode(resendRequest: ResendRequest, landin
     });
 
     // If the response is not ok, handleFetchResponse will throw an error
-    await handleFetchResponse(response, landingPage);
+    await handleFetchResponse(response);
   
     toast.success("If an account exists, a reset code will be sent to the email address you provided.");
     return true; // Request was successful

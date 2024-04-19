@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate, useLocation } from 'react-router-dom';
 import StudentLessonCard from './StudentLessonCard.tsx';
 import CalendarCard from './CalendarCard.tsx';
 import StatsCard from "./StatsCard.tsx";
@@ -22,12 +23,15 @@ interface Props {
 }
 
 
-const TeacherStudentDash: React.FC<Props> = ({student, goBackToDash, searchTerm}) => {
+const TeacherStudentDash: React.FC = () => {
+  const location = useLocation();
+  const { student, goBackToDash, searchTerm } = location.state as Props;
   const [studentData, setStudentData] = useState<Student>(student);
-  const [page, setPage] = useState('home');
+
+  const navigate = useNavigate();
 
   const handleBackToDash = () => {
-    setPage('default');
+    navigate('/view-teacher-student-dash')
   };
 
   const handleUpdateLesson = (lessonData: LessonEvent[], calendarData: CalendarEvent[]) => {
@@ -213,74 +217,59 @@ const TeacherStudentDash: React.FC<Props> = ({student, goBackToDash, searchTerm}
 
 
  
+  const handleViewLessons = () => {
+    if (studentData) {
+      navigate('/view-student-lessons', { state: { searchTerm, student: studentData, goBackToDash: handleBackToDash, handleUpdateLesson, handleDeleteLesson } });
+    }
+  };
 
+  const handleViewAssessments = () => {
+    if (studentData) {
+      navigate('/view-student-assessments', { state: { searchTerm, student: studentData, goBackToDash: handleBackToDash, handleUpdateAssessment, handleDeleteAssessment } });
+    }
+  };
 
-  switch(page){
-  case "lessons":
-    if (studentData){
-      return (
-        <>
-          <ViewStudentLessons searchTerm={searchTerm} student={studentData} goBackToDash={handleBackToDash} handleUpdateLesson={handleUpdateLesson} handleDeleteLesson={handleDeleteLesson}/>
-        </>
-      )
+  const handleViewHomework = () => {
+    if (studentData) {
+      navigate('/view-student-homework', { state: { searchTerm, student: studentData, goBackToDash: handleBackToDash, handleUpdateHomework, handleUploadHomework, handleDeleteHomework } });
     }
-    break;
-  case "assessments":
-    if (studentData){
-      return (
-        <>
-          <ViewStudentAssessments searchTerm={searchTerm} student={studentData}  goBackToDash={handleBackToDash} handleUpdateAssessment={handleUpdateAssessment} handleDeleteAssessment={handleDeleteAssessment}/>
-        </>
-      )
+  };
+
+  const handleViewStats = () => {
+    if (studentData) {
+      navigate('/stats', { state: { student: studentData } });
     }
-    break;
-  case "homework":
-    if (studentData){
-      return (
-        <>
-          <ViewStudentHomework searchTerm={searchTerm} student={studentData} goBackToDash={handleBackToDash} handleUpdateHomework={handleUpdateHomework} handleUploadHomework={handleUploadHomework} handleDeleteHomework={handleDeleteHomework}/>
-        </>
-      )
+  };
+
+  const handleViewCalendar = () => {
+    if (studentData?.calendarEvents) {
+      navigate('/calendar', { state: { events: studentData.calendarEvents, goBackToDash: handleBackToDash, handleUpdateLesson, handleDeleteLesson } });
     }
-    break;  
-  case "stats":
-    if (studentData){
-      return (
-        <>
-          <Stats student={studentData} />
-        </>
-      )
-    }
-    break;
-  case "calendar":
-    if ( studentData?.calendarEvents) {
-      return <Calendar events={studentData?.calendarEvents}  goBackToDash={handleBackToDash} handleUpdateLesson={handleUpdateLesson} handleDeleteLesson={handleDeleteLesson}/>
-    }
-    break;
-  default:
-    if (!studentData) {
-      return <p>Loading...</p>; 
-    }
-    return (
+  };
+
+  if (!studentData) {
+    return <p>Loading...</p>;
+  }
+
+  return (
     <>
-      <BackButton goBackToDash={goBackToDash}/>
+      <BackButton goBackToDash={handleBackToDash} />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <div onClick={() => setPage('lessons')}>
-        <StudentLessonCard lessons={studentData.lessonEvents} />
+        <div onClick={handleViewLessons}>
+          <StudentLessonCard lessons={studentData.lessonEvents} />
         </div>
-        <div onClick={() => setPage('homework')}>
-          <StudentHomeworkCard homework={studentData.homeworkAssignments}/>
+        <div onClick={handleViewHomework}>
+          <StudentHomeworkCard homework={studentData.homeworkAssignments} />
         </div>
-        <div onClick={() => setPage('assessments')}>
-          <StudentAssessmentCard assessment={studentData.assessments}/> 
+        <div onClick={handleViewAssessments}>
+          <StudentAssessmentCard assessment={studentData.assessments} />
         </div>
-        <div onClick={() => setPage('stats')}>
-          <StatsCard assessment={studentData.assessments}/> 
+        <div onClick={handleViewStats}>
+          <StatsCard assessment={studentData.assessments} />
         </div>
-        <div onClick={() => setPage('calendar')}>
-          <CalendarCard lessons={studentData.lessonEvents} homework={studentData.homeworkAssignments}/>
+        <div onClick={handleViewCalendar}>
+          <CalendarCard lessons={studentData.lessonEvents} homework={studentData.homeworkAssignments} />
         </div>
-        
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
@@ -297,7 +286,7 @@ const TeacherStudentDash: React.FC<Props> = ({student, goBackToDash, searchTerm}
       </div>
     </>
     );
-  }
+  
   
 };
 

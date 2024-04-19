@@ -18,19 +18,22 @@ import Billing from './Billing.tsx';
 import Header from'/src/dashboard/layout/header/Header.tsx'
 import { Button } from "flowbite-react";
 import { HiOutlineArrowRight } from "react-icons/hi";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface Props {
-  landingPage: (page: string) => void;
   searchTerm: string;
   updateUserProfileInfo: (newUserInfo: { role: string, name: string, profileImgUrl: string | null }) => void;
 }
 
 
-const TeacherDash: React.FC<Props> = ({landingPage, searchTerm, updateUserProfileInfo}) => {
+const TeacherDash: React.FC = () => {
+  const location = useLocation();
+  const { searchTerm, updateUserProfileInfo } = location.state as Props;
 
-  const [page, setPage] = useState('home');
   const [teacherData, setTeacherData] = useState<Teacher>(); 
   const [student, setStudent] = useState<Student | undefined>();  
+
+  const navigate = useNavigate();
 
   //Get teacher data
   const fetchData = async () => {
@@ -56,7 +59,7 @@ const TeacherDash: React.FC<Props> = ({landingPage, searchTerm, updateUserProfil
         console.log("Successfuly retrieved teacher data: ", data);
       } else {
         toast.error("Unable to retrieve teacher data");
-        landingPage("signin");
+        navigate('/signin');
       }
     } catch (error) {
       toast.error("Unable to retrieve teacher data");
@@ -65,8 +68,7 @@ const TeacherDash: React.FC<Props> = ({landingPage, searchTerm, updateUserProfil
   };
 
   const handleBackToDash = () => {
-    setPage('default');
-    console.log("handlebacktodash in teacher dash called ")
+    navigate('/teacher-dash');
   };
 
   useEffect(() => {
@@ -298,97 +300,68 @@ const TeacherDash: React.FC<Props> = ({landingPage, searchTerm, updateUserProfil
 
   
 
-  switch(page){
-  case "students":
-    if (teacherData?.students ) {
-      return (
-      <>
-        <ViewStudents studentsData={teacherData.students} searchTerm={searchTerm} updateTeacherStudentData={updateTeacherStudentData} goBackToDash={handleBackToDash}  />
-      </>
-      )
+  const handleViewStudents = () => {
+    if (teacherData?.students) {
+      navigate('/view-students', { state: { studentsData: teacherData.students, searchTerm, updateTeacherStudentData, goBackToDash: handleBackToDash } });
     }
-    break;
-  case "homework":
+  };
+
+  const handleViewHomework = () => {
     if (teacherData?.students && teacherData?.homeworkAssignments) {
-      return (
-        <>
-          <ViewTeacherHomework homework={teacherData?.homeworkAssignments} searchTerm={searchTerm} students={teacherData?.students } goBackToDash={handleBackToDash} handleUpdateHomework={handleUpdateHomework} handleUploadHomework={handleUploadHomework} handleDeleteHomework={handleDeleteHomework}/>
-        </>
-      )
+      navigate('/view-teacher-homework', { state: { homework: teacherData.homeworkAssignments, searchTerm, students: teacherData.students, goBackToDash: handleBackToDash, handleUpdateHomework, handleUploadHomework, handleDeleteHomework } });
     }
-    break;
-  case "assessments":
+  };
+
+  const handleViewAssessments = () => {
     if (teacherData?.students && teacherData?.assessments) {
-      return (
-        <>
-          <ViewTeacherAssessments assessments={teacherData?.assessments} searchTerm={searchTerm} students={teacherData?.students } goBackToDash={handleBackToDash} handleUpdateAssessment={handleUpdateAssessment} handleDeleteAssessment={handleDeleteAssessment}/>
-        </>
-      )
+      navigate('/view-teacher-assessments', { state: { assessments: teacherData.assessments, searchTerm, students: teacherData.students, goBackToDash: handleBackToDash, handleUpdateAssessment, handleDeleteAssessment } });
     }
-    break;
-    case "lessons":
-      if (teacherData?.students && teacherData?.lessonEvents) {
-        return (
-          <>
-            <ViewTeacherLessons lessons={teacherData?.lessonEvents} searchTerm={searchTerm} students={teacherData?.students } goBackToDash={handleBackToDash} handleUpdateLesson={handleUpdateLessons} handleDeleteLesson={handleDeleteLesson}/>
-          </>
-        )  
-      }
-      break;
-    case "calendar":
-      if (teacherData?.students && teacherData?.calendarEvents) {
-        return (
-          <>
-            <Calendar events={teacherData?.calendarEvents}  goBackToDash={handleBackToDash} handleUpdateLesson={handleUpdateLessons} handleDeleteLesson={handleDeleteLesson}/>
-          </>
-        )
-      }
-      break;
-    // case "humanFeedback":
-    //   if (teacherData?.students ) {
-    //     return <HumanVerifyMath goBackToDash={handleBackToDash}/>
-    //   }
-    //   break;
-    case "paymentscheckout":
-      if (teacherData?.students ) {
-        return (
-          <>
-            <CheckoutForm goBackToDash={handleBackToDash}/>
-          </>
-        )
-      }
-      break;
-    // case "paymentsreturn":
-    //   if (teacherData?.students ) {
-    //     return <Return goBackToDash={handleBackToDash}/>
-    //   }
-      break;
-  default:
-    if (!teacherData) {
-      return <p>Loading...</p>;
+  };
+
+  const handleViewLessons = () => {
+    if (teacherData?.students && teacherData?.lessonEvents) {
+      navigate('/view-teacher-lessons', { state: { lessons: teacherData.lessonEvents, searchTerm, students: teacherData.students, goBackToDash: handleBackToDash, handleUpdateLessons, handleDeleteLesson } });
     }
-    return (
+  };
+
+  const handleViewCalendar = () => {
+    if (teacherData?.students && teacherData?.calendarEvents) {
+      navigate('/calendar', { state: { events: teacherData.calendarEvents, goBackToDash: handleBackToDash, handleUpdateLessons, handleDeleteLesson } });
+    }
+  };
+
+  const handlePaymentCheckout = () => {
+    if (teacherData?.students) {
+      navigate('/payment-checkout', { state: { goBackToDash: handleBackToDash } });
+    }
+  };
+
+  if (!teacherData) {
+    return <p>Loading...</p>;
+  }
+
+  return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <div onClick={() => setPage('students')}>
-          <TeacherViewStudentsCard students={teacherData.students}/>
+        <div onClick={handleViewStudents}>
+          <TeacherViewStudentsCard students={teacherData.students} />
         </div>
-        <div onClick={() => setPage('homework')}>
-          <TeacherHomeworkCard homework={teacherData.homeworkAssignments}/>
+        <div onClick={handleViewHomework}>
+          <TeacherHomeworkCard homework={teacherData.homeworkAssignments} />
         </div>
-        <div onClick={() => setPage('assessments')}>
-          <StudentAssessmentCard assessment={teacherData.assessments}/> 
+        <div onClick={handleViewAssessments}>
+          <StudentAssessmentCard assessment={teacherData.assessments} />
         </div>
-        <div onClick={() => setPage('lessons')}>
+        <div onClick={handleViewLessons}>
           <StudentLessonCard lessons={teacherData.lessonEvents} />
         </div>
-        <div onClick={() => setPage('calendar')}>
+        <div onClick={handleViewCalendar}>
           <CalendarCard events={teacherData?.calendarEvents} />
         </div>
-        {/* <div onClick={() => setPage('humanFeedback')}>
+        {/* <div onClick={() => navigate('/human-feedback')}>
           <ExamMaker lessons={teacherData.lessonEvents} />
         </div> */}
-        <div onClick={() => setPage('paymentscheckout')}>
+        <div onClick={handlePaymentCheckout}>
           <Billing lessons={teacherData.lessonEvents} />
         </div>
       </div>
@@ -408,7 +381,7 @@ const TeacherDash: React.FC<Props> = ({landingPage, searchTerm, updateUserProfil
       </div>
     </>
     );
-  }
+  
   
 };
 

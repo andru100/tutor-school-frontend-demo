@@ -1,11 +1,11 @@
 import React from 'react';
 import { sendPasswordResetCode } from './SendPasswordResetCode';
 
-export const ResendPasswordResetButton: React.FC<{ email: string, landingPage: (page: string) => void }> = ({ email, landingPage }) => {
+export const ResendPasswordResetButton: React.FC<{ email: string }> = ({ email }) => {
 
     const handleResetPassword = () => {
         const resendRequest = { Email: email };
-        sendPasswordResetCode(resendRequest, landingPage);
+        sendPasswordResetCode(resendRequest);
     };
 
     return (

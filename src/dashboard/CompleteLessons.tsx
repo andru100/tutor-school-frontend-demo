@@ -1,22 +1,30 @@
 import { useState, useEffect } from "react"
-import { Student, LessonEvent } from "./types"
+import { LessonEvent, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
-    lessons: Student["lessonEvents"];
-    backToLessons: (req: string, id: number) => void; // Define the type of the onBackToList function
+    lessons: LessonEvent[];
+    handleUpdateLesson: (update: LessonEvent[], calendarData: CalendarEvent[]) => void;
     handleDeleteLesson: (id: number) => void;
+    backToParent: string;
 };
 
 
-const CompleteLessons: React.FC<Props> = ({lessons, backToLessons, handleDeleteLesson}) => {
+const CompleteLessons: React.FC<Props> = ({lessons, handleDeleteLesson, handleUpdateLesson, backToParent}) => {
 
   const [upcomingLessons, setUpcomingLessons] = useState(lessons);
 
   useEffect(() => {
     setUpcomingLessons(lessons);
   }, [lessons]);
+
+  const navigate = useNavigate();
+
+  const handleEditLesson = ( lesson: LessonEvent) => {
+    navigate('/edit-lesson', { state: { lesson, handleUpdateLesson, backToParent } });
+  };
 
 
   const handleDelete = async (lessonId: number) => {
@@ -56,6 +64,7 @@ const CompleteLessons: React.FC<Props> = ({lessons, backToLessons, handleDeleteL
     }
   };
 
+
   const PreviousEvents = () => {
       return upcomingLessons?.map((event) => (
         <tbody key={event.id}>
@@ -77,7 +86,7 @@ const CompleteLessons: React.FC<Props> = ({lessons, backToLessons, handleDeleteL
           <td className="py-5 px-4 dark:border-strokedark">
             <div className="flex items-center space-x-3.5">
               {/* Actions */}
-                <button className="hover:text-primary" onClick={() => backToLessons("edit", event.id ?? 0)}>
+                <button className="hover:text-primary" onClick={() => handleEditLesson(event)}>
                   <svg
                     className="fill-current"
                     width="18"

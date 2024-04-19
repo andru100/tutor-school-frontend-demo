@@ -3,19 +3,23 @@ import { useState } from "react"
 import { LessonEvent, CalendarEvent } from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
 interface Props {
   lesson: LessonEvent;
-  backToLessons: (req: string, id: number) => void;
+  backToParent: string;
   handleUpdateLesson: (lessonData: LessonEvent[], calendarData: CalendarEvent[]) => void;
 }
 
 
 
-const EditLesson: React.FC<Props> = ({ lesson, backToLessons, handleUpdateLesson }) => {
+const EditLesson: React.FC = () => {
+  const location = useLocation();
+  const { lesson, backToParent, handleUpdateLesson } = location.state as Props;
   const [lessonData, setLessonData] = useState<LessonEvent>(lesson);
   
+  const navigate = useNavigate();
   const formattedDueDate = new Date(lessonData.dueDate).toISOString().slice(0, 16);
 
   const handleSubmit = async (event) => {
@@ -42,17 +46,13 @@ const EditLesson: React.FC<Props> = ({ lesson, backToLessons, handleUpdateLesson
       console.log('Mutation response:', result);
       handleUpdateLesson(result.lessonEvents, result.calendarEvents)
       toast.success('Generation Prompt');
-      handleCancel()
+      navigate(backToParent)
     } catch (error) {
       toast.error('An error occurred while updating the homework');
       console.error('Error creating lesson:', error);
     }
   };
 
-  const handleCancel = () => {
-    backToLessons("default", 0);
-    
-  };
 
 
   const handleInputChange = (event) => {
@@ -75,7 +75,7 @@ const EditLesson: React.FC<Props> = ({ lesson, backToLessons, handleUpdateLesson
                     Create Lesson
                   </h4>
                 </div>
-                <CancelButton handleCancel={handleCancel}/>
+                <CancelButton backToParent={backToParent}/>
               </div>
             </div>
 

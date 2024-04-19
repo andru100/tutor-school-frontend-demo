@@ -2,16 +2,19 @@ import React, { useState } from "react"
 import { Student, LessonEvent, CalendarEvent } from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
 interface Props {
   student: Student;
-  backToLessons: (req: string, id: number) => void; // Define the type of the backToLessons function
+  backToParent: string;
   handleUpdateLesson: (lessonData: LessonEvent[], calendarData: CalendarEvent[]) => void;
 }
 
 
-const CreateLesson: React.FC<Props> = ({ student, backToLessons, handleUpdateLesson }) => {
+const CreateLesson: React.FC = () => {
+  const location = useLocation();
+  const { student, backToParent, handleUpdateLesson } = location.state as Props;
 
   const [lessonData, seLessonData] = useState<LessonEvent>({
     id: null ,
@@ -26,6 +29,8 @@ const CreateLesson: React.FC<Props> = ({ student, backToLessons, handleUpdateLes
     teacher: null,
     student: null
   });
+
+  const navigate = useNavigate();
   
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -50,18 +55,12 @@ const CreateLesson: React.FC<Props> = ({ student, backToLessons, handleUpdateLes
       console.log('Mutation response:', result);
       handleUpdateLesson(result.lessonEvents, result.calendarEvents)
       
-      handleCancel()
+      navigate(backToParent)
 
     } catch (error) {
       console.error('Error creating lesson:', error);
     }
   };
-
-
-  const handleCancel = () => {
-    backToLessons("default", 0);
-  };
-
 
 
   const handleInputChange = (event) => {
@@ -84,7 +83,7 @@ const CreateLesson: React.FC<Props> = ({ student, backToLessons, handleUpdateLes
                     Create Lesson
                   </h4>
                 </div>
-                <CancelButton handleCancel={handleCancel}/>
+                <CancelButton backToParent={backToParent}/>
               </div>
             </div>
 

@@ -4,29 +4,28 @@ import LogoDark from './path/to/logo-dark.png';
 import { NavigateButtonAuth } from './NavigateButtonAuth.tsx';
 import { SignUpTeacher } from "./SignUpTeacher.tsx";
 import SignUpStudent from './SignUpStudent.tsx';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
    
-    setPage: (page: string) => void;
-    goBackToSignUp: () => void;
-    landingPage: (page: string) => void;
-    //email: string;
   }
   
-export const CreateRole: React.FC<Props> = ({setPage, goBackToSignUp, landingPage}) => {
+export const CreateRole: React.FC = () => {
 
-  const selectStudentBasic = () => {
-    setPage("addStudent")
-  };
+    const navigate = useNavigate();
 
-  const selectTeacherBasic = () => {
-    setPage("addTeacher")
-  };
+    const selectStudentBasic = () => {
+        navigate('/addStudent')
+    };
 
-  const selectStudentPlus = () => {
-    // TODO renders billing page to setup subscription
-    setPage("addTeacherPlus")
-  };
+    const selectTeacherBasic = () => {
+        navigate('addTeacher')
+    };
+
+    const selectStudentPlus = () => {
+        // TODO renders billing page to setup subscription
+        navigate('addTeacherPlus')
+    };
 
 //   const selectTeacherPlus = () => {
 //     // Handle landing page navigation logic here

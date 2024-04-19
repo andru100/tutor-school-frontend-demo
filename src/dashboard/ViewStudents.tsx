@@ -3,6 +3,7 @@ import TeacherStudentDash from "./ViewTeacherStudentDash"
 import { useState, useEffect } from "react"
 import { Student} from "./types";
 import { BackButton } from './BackButton';
+import { useLocation } from 'react-router-dom';
 
 interface Props {
   studentsData: Student[];
@@ -10,9 +11,10 @@ interface Props {
   searchTerm: string;
 }
 
-const ViewStudents: React.FC<Props> = ({studentsData, goBackToDash, searchTerm}) => {
+const ViewStudents: React.FC = () => {
+  const location = useLocation();
+  const { studentsData, goBackToDash, searchTerm } = location.state as Props;
   const [studentID, setStudentID] = useState("");
-  const [page, setPage] = useState("default"); 
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
 
   useEffect(() => {

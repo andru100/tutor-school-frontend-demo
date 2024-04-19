@@ -4,10 +4,11 @@ import BarChartTopicsResult from './BarChartTopicsResult.tsx';
 import RadialResult from './RadialResult.tsx';
 import toast from 'react-hot-toast';
 import { CancelButton } from './CancelButton.tsx';
+import { useLocation } from 'react-router-dom';
 
 interface Props {
   assignment: StudentAssessmentAssignment;
-  backToAssessment: (req: string, id: number,) => void; 
+  backToParent: string; 
   handleUpdateAssessment: (update: StudentAssessmentAssignment[], calendarData: CalendarEvent[]) => void;
   //goBackToDash: () => void;
 }
@@ -33,7 +34,9 @@ function useInterval(callback, delay) {
 }
 
 
-const ExamPage: React.FC<Props> = ({ assignment, backToAssessment, handleUpdateAssessment }) => {
+const ExamPage: React.FC = () => {
+  const location = useLocation();
+  const { assignment, backToParent, handleUpdateAssessment } = location.state as Props;
   const [assessment, setAssessment] = useState<Assessment>();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<StudentAssessmentAssignment["answers"]>([]);
@@ -117,10 +120,6 @@ const ExamPage: React.FC<Props> = ({ assignment, backToAssessment, handleUpdateA
   if (!assessment) {
     return <p>Loading student data...</p>; 
   }
-
-  const handleCancel = () => {
-    backToAssessment("default", 0);
-  };
 
 
   const handleBegin = () => {
@@ -228,7 +227,7 @@ const ExamPage: React.FC<Props> = ({ assignment, backToAssessment, handleUpdateA
   const handleExit = () => {
     // TODO need to send .calendarevents to..
     handleUpdateAssessment (updatedStudent.assessments, updatedStudent.calendarEvents)
-    backToAssessment("default", 0);
+    navigate(backToParent)
   };
 
   const currentQuestion = assessment.questionsWithAnswers[currentQuestionIndex];
@@ -270,7 +269,7 @@ const ExamPage: React.FC<Props> = ({ assignment, backToAssessment, handleUpdateA
         ) : (
           
           <div>
-             <CancelButton handleCancel={handleCancel}/>
+             <CancelButton backToParent={backToParent}/>
           {/* Display the timer */}
           {/* <h3 className="text-xl">Time Remaining: {timerDisplay}</h3> */}
             {currentQuestionIndex === 0 ? (

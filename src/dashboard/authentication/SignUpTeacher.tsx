@@ -6,12 +6,16 @@ import { NavigateButtonAuth } from './NavigateButtonAuth';
 import { NavigateCancelButton } from './NavigateCancelButton';
 import { AdminCreateTeacherData } from "/src/dashboard/types.tsx";
 import { handleFetchResponse} from '../HandleFetchResponse';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface Props {
-  landingPage: (page: string) => void;
   goBackToSignUp: () => void;
 }
-const SignUpTeacher: React.FC<Props> = ({landingPage, goBackToSignUp}) => {
+const SignUpTeacher: React.FC = () => {
+  const location = useLocation();
+  const { goBackToSignUp } = location.state as Props;
+
+  const navigate = useNavigate();
 
   const signUp = async (Data: AdminCreateTeacherData) => {
     try{
@@ -28,14 +32,14 @@ const SignUpTeacher: React.FC<Props> = ({landingPage, goBackToSignUp}) => {
         body: JSON.stringify(Data)
       });
 
-      const fetchHandled = await handleFetchResponse(response, landingPage);
+      const fetchHandled = await handleFetchResponse(response);
       const responseData = await fetchHandled.json();
 
       localStorage.setItem('accessToken', responseData.accessToken);
       localStorage.setItem('refreshToken', responseData.refreshToken);
 
       toast.success("That's it, you're all signed up!");
-      landingPage("teacherDash");
+      navigate('teacherDash');
     } catch (error) {
       console.error("Error during signup:", error);
       // The error message has already been displayed by handleFetchResponse
@@ -358,10 +362,10 @@ const SignUpTeacher: React.FC<Props> = ({landingPage, goBackToSignUp}) => {
                     <div className="mt-6 text-center">
                       <div className="mt-6 flex justify-between">
                         <div className="flex-1 text-center pr-2">
-                          <NavigateCancelButton backTO={goBackToSignUp}/>
+                          <NavigateCancelButton/>
                         </div>
                         <div className="ml-auto text-center pl-2">
-                          <NavigateButtonAuth landingPage={landingPage} page={"signin"}/>
+                          <NavigateButtonAuth  page={"signin"}/>
                         </div>
                       </div>
                     </div>

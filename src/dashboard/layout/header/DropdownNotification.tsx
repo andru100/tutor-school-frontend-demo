@@ -107,15 +107,9 @@ const DropdownNotification = () => {
               className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
               // onClick = {()=> landingPage("messages")}
             >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  There are many variations
-                </span>{' '}
-                of passages of <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Tutoring Platform Demo
-              </h2> Ipsum available, but the majority have
-                suffered
-              </p>
+              <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
+                  Tutoring Platform Demo
+              </h2> 
 
               <p className="text-xs">04 Jan, 2025</p>
             </span>
@@ -125,15 +119,9 @@ const DropdownNotification = () => {
               className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
               // onClick = {()=> landingPage("messages")}
             >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  There are many variations
-                </span>{' '}
-                of passages of <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
+              <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
                 Tutoring Platform Demo
-              </h2> Ipsum available, but the majority have
-                suffered
-              </p>
+              </h2>
 
               <p className="text-xs">01 Dec, 2024</p>
             </span>

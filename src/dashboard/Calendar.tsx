@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import Breadcrumb from './Breadcrumb';
 import {Teacher, LessonEvent, CalendarEvent} from './types';
 import { BackButton } from "./BackButton";
+import { useLocation } from 'react-router-dom';
 
 interface Props {
   events: Teacher["calendarEvents"];
@@ -13,7 +14,9 @@ interface Props {
 }
 
 
-const Calendar:  React.FC<Props> = ({ events, goBackToDash, handleUpdateLesson, handleDeleteLesson }) => {
+const Calendar:  React.FC = () => {
+  const location = useLocation();
+  const { events, goBackToDash, handleUpdateLesson, handleDeleteLesson } = location.state as Props;
   const [currentDate, setCurrentDate] = useState(new Date());
   const [eventsByDate, setEventsByDate] = useState<{ [key: string]: CalendarEvent[] }>({});
 

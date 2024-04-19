@@ -3,18 +3,22 @@ import { useState } from "react"
 import { HomeworkAssignment, CalendarEvent } from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
 interface Props {
+  backToParent: string;
   homework: HomeworkAssignment;
-  backToHomework: (req: string, id: number) => void; // Define the type of the backToLessons function
   handleUpdateHomework: (update: HomeworkAssignment[], calendarData: CalendarEvent[]) => void;
 }
 
 
-const EditHomework: React.FC<Props> = ({homework, backToHomework, handleUpdateHomework }) => {
+const EditHomework: React.FC = () => {
+  const location = useLocation();
+  const { backToParent, homework, handleUpdateHomework } = location.state as Props;
   const [homeworkData, setHomeworkData] = useState<HomeworkAssignment>(homework);
 
+  const navigate = useNavigate();
   const formattedDueDate = new Date(homeworkData.dueDate).toISOString().slice(0, 16);
   const formattedSubmissionDate = homeworkData.submissionDate ? new Date(homeworkData.submissionDate).toISOString().slice(0, 16) : null;
   
@@ -43,16 +47,13 @@ const EditHomework: React.FC<Props> = ({homework, backToHomework, handleUpdateHo
       console.log('Mutation response:', result);
       handleUpdateHomework(result.homeworkAssignments, result.calendarEvents )
       toast.success('Generation completed successfully');
-      handleCancel()
+      navigate(backToParent)
     } catch (error) {
       toast.error('An error occurred while updating the homework');
       console.error('Error updating homework:', error);
     }
   };
 
-  const handleCancel = () => {
-    backToHomework("default", 0);
-  };
 
 
   const handleInputChange = (event) => {
@@ -86,7 +87,7 @@ const EditHomework: React.FC<Props> = ({homework, backToHomework, handleUpdateHo
                     View Homework
                   </h4>
                 </div>
-                <CancelButton handleCancel={handleCancel}/>
+                <CancelButton backToParent={backToParent}/>
               </div>
             </div>
 

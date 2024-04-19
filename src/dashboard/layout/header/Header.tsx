@@ -3,19 +3,21 @@ import DarkModeSwitcher from './DarkModeSwitcher';
 import DropdownMessage from './DropdownMessage';
 import DropdownNotification from './DropdownNotification';
 import DropdownUser from './DropdownUser';
+import { useNavigate } from 'react-router-dom';
 
 
   interface Props {
     sidebarOpen: string | boolean | undefined;
     setSidebarOpen: (arg0: boolean) => void;
-    landingPage: (page: string) => void;
     updateSearchTerm: (page: string) => void;
     searchTerm: string;
     userProfileInfo: { role: string; name: string; profileImgUrl: string | null };
     
   }
 
-const Header: React.FC<Props> = ({sidebarOpen, setSidebarOpen, landingPage, updateSearchTerm, searchTerm, userProfileInfo}) => {
+const Header: React.FC<Props> = ({sidebarOpen, setSidebarOpen, updateSearchTerm, searchTerm, userProfileInfo}) => {
+
+  const navigate = useNavigate();
 
     
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,7 +137,7 @@ const Header: React.FC<Props> = ({sidebarOpen, setSidebarOpen, landingPage, upda
           </ul>
 
           {/* <!-- User Area --> */}
-          <DropdownUser landingPage={landingPage} userProfileInfo={userProfileInfo} />
+          <DropdownUser  userProfileInfo={userProfileInfo} />
           {/* <!-- User Area --> */}
         </div>
       </div>

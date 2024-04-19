@@ -3,16 +3,21 @@ import { useState } from "react"
 import { Student, HomeworkAssignment, CalendarEvent, HomeworkStream} from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
 interface Props {
   student: Student;
-  backToHomework: (req: string, id: number) => void;
+  backToParent: string;
   handleUpdateHomework: (update: HomeworkAssignment[], calendarData: CalendarEvent[]) => void;
 }
 
 
-const CreateHomework: React.FC<Props> = ({ student, backToHomework, handleUpdateHomework }) => {
+const CreateHomework: React.FC = () => {
+  const location = useLocation();
+  const { student, backToParent, handleUpdateHomework } = location.state as Props;
+  const navigate = useNavigate()
+
   const [homeworkData, setHomeworkData] = useState<HomeworkAssignment>({
     id: null,
     teacherId: null, // get from auth
@@ -61,16 +66,11 @@ const CreateHomework: React.FC<Props> = ({ student, backToHomework, handleUpdate
       console.log('Mutation response:', result);
       handleUpdateHomework(result.homeworkAssignments, result.calendarEvents)
       toast.success('Homework created successfully');
-      handleCancel()
+      navigate(backToParent)
     } catch (error) {
       toast.error('An error occurred while creating the homework');
       console.error('Error creating homework:', error);
     }
-  };
-
-
-  const handleCancel = () => {
-    backToHomework("default", 0);
   };
 
 
@@ -105,7 +105,7 @@ const CreateHomework: React.FC<Props> = ({ student, backToHomework, handleUpdate
                     Create Homework
                   </h4>
                 </div>
-                <CancelButton handleCancel={handleCancel}/>
+                <CancelButton backToParent={backToParent}/>
               </div>
             </div>
 

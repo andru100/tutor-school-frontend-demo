@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate, useLocation } from 'react-router-dom';
 import Breadcrumb from './Breadcrumb';
 import AssignedLessons from './Assignedlessons';
 import CompleteLessons from './CompleteLessons';
@@ -12,26 +13,29 @@ interface Props {
   lessons: LessonEvent[];
   students: Student[];
   goBackToDash: () => void;
-  handleUpdateLesson: (update: LessonEvent[], calendarData: CalendarEvent[]) => void;
   handleDeleteLesson: (id: number) => void;
+  handleUpdateLesson: (update: LessonEvent[], calendarData: CalendarEvent[]) => void;
   searchTerm: string;
 }
 
-const ViewTeacherLessons: React.FC<Props> = ({ lessons, students, searchTerm, goBackToDash, handleUpdateLesson, handleDeleteLesson }) => {
-  const [page, setPage] = useState('home');
-  const [lessonId, setLessonId] = useState(0);
+const ViewTeacherLessons: React.FC = () => {
+  const location = useLocation();
+  const { lessons, students, searchTerm, goBackToDash, handleDeleteLesson, handleUpdateLesson } = location.state as Props;
+
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [filteredLessons, setFilteredLessons] = useState<LessonEvent[]>([]);
+
+  const navigate = useNavigate();
+
+  
+  const handleNavigateCreate = () => {
+    navigate('/create-lesson', { state: { handleUpdateLesson } });
+  };
 
   useEffect(() => {
     setFilteredLessons(lessons.filter(lesson => lesson.title && lesson.title.toLowerCase().includes(searchTerm.toLowerCase())));
   }, [searchTerm, lessons]);
 
-
-  const handleBackToLessons = (req: string, id: number) => {
-    setLessonId(id);
-    setPage(req);
-  };
 
   if (!students) {
     return <p>Loading lesson data...</p>; 
@@ -52,32 +56,13 @@ const ViewTeacherLessons: React.FC<Props> = ({ lessons, students, searchTerm, go
       ) ?? null
     : filteredLessons?.filter(lesson => lesson.isComplete) ?? null;
 
-    if (page === 'create') {
-        return (
-          <>
-            <Breadcrumb pageName={"Assign lesson to " + selectedStudent.name} />
-            <CreateLesson student={selectedStudent} backToLessons={handleBackToLessons} handleUpdateLesson={handleUpdateLesson} />
-          </>
-        );
-      }
-      
-      if (page === 'edit') {
-        if (lessons) {
-            const lessonEvent = lessons.find(lesson => lesson.id === lessonId);
-            return (
-                <>
-                    <Breadcrumb pageName={"Edit lesson for " + lessonId} />
-                    <EditLesson lesson= {lessonEvent} backToLessons={handleBackToLessons} handleUpdateLesson={handleUpdateLesson} />
-                </>
-            );
-        } else {
-            console.log("Error: Lesson Event is undefined");
-        }
-      }
+   
+
 
       if (!students) {
         return <p>Loading lesson data...</p>; 
       }
+
 
       return (
         <>
@@ -94,17 +79,18 @@ const ViewTeacherLessons: React.FC<Props> = ({ lessons, students, searchTerm, go
                   ))}
                 </select>
               </div>
-              <div className="ml-auto"><CreateButton setPage={setPage}/></div>
+              <div className="ml-auto"><button onClick={handleNavigateCreate} className="inline-flex items-center justify-center rounded-full bg-primary py-2 px-6 text-left font-medium text-white hover:bg-opacity-90 lg:px-4 xl:px-6">Create</button></div>
+         
             </div>
       
             {/* Row 2 for AssignedLessons */}
             <div className="row-start-2 col-span-full">
-              <AssignedLessons lessons={assignedLessons} backToLessons={handleBackToLessons} handleDeleteLesson={handleDeleteLesson}/>
+              <AssignedLessons lessons={assignedLessons} handleDeleteLesson={handleDeleteLesson} handleUpdateLesson={handleUpdateLesson} backToParent={'/view-teacher-lessons'} />
             </div>
       
             {/* Row 3 for CompleteLessons */}
             <div className="row-start-3 col-span-full">
-              <CompleteLessons lessons={completedLessons} backToLessons={handleBackToLessons} handleDeleteLesson={handleDeleteLesson}/>
+              <CompleteLessons lessons={completedLessons} handleDeleteLesson={handleDeleteLesson} handleUpdateLesson={handleUpdateLesson} backToParent={'/view-teacher-lessons'} />
             </div>
           </div>
         </>

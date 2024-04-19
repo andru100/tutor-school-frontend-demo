@@ -15,22 +15,25 @@ import Stats from './Stats.tsx'
 import Calendar from "./Calendar.tsx";
 import { BackButton } from "./BackButton.tsx";
 import toast from 'react-hot-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 
 interface Props {
-  landingPage: (page: string) => void;
   searchTerm: string;
   updateUserProfileInfo: (newUserInfo: { role: string, name: string, profileImgUrl: string | null }) => void;
 }
 
 
-const StudentDash: React.FC<Props> = ({landingPage, searchTerm, updateUserProfileInfo}) => {
+const StudentDash: React.FC = () => {
+  const location = useLocation();
+  const { searchTerm, updateUserProfileInfo } = location.state as Props;
   const [studentData, setStudentData] = useState<Student>();
 
-  const [page, setPage] = useState('home');
+  const navigate = useNavigate();
 
 
   const handleBackToDash = () => {
-    setPage('default');
+    navigate('/student-dash')
   };
 
   useEffect(() => {
@@ -55,12 +58,12 @@ const StudentDash: React.FC<Props> = ({landingPage, searchTerm, updateUserProfil
               console.log("use effect view student dash student data: ", data)
             } else {
               toast.error("Unable to retrieve student data, please sign in");
-              landingPage("signin");
+              navigate('/signin');
             }
         } catch (error) {
           toast.error("An error has occured, please sign in");
           console.error("Error fetching student data:", error);
-          landingPage("signin");
+          navigate('/signin');
         }
       }
       
@@ -238,77 +241,58 @@ const StudentDash: React.FC<Props> = ({landingPage, searchTerm, updateUserProfil
   };
 
 
+  const handleViewLessons = () => {
+    if (studentData) {
+      navigate('/view-student-lessons', { state: { student: studentData, searchTerm, goBackToDash: handleBackToDash, handleUpdateLesson, handleDeleteLesson } });
+    }
+  };
 
-  switch(page){
-  case "lessons":
-    if (studentData){
-      return (
-        <>
-          <ViewStudentLessons student={studentData} searchTerm={searchTerm} goBackToDash={handleBackToDash} handleUpdateLesson={handleUpdateLesson} handleDeleteLesson={handleDeleteLesson}/>
-        </>
-      )
+  const handleViewAssessments = () => {
+    if (studentData) {
+      navigate('/view-student-assessments', { state: { student: studentData, searchTerm, goBackToDash: handleBackToDash, handleUpdateAssessment, handleDeleteAssessment } });
     }
-    break;
-  case "assessments":
-    if (studentData){
-      return (
-        <>
-          <ViewStudentAssessments student={studentData}  searchTerm={searchTerm} goBackToDash={handleBackToDash} handleUpdateAssessment={handleUpdateAssessment} handleDeleteAssessment={handleDeleteAssessment}/>
-        </>
-      )
+  };
+
+  const handleViewHomework = () => {
+    if (studentData) {
+      navigate('/view-student-homework', { state: { student: studentData, searchTerm, goBackToDash: handleBackToDash, handleUpdateHomework, handleUploadHomework, handleDeleteHomework } });
     }
-    break;
-  case "homework":
-    if (studentData){
-      return (
-        <>
-          <ViewStudentHomework student={studentData} searchTerm={searchTerm} goBackToDash={handleBackToDash} handleUpdateHomework={handleUpdateHomework} handleUploadHomework={handleUploadHomework} handleDeleteHomework={handleDeleteHomework}/>
-        </>
-      )
+  };
+
+  const handleViewStats = () => {
+    if (studentData) {
+      navigate('/stats', { state: { student: studentData, goBackToDash: handleBackToDash, searchTerm } });
     }
-    break;  
-  case "stats":
-    if (studentData){
-      return (
-        <>
-          <Stats student={studentData} goBackToDash={handleBackToDash} searchTerm={searchTerm}/>
-        </>
-      )
+  };
+
+  const handleViewCalendar = () => {
+    if (studentData?.calendarEvents) {
+      navigate('/calendar', { state: { events: studentData.calendarEvents, goBackToDash: handleBackToDash, handleUpdateLesson, handleDeleteLesson } });
     }
-    break;
-  case "calendar":
-    if ( studentData?.calendarEvents) {
-      return (
-        <>
-          <Calendar events={studentData?.calendarEvents}  goBackToDash={handleBackToDash} handleUpdateLesson={handleUpdateLesson} handleDeleteLesson={handleDeleteLesson}/>
-        </>
-      )
-        
-    }
-    break;
-  default:
-    if (!studentData) {
-      return <p>Loading...</p>; 
-    }
-    return (
+  };
+
+  if (!studentData) {
+    return <p>Loading...</p>;
+  }
+
+  return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <div onClick={() => setPage('lessons')}>
-        <StudentLessonCard lessons={studentData.lessonEvents} />
+        <div onClick={handleViewLessons}>
+          <StudentLessonCard lessons={studentData.lessonEvents} />
         </div>
-        <div onClick={() => setPage('homework')}>
-          <StudentHomeworkCard homework={studentData.homeworkAssignments}/>
+        <div onClick={handleViewHomework}>
+          <StudentHomeworkCard homework={studentData.homeworkAssignments} />
         </div>
-        <div onClick={() => setPage('assessments')}>
-          <StudentAssessmentCard assessment={studentData.assessments}/> 
+        <div onClick={handleViewAssessments}>
+          <StudentAssessmentCard assessment={studentData.assessments} />
         </div>
-        <div onClick={() => setPage('stats')}>
-          <StatsCard /> 
+        <div onClick={handleViewStats}>
+          <StatsCard />
         </div>
-        <div onClick={() => setPage('calendar')}>
+        <div onClick={handleViewCalendar}>
           <CalendarCard />
         </div>
-        
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
@@ -325,7 +309,7 @@ const StudentDash: React.FC<Props> = ({landingPage, searchTerm, updateUserProfil
       </div>
     </>
     );
-  }
+  
   
 };
 

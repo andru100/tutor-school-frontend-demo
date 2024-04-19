@@ -9,84 +9,37 @@ import EditAssessment from "./EditAssessment";
 import Exam from "./Exam";
 import { BackButton } from "./BackButton";
 import {Student, StudentAssessmentAssignment, CalendarEvent} from './types'
+import { useLocation } from 'react-router-dom';
 
 interface Props {
   student: Student;
   goBackToDash: () => void; 
-  handleUpdateAssessment:(update: StudentAssessmentAssignment[], calendarData: CalendarEvent[]) => void;
   handleDeleteAssessment: (id: number) => void;
+  handleUpdateAssessment: (update: StudentAssessmentAssignment[], calendarData: CalendarEvent[]) => void;
   searchTerm: string;
 }
 
-const ViewStudentAssessments: React.FC<Props> = ({student, handleUpdateAssessment,  handleDeleteAssessment, searchTerm, goBackToDash}) => {
-
-  const [page, setPage] = useState('home');
-  const [assignmentId, setAssignmentId] = useState(0)
+const ViewStudentAssessments: React.FC = () => {
+  const location = useLocation();
+  const { student, handleDeleteAssessment, handleUpdateAssessment, searchTerm, goBackToDash } = location.state as Props;
 
   const [filteredAssessment, setFilteredAssessment] = useState<Student["assessments"]>([]);
 
   useEffect(() => {
-      //console.log("searchterm is  ", searchTerm);
       setFilteredAssessment(student.assessments.filter(assessment => assessment.title && assessment.title.toLowerCase().includes(searchTerm.toLowerCase())));
   }, [searchTerm, student]);
-
-  const handleBackToAssessment = (req: string, id: number) => {
-    setAssignmentId(id);
-    setPage(req);
-  };
 
 
   if (!student) {
     return <p>Loading assessment data...</p>; 
   }
-    
-  if (page === 'create') {
-    return (
-      <>
-        <Breadcrumb pageName={"Assign assessment to " + student.name} />
-        <CreateAssessment student={student} backToAssessment={handleBackToAssessment} handleUpdateAssessment={handleUpdateAssessment}/>
-        
-      </>
-    );
-  }
-  
-  if (page === 'edit') {
-    const assessmentEvent = student.assessments?.find(event => event.id === assignmentId);
-    if (assessmentEvent) {
-      console.log("bout to open edit assessments data is :", assessmentEvent)
-        return (
-            <>
-                <Breadcrumb pageName={"Edit assessment for " + student.name} />
-                <EditAssessment assessment={assessmentEvent} backToAssessment={handleBackToAssessment} handleUpdateAssessment={handleUpdateAssessment}/>
-            </>
-        );
-    } else {
-        console.log("Error: assessment Event is undefined");
-    }
-  }
-
-  if (page === 'exam') {
-    const assessmentEvent = student.assessments?.find(event => event.id === assignmentId);
-    if (assessmentEvent) {
-        return (
-            <>
-                <Breadcrumb pageName={student.name + " "+ assessmentEvent.title + " exam"} />
-                <Exam assignment={assessmentEvent} backToAssessment={handleBackToAssessment} handleUpdateAssessment={handleUpdateAssessment}/>
-            </>
-        );
-    } else {
-        console.log("Error: assessment Event is undefined");
-    }
-  }
-
-  
+ 
 
   const assignedAssessments = filteredAssessment?.filter(assessment => assessment.isAssigned && !assessment.isSubmitted && !assessment.isGraded) ?? null;
   const submittedAssessments = filteredAssessment?.filter(assessment => assessment.isAssigned && assessment.isSubmitted && !assessment.isGraded) ?? null;
   const completedAssessments = filteredAssessment?.filter(assessment => assessment.isSubmitted && assessment.isGraded) ?? null;
 
   
-
   return (
     <>
       <Breadcrumb pageName={"Assessments"} />
@@ -98,17 +51,17 @@ const ViewStudentAssessments: React.FC<Props> = ({student, handleUpdateAssessmen
   
         {/* Row 2 for AssignedAssessments */}
         <div className="row-start-2 col-span-full">
-          <AssignedAssessments assessment={assignedAssessments} backToAssessment={handleBackToAssessment} handleDeleteAssessment={handleDeleteAssessment}/>
+          <AssignedAssessments assessment={assignedAssessments}  handleUpdateAssessment={handleUpdateAssessment} handleDeleteAssessment={handleDeleteAssessment} backToParent={'/view-student-assessments'} />
         </div>
   
         {/* Row 3 for SubmittedAssessments */}
         {/* <div className="row-start-3 col-span-full">
-          <SubmittedAssessment assessment={submittedAssessments} backToAssessment={handleBackToAssessment} handleDeleteAssessment={handleDeleteAssessment}/>
+          <SubmittedAssessment assessment={submittedAssessments}  handleDeleteAssessment={handleDeleteAssessment}/>
         </div> */}
   
         {/* Row 4 for CompleteAssessments */}
         <div className="row-start-4 col-span-full">
-          <CompleteAssessment assessment={completedAssessments} backToAssessment={handleBackToAssessment} handleDeleteAssessment={handleDeleteAssessment}/>
+          <CompleteAssessment assessment={completedAssessments} handleUpdateAssessment={handleUpdateAssessment}  handleDeleteAssessment={handleDeleteAssessment} backToParent={'/view-student-assessments'} />
         </div>
       </div>
     </>

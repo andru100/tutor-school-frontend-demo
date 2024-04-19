@@ -1,21 +1,33 @@
 import { useState, useEffect } from "react"
-import { Student } from "./types"
+import {  StudentAssessmentAssignment, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
-    assessment: Student["assessments"];
-    backToAssessment: (req: string, id: number) => void; 
+    assessment: StudentAssessmentAssignment[];
     handleDeleteAssessment: (id: number) => void;
+    handleUpdateAssessment: (update: StudentAssessmentAssignment[], calendarData: CalendarEvent[]) => void;
+    backToParent: string;
 };
 
 
-const AssignedAssessments: React.FC<Props> = ({assessment, backToAssessment, handleDeleteAssessment}) => {
+const AssignedAssessments: React.FC<Props> = ({assessment, handleDeleteAssessment, handleUpdateAssessment, backToParent}) => {
   const [upcomingAssessments, setUpcomingAssessments] = useState(assessment);
 
   useEffect(() => {
     setUpcomingAssessments(assessment);
   }, [assessment]);
+
+  const navigate = useNavigate();
+
+  const handleEditAssessment = ( assessment: StudentAssessmentAssignment) => {
+    navigate('/edit-assessment', { state: { assessment, handleUpdateAssessment, backToParent } });
+  };
+
+  const handleStartAssessment = ( assessment: StudentAssessmentAssignment) => {
+    navigate('/exam', { state: { assessment, handleUpdateAssessment, backToParent } });
+  };
 
 
 
@@ -57,8 +69,6 @@ const AssignedAssessments: React.FC<Props> = ({assessment, backToAssessment, han
   };
 
 
-
-
   const UpcomingAssessment = () => {
     return upcomingAssessments?.map((event) => (
       <tbody key={event.id}>
@@ -73,7 +83,7 @@ const AssignedAssessments: React.FC<Props> = ({assessment, backToAssessment, han
           </td>
           <td className="py-5 px-4 dark:border-strokedark w-1/4">
             <div className="flex items-center space-x-3.5">
-                <button className="hover:text-primary" onClick={() => backToAssessment("edit", event.id ?? 0)}>
+                <button className="hover:text-primary"  onClick={() => handleEditAssessment(event)}>
                   <svg
                     className="fill-current"
                     width="18"
@@ -119,7 +129,7 @@ const AssignedAssessments: React.FC<Props> = ({assessment, backToAssessment, han
                     />
                   </svg>
                 </button>
-                <button className="hover:text-primary" onClick={() => backToAssessment("exam", event.id ?? 0)}>
+                <button className="hover:text-primary" onClick={handleStartAssessment}>
                   <svg
                     className="fill-current"
                     width="18"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useLocation } from 'react-router-dom';
 import { BackButton } from "./BackButton";
 import {loadStripe} from '@stripe/stripe-js';
 import {
@@ -13,7 +14,9 @@ interface Props {
 
  
 
-export const CheckoutForm: React.FC<Props> = ({goBackToDash}) => {
+export const CheckoutForm: React.FC = () => {
+    const location = useLocation();
+    const { goBackToDash } = location.state as Props;
     // Make sure to call `loadStripe` outside of a component’s render to avoid
     // recreating the `Stripe` object on every render.
     // This is your test public API key.

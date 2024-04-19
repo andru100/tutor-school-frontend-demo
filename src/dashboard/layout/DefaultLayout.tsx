@@ -1,31 +1,43 @@
 import { useState } from 'react';
-import Header from "./header/Header.tsx";
-
-import TeacherDash from '/src/dashboard/TeacherDash.tsx';
-import StudentDash from '/src/dashboard/StudentDash.tsx';
-//import AdminDash from './pages/Dashboard/Admin/AdminDash';
+import { Routes, Route } from 'react-router-dom';
+import Header from "/src/dashboard/layout/header/Header.tsx";
 import SignIn from '/src/dashboard/authentication/SignIn.tsx';
 import SignUp from '/src/dashboard/authentication/SignUp.tsx';
-import Settings from '/src/dashboard/account/Settings.tsx';
 import ForgotPassword from "/src/dashboard/authentication/ForgotPassword.tsx"
-import IncompleteRegistration from '/src/dashboard/authentication/IncompleteRegistration.tsx';
+import ForgotPasswordConfirm from "/src/dashboard/authentication/ForgotPasswordConfirm.tsx"
+import SignUpTeacher from "/src/dashboard/authentication/SignUpTeacher.tsx";
+import SignUpStudent from "/src/dashboard/authentication/SignUpStudent.tsx";
+import ConfirmEmail from "/src/dashboard/authentication/ConfirmEmail.tsx"
+import TeacherDash from '/src/dashboard/TeacherDash.tsx';
+import StudentDash from '/src/dashboard/StudentDash.tsx';
+import ViewTeacherStudentDash from '/src/dashboard/ViewTeacherStudentDash.tsx';
+import Settings from '/src/dashboard/account/Settings.tsx';
+import ViewStudents from '/src/dashboard/ViewStudents.tsx';
+import ViewTeacherHomework from  '/src/dashboard/ViewTeacherHomework.tsx';
+import ViewTeacherAssessments from '/src/dashboard/ViewTeacherAssessments.tsx';
+import ViewTeacherLessons from '/src/dashboard/ViewTeacherLessons.tsx';
+import Calendar from '/src/dashboard/Calendar.tsx';
+import Billing from '/src/dashboard/Billing.tsx';
+import ViewStudentLessons from '/src/dashboard/ViewStudentLessons.tsx';
+import ViewStudentAssessments from '/src/dashboard/ViewStudentAssessments.tsx';
+import ViewStudentHomework from '/src/dashboard/ViewStudentHomework.tsx';
+import Stats from '/src/dashboard/Stats.tsx';
+import CreateAssessment from '/src/dashboard/CreateAssessment.tsx';
+import CreateHomework from '/src/dashboard/CreateHomework.tsx';
+import CreateLesson from '/src/dashboard/CreateLesson.tsx';
+import EditAssessment from '/src/dashboard/EditAssessment.tsx';
+import EditHomework from '/src/dashboard/EditHomework.tsx';
+import EditLesson from '/src/dashboard/EditLesson.tsx';
+import HomeworkStudio from '/src/dashboard/HomeworkStudio.tsx';
+import Exam from '/src/dashboard/Exam.tsx';
+import { CreateRole } from '/src/dashboard/authentication/CreateRole.tsx';
+import ProtectedRoutes from './ProtectedRoutes';
 
 
-interface Props {
-  //if needed.. will likely delete as parent component has nothing to pass.
-}
-
-const DefaultLayout: React.FC<Props> = ({}) => {
+const DefaultLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [page, setPage] = useState("signin");
   const [searchTerm, setSearchTerm] = useState('');
   const [userProfileInfo, setUserProfileInfo] = useState({ role: '', name: '' });
-  const [startPage, setStartPage] = useState('default');
-  const [email, setEmail] = useState<string>('');
-
-  const landingPage = (page: string) => {
-    setPage(page);
-  };
 
   const updateSearchTerm = (newSearchTerm: string) => {
     setSearchTerm(newSearchTerm);
@@ -35,35 +47,64 @@ const DefaultLayout: React.FC<Props> = ({}) => {
     setUserProfileInfo(newUserInfo);
   };
 
-  const goToIncompleteRegistration = (startPage: string, email: string = '') => {
-
-    console.log("yeah i got called email is: "), email;
-    
-    setStartPage(startPage);
-    setEmail(email);
-    setPage('incompleteRegistration');
-  };
-
-
-
-  
 
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">
       <div className="flex h-screen overflow-hidden">
         <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-        {page !== 'signin' && page !== 'signup' && page!== 'forgot' && page!== 'incompleteRegistration' && (
-          <Header landingPage={landingPage} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} updateSearchTerm={updateSearchTerm} searchTerm={searchTerm} userProfileInfo={userProfileInfo}/>
-        )}
+          <Header
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+            updateSearchTerm={updateSearchTerm}
+            searchTerm={searchTerm}
+            userProfileInfo={userProfileInfo}
+          />
           <main>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-              {page === 'signin' && <SignIn landingPage={landingPage} goToIncompleteRegistration={goToIncompleteRegistration}/>}
-              {page === 'signup' && <SignUp landingPage={landingPage} />}
-              {page === 'incompleteRegistration' && <IncompleteRegistration landingPage={landingPage} startPage={startPage} email={email}/>}
-              {page === 'forgot' && <ForgotPassword landingPage={landingPage}/>}
-              {page === 'settings' && <Settings landingPage={landingPage} updateUserProfileInfo={updateUserProfileInfo}  userProfileInfo={userProfileInfo} />}
-              {page === 'teacherDash' && <TeacherDash landingPage={landingPage} searchTerm={searchTerm} updateUserProfileInfo={updateUserProfileInfo} />}
-              {page === 'studentDash' && <StudentDash landingPage={landingPage} searchTerm={searchTerm} updateUserProfileInfo={updateUserProfileInfo}/>}
+              <ProtectedRoutes>
+                <Routes>
+                  <Route path="/signin" element={<SignIn  />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/forgot-password-confirm" element={<ForgotPasswordConfirm />} />
+                  
+                  <Route path="/signup" element={<SignUp />} />
+                  <Route path="/confirm-email" element={<ConfirmEmail />} />
+                  <Route path="/choose-subscription" element={<CreateRole />} />
+                  <Route path="/teacher-signup" element={<SignUpTeacher />} />
+                  <Route path="/student-signup" element={<SignUpStudent />} />
+
+                  <Route path="/teacher-dashboard" element={<TeacherDash searchTerm={searchTerm} updateUserProfileInfo={updateUserProfileInfo} />} />
+                  <Route path="/student-dashboard" element={<StudentDash searchTerm={searchTerm} updateUserProfileInfo={updateUserProfileInfo} />} />
+                  <Route path="/teacher-student-dash" element={<ViewTeacherStudentDash />} />
+
+                  <Route path="/settings" element={<Settings updateUserProfileInfo={updateUserProfileInfo} userProfileInfo={userProfileInfo} />} />
+
+
+                  <Route path="/view-students" element={<ViewStudents />} />
+                  <Route path="/view-teacher-homework" element={<ViewTeacherHomework />} />
+                  <Route path="/view-teacher-assessments" element={<ViewTeacherAssessments />} />
+                  <Route path="/view-teacher-lessons" element={<ViewTeacherLessons />} />
+                  <Route path="/calendar" element={<Calendar />} />
+                  <Route path="/billing" element={<Billing />} />
+
+                  <Route path="/view-student-lessons" element={<ViewStudentLessons />} />
+                  <Route path="/view-student-assessments" element={<ViewStudentAssessments />} />
+                  <Route path="/view-student-homework" element={<ViewStudentHomework />} />
+                  <Route path="/stats" element={<Stats />} />
+
+                  <Route path="/create-assessment" element={<CreateAssessment />} />
+                  <Route path="/create-homework" element={<CreateHomework />} />
+                  <Route path="/create-lesson" element={<CreateLesson />} />
+
+                  <Route path="/edit-assessment" element={<EditAssessment />} />
+                  <Route path="/edit-homework" element={<EditHomework />} />
+                  <Route path="/edit-lesson" element={<EditLesson />} />
+
+                  <Route path="/homework-studio" element={<HomeworkStudio />} />
+                  <Route path="/exam-studio" element={<Exam />} />
+                </Routes>
+                
+              </ProtectedRoutes>
             </div>
           </main>
         </div>

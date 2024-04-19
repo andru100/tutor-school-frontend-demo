@@ -8,6 +8,7 @@ import HeatMapTopics from './HeatMapTopics.tsx';
 import BarChartTopics from './BarChartTopics.tsx';
 import { Student, StudentAssessmentAssignment } from "./types.tsx";
 import { BackButton } from './BackButton.tsx';
+import { useLocation } from 'react-router-dom';
 
 
 interface Props {
@@ -17,7 +18,9 @@ interface Props {
 }
 
 
-const Stats: React.FC<Props> = ({ student, goBackToDash, searchTerm }) => {
+const Stats: React.FC = () => {
+  const location = useLocation();
+  const { student, goBackToDash, searchTerm } = location.state as Props;
 
   if (!student.assessments || student.assessments.length === 0) {
     return <p>Student has no assessments. To get started take your first assessment</p>;

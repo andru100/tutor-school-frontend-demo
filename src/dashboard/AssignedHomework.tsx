@@ -1,17 +1,28 @@
 import { useState, useEffect } from "react"
-import { Student } from "./types"
+import { HomeworkAssignment, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';  
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
-    homework: Student["homeworkAssignments"];
-    backToHomework: (req: string, id: number) => void;
+    homework: HomeworkAssignment[];
+    handleUpdateHomework: (update: HomeworkAssignment[], calendarData: CalendarEvent[]) => void;
     handleDeleteHomework: (id: number) => void;
-    viewHomeworkStudio: (id: number) => void;
+    backToParent: string;
 };
 
-const AssignedHomework: React.FC<Props> = ({homework, backToHomework, viewHomeworkStudio, handleDeleteHomework}) => {
+const AssignedHomework: React.FC<Props> = ({homework, handleDeleteHomework, handleUpdateHomework, backToParent}) => {
   const [upcomingHomework, setUpcomingHomework] = useState(homework);
+
+  const navigate = useNavigate();
+
+  const handleEditHomework = ( homework: HomeworkAssignment) => {
+    navigate('/edit-homework', { state: { homework, handleUpdateHomework, backToParent } });
+  };
+
+  const viewHomeworkStudio = ( homework: HomeworkAssignment) => {
+    navigate('/homework-studio', { state: { homework, handleUpdateHomework, backToParent } });
+  };
   
 
   useEffect(() => {
@@ -55,6 +66,9 @@ const AssignedHomework: React.FC<Props> = ({homework, backToHomework, viewHomewo
     }
   };
 
+ 
+
+
   
 
   const UpcomingHomework = () => {
@@ -72,7 +86,7 @@ const AssignedHomework: React.FC<Props> = ({homework, backToHomework, viewHomewo
             </td>
             <td className="py-5 px-4 dark:border-strokedark">
               <div className="flex items-center space-x-3.5">
-                <button className="hover:text-primary" onClick={() => backToHomework("edit", event.id ?? 0)}>
+                <button className="hover:text-primary" onClick={() => handleEditHomework(event)}>
                   <svg
                     className="fill-current"
                     width="18"
@@ -118,7 +132,7 @@ const AssignedHomework: React.FC<Props> = ({homework, backToHomework, viewHomewo
                     />
                   </svg>
                 </button>
-                <button className="hover:text-primary" onClick={() => viewHomeworkStudio(event.id ?? 0)}>
+                <button className="hover:text-primary" onClick={() => viewHomeworkStudio(event)}>
                   <svg
                     className="fill-current"
                     width="18"

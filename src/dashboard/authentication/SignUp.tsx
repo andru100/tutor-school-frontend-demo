@@ -10,15 +10,16 @@ import { NavigateButtonAuth } from './NavigateButtonAuth.tsx';
 import toast from 'react-hot-toast';
 import { CreateRole } from './CreateRole.tsx';
 import {handleFetchResponse} from '/src/dashboard/HandleFetchResponse.tsx'
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
-  landingPage: (page: string) => void;
 }
 
-const SignUp: React.FC<Props> = ({landingPage}) => {
+const SignUp: React.FC = () => {
 
-  const [page, setPage] = useState("defualt");
   const [email, setEmail] = useState("");
+
+  const navigate = useNavigate();
 
   const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
 
@@ -39,10 +40,10 @@ const SignUp: React.FC<Props> = ({landingPage}) => {
       });
   
       // If the response is not ok, handleFetchResponse will throw an error
-      await handleFetchResponse(response, landingPage);
+      await handleFetchResponse(response);
   
       //toast.success("Please confirm your email");
-      setPage("confirmEmail");
+      navigate('/confirm-email', { state: { email: email } });
     } catch (error) {
       console.error("Error during signup:", error);
       // Check if the error message is related to a 400 status code
@@ -112,7 +113,7 @@ const SignUp: React.FC<Props> = ({landingPage}) => {
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken);
         toast.success("Thats it you're all signed up!")
-        setPage("selectSubscription")
+        navigate('/choose-subscription' , { state: { email: email } });
       } else if (response.status === 400) {
         toast.error("Error in  sign up. Please check that you have entered a valid email address and password. If you think you may have already registered, please try to sign in.")
         console.log("Error in signup, status code:", response.status, "response data:", data)
@@ -130,16 +131,16 @@ const SignUp: React.FC<Props> = ({landingPage}) => {
           
 
 
-  switch (page) {
-    case "confirmEmail":
-      return <EmailConfirm landingPage={landingPage} goBackToSignUp={goBackToSignUp} setPage={setPage}  email={email}/>;
-    case "selectSubscription":
-      return <CreateRole landingPage={landingPage} goBackToSignUp={goBackToSignUp} setPage={setPage} />;
-    case "addTeacher":
-        return <SignUpTeacher landingPage={landingPage} goBackToSignUp={goBackToSignUp}  />;
-    case "addStudent":
-      return <SignUpStudent landingPage={landingPage} goBackToSignUp={goBackToSignUp} />;
-    default:
+  // switch (page) {
+  //   case "confirmEmail":
+  //     return <EmailConfirm  goBackToSignUp={goBackToSignUp} setPage={setPage}  email={email}/>;
+  //   case "selectSubscription":
+  //     return <CreateRole  goBackToSignUp={goBackToSignUp} setPage={setPage} />;
+  //   case "addTeacher":
+  //       return <SignUpTeacher  goBackToSignUp={goBackToSignUp}  />;
+  //   case "addStudent":
+  //     return <SignUpStudent  goBackToSignUp={goBackToSignUp} />;
+    //default:
       return (
         <>
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -444,7 +445,7 @@ const SignUp: React.FC<Props> = ({landingPage}) => {
                   <div className="mt-6 text-center">
                     <p>
                       Already have an account?{' '}
-                      <NavigateButtonAuth landingPage={landingPage} page="signin"/>
+                      <NavigateButtonAuth  page="signin"/>
                     </p>
                   </div>
                 
@@ -454,7 +455,7 @@ const SignUp: React.FC<Props> = ({landingPage}) => {
           </div>
         </>
       );
-  }
+  
 };
 
 export default SignUp;

@@ -7,14 +7,16 @@ import { NavigateButtonAuth } from './NavigateButtonAuth.tsx';
 import { NavigateCancelButton } from './NavigateCancelButton.tsx';
 import { ResetPasswordRequest } from "/src/dashboard/types.tsx";
 import {ResendPasswordResetButton} from './ResendPasswordResetButton'
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface Props {
-  landingPage: (page: string) => void;
   email: string;
 }
-const ForgotPasswordConfirm: React.FC<Props> = ({landingPage, email}) => {
+const ForgotPasswordConfirm: React.FC = () => {
+  const location = useLocation();
+  const { email } = location.state as Props;
 
-  const [page, setPage] = useState("Signin");
+  const navigate = useNavigate();
 
 
   const resetConfirm = async (resetPasswordRequest: ResetPasswordRequest) => {
@@ -31,7 +33,7 @@ const ForgotPasswordConfirm: React.FC<Props> = ({landingPage, email}) => {
   
       if (response.ok) {
         toast.success("Password reset successfully. Please sign in with your new password.")
-        landingPage('signin');
+        navigate('/signin');
       } else {
         const errorData = await response.json();
         console.log("error in reset response is: ", errorData);
@@ -65,10 +67,6 @@ const ForgotPasswordConfirm: React.FC<Props> = ({landingPage, email}) => {
     };
     resetConfirm(resetPasswordRequest);
   };
-
-  if (page === "signup") {
-    landingPage('signup')
-  }
 
 
   return (
@@ -407,10 +405,10 @@ const ForgotPasswordConfirm: React.FC<Props> = ({landingPage, email}) => {
                 <div className="mt-6 text-center">
                   <div className="mt-6 flex justify-between">
                     <div className="flex-1 text-center pr-2">
-                      <ResendPasswordResetButton email={email} landingPage={landingPage}/>
+                      <ResendPasswordResetButton email={email} />
                     </div> 
                     <div className="ml-auto text-center pl-2">
-                        <NavigateButtonAuth landingPage={landingPage} page="signup"/>
+                        <NavigateButtonAuth  page="signup"/>
                     </div>
                   </div>
                 </div>

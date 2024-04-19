@@ -1,8 +1,9 @@
 import { toast } from 'react-hot-toast';
 import { handleFetchResponse } from '/src/dashboard/HandleFetchResponse.tsx';
 
+
 // Utility function to resend the confirmation email
-export const sendEmailConfirmCode = async (email: string, landingPage: (page: string) => void) => {
+export const sendEmailConfirmCode = async (email: string) => {
     try {
         const resendRequest = {
             email: email
@@ -17,7 +18,7 @@ export const sendEmailConfirmCode = async (email: string, landingPage: (page: st
         });
 
         // If the response is not ok, handleFetchResponse will throw an error
-        await handleFetchResponse(response, landingPage);
+        await handleFetchResponse(response);
 
         console.log("Resend confirmation email successful:");
         toast.success("If the email exists, a confirmation code has been sent.");
