@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useContext } from "react"
-import { HomeworkAssignment, CalendarEvent } from './types'
+import { HomeworkAssignment, CalendarEvent } from './types.tsx'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -15,7 +15,7 @@ interface Props {
 }
 
 
-const EditHomework: React.FC = () => {
+const HomeworkGrader: React.FC = () => {
 
   const { role, setTeacherData }  = useContext(UniversalContext);
 
@@ -31,7 +31,8 @@ const EditHomework: React.FC = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+    homeworkData.isGraded = true;
+    homeworkData.gradedDate = new Date();
     console.log("sending: ", homeworkData)
     try {
       const accessToken = localStorage.getItem('accessToken') || null;
@@ -71,17 +72,6 @@ const EditHomework: React.FC = () => {
     }));
   };
 
-  const handleStreamInputChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
-
-    console.log('Name:', name);
-    console.log('Value:', value);
-    setHomeworkData((prevData) => ({
-      ...prevData,
-      [name]: HomeworkStream[value as keyof typeof HomeworkStream],
-    }));
-  };
-
 
 
   return (
@@ -90,7 +80,7 @@ const EditHomework: React.FC = () => {
               <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6">  
                 <div className="p-2.5 xl:p-5">
                   <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-                    View Homework
+                    Grade Homework
                   </h4>
                 </div>
                 <CancelButton backToParent={backToParent}/>
@@ -117,7 +107,7 @@ const EditHomework: React.FC = () => {
                           name="title"
                           type="text"
                           value={homeworkData.title || ""}
-                          onChange={handleInputChange}
+                          readOnly
                           placeholder="Enter your age"
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         />
@@ -131,7 +121,7 @@ const EditHomework: React.FC = () => {
                           rows={6}
                           name="description"
                           value={homeworkData.description || ""}
-                          onChange={handleInputChange}
+                          readOnly
                           placeholder="Type your message"
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         ></textarea>
@@ -145,7 +135,20 @@ const EditHomework: React.FC = () => {
                           name="dueDate"
                           type="datetime-local"
                           value={formattedDueDate|| ""}
-                          onChange={handleInputChange}
+                          readOnly
+                          className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                        />
+                      </div>
+
+                      <div className="mb-4.5">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          Submission Date
+                        </label>
+                        <input
+                          name="submissionDate"
+                          type="datetime-local"
+                          value={formattedSubmissionDate || ""}
+                          readOnly
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         />
                       </div>
@@ -158,23 +161,10 @@ const EditHomework: React.FC = () => {
                           rows={6}
                           name="submissionContent"
                           value={homeworkData.submissionContent || ""}
-                          onChange={handleInputChange}
+                          readOnly
                           placeholder="Type your message"
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         ></textarea>
-                      </div>
-
-                      <div className="mb-4.5">
-                        <label className="mb-2.5 block text-black dark:text-white">
-                          Submission Date
-                        </label>
-                        <input
-                          name="submissionDate"
-                          type="datetime-local"
-                          value={formattedSubmissionDate || ""}
-                          onChange={handleInputChange}
-                          className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                        />
                       </div>
 
                       <div className="mb-6">
@@ -231,4 +221,4 @@ const EditHomework: React.FC = () => {
   
 }
 
-export default EditHomework;
+export default HomeworkGrader;

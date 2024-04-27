@@ -44,7 +44,6 @@ const SignUpStudent: React.FC = () => {
       
     } catch (error) {
       console.error("Error during signup:", error);
-      // The error message has already been displayed by handleFetchResponse
     }
 
   };

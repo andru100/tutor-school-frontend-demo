@@ -19,7 +19,7 @@ export const CreateRole: React.FC = () => {
     };
 
     const selectTeacherBasic = () => {
-        navigate('addTeacher')
+        navigate('/addTeacher')
     };
 
     const selectStudentPlus = () => {
@@ -27,9 +27,6 @@ export const CreateRole: React.FC = () => {
         navigate('addTeacherPlus')
     };
 
-//   const selectTeacherPlus = () => {
-//     // Handle landing page navigation logic here
-//   };
 
   return (
     <section className="bg-white dark:bg-gray-900">

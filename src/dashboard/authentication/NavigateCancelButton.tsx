@@ -1,10 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
-interface Props {
-   // page: string;
-  }
-    
-export const NavigateCancelButton: React.FC<Props> = ({}) => {
+
+export const NavigateCancelButton: React.FC = () => {
     const navigate = useNavigate();
     const handleCancel = () => {
         navigate("/signup");

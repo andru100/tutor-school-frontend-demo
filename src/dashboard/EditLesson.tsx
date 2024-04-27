@@ -4,8 +4,9 @@ import { LessonEvent, CalendarEvent } from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { teacherHandleUpdateLesson } from '/src/dashboard/UpdateTeacher.tsx';
+
 
 
 interface Props {
@@ -17,9 +18,7 @@ interface Props {
 
 const EditLesson: React.FC = () => {
 
-  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
-
-  const { handleUpdateLesson } = context;
+  const { role, setTeacherData }  = useContext(UniversalContext);
   
   const location = useLocation();
   const { lesson, backToParent } = location.state as Props;
@@ -50,8 +49,8 @@ const EditLesson: React.FC = () => {
 
       const result = await response.json();
       console.log('Mutation response:', result);
-      handleUpdateLesson(result.lessonEvents, result.calendarEvents)
-      toast.success('Generation Prompt');
+      teacherHandleUpdateLesson(result.lessonEvents, result.calendarEvents, setTeacherData)
+      toast.success('Lesson successfully updated');
       navigate(backToParent)
     } catch (error) {
       toast.error('An error occurred while updating the homework');
@@ -101,7 +100,6 @@ const EditLesson: React.FC = () => {
                         <input
                           name="title"
                           type="text"
-                          //defaultvalue={element.age || ""}
                           value={lessonData.title || ""}
                           onChange={handleInputChange}
                           placeholder="Enter your age"

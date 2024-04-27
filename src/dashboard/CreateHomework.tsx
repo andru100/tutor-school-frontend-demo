@@ -4,30 +4,30 @@ import { Student, HomeworkAssignment, CalendarEvent, HomeworkStream} from './typ
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { teacherHandleUpdateLesson } from '/src/dashboard/UpdateTeacher.tsx';
+import { teacherHandleUpdateHomework } from './UpdateTeacher.tsx';
+
 
 
 interface Props {
-  student: Student;
+  selectedStudent: Student;
   backToParent: string;
 }
 
 
 const CreateHomework: React.FC = () => {
 
-  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
-
-  const { handleUpdateHomework } = context;
+  const { role, setTeacherData }  = useContext(UniversalContext);
   
   const location = useLocation();
-  const { student, backToParent } = location.state as Props;
+  const { selectedStudent, backToParent } = location.state as Props;
   const navigate = useNavigate()
 
   const [homeworkData, setHomeworkData] = useState<HomeworkAssignment>({
     id: null,
     teacherId: null, // get from auth
-    studentId: student.studentId,
+    studentId: selectedStudent.studentId,
     stream: null,
     title: null,
     description: null,
@@ -45,7 +45,6 @@ const CreateHomework: React.FC = () => {
     teacher: null,
     student: null
 });
-  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -70,7 +69,7 @@ const CreateHomework: React.FC = () => {
       // TODO make sure http responses outside 200 trigger error .. if not add condition for 400 404 etc
       const result = await response.json();
       console.log('Mutation response:', result);
-      handleUpdateHomework(result.homeworkAssignments, result.calendarEvents)
+      teacherHandleUpdateHomework( result.homeworkAssignments, result.calendarEvents, setTeacherData);
       toast.success('Homework created successfully');
       navigate(backToParent)
     } catch (error) {
@@ -145,7 +144,6 @@ const CreateHomework: React.FC = () => {
                         <textarea
                           rows={6}
                           name="description"
-                          //defaultvalue={element.notes || ""}
                           value={homeworkData.description || ""}
                           onChange={handleInputChange}
                           placeholder="Type your message"

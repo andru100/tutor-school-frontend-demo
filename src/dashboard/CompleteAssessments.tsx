@@ -3,8 +3,9 @@ import { StudentAssessmentAssignment, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { teacherHandleDeleteAssessment } from '/src/dashboard/UpdateTeacher.tsx';
+
 
 interface Props {
     assessment: StudentAssessmentAssignment[];
@@ -13,16 +14,15 @@ interface Props {
 
 const CompleteAssessments: React.FC<Props> = ({assessment, backToParent}) => {
 
-  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
+  const { role, setTeacherData }  = useContext(UniversalContext);
 
-  const { handleUpdateAssessment, handleDeleteAssessment } = context;
   
   const [upcomingAssessment, setUpcomingAssessment] = useState(assessment);
 
   const navigate = useNavigate(); 
   
   const handleEditAssessment = ( assessment: StudentAssessmentAssignment) => {
-    navigate('/edit-assessment', { state: { assessment, handleUpdateAssessment, backToParent } });
+    navigate('/edit-assessment', { state: { assessment, backToParent } });
   };
 
   useEffect(() => {
@@ -58,7 +58,12 @@ const CompleteAssessments: React.FC<Props> = ({assessment, backToParent}) => {
 
       console.log('Mutation response:', response);
       
-      handleDeleteAssessment(assessmentId)
+      if (role === 'Teacher') {
+        teacherHandleDeleteAssessment(assessmentId);
+      }  else {
+        throw new Error('unable to ascertain role, role is: ', role);
+      }
+
       toast.success('Assessment deleted successfully');
       
     } catch (error) {
@@ -80,7 +85,12 @@ const CompleteAssessments: React.FC<Props> = ({assessment, backToParent}) => {
             <p className="text-black dark:text-white">{new Date(event.submissionDate).toLocaleDateString('en-UK')}</p>
           </td>
           <td className="py-5 px-4 dark:border-strokedark w-1/4">
+            <p className="text-black dark:text-white">{event.score}</p>
+          </td>
+          <td className="py-5 px-4 dark:border-strokedark w-1/4">
             <div className="flex items-center space-x-3.5">
+              {role === 'Teacher' && (
+                <>
                 <button className="hover:text-primary" onClick={() => handleEditAssessment(event)}>
                   <svg
                     className="fill-current"
@@ -100,7 +110,7 @@ const CompleteAssessments: React.FC<Props> = ({assessment, backToParent}) => {
                     />
                   </svg>
                 </button>
-                <button className="hover:text-primary" onClick={() => handleDelete(event.id ?? 0)}>
+                <button className="hover:text-primary" onClick={() => handleDelete(event.id ?? 0)} title="Delete">
                   <svg
                     className="fill-current"
                     width="18"
@@ -127,6 +137,8 @@ const CompleteAssessments: React.FC<Props> = ({assessment, backToParent}) => {
                     />
                   </svg>
                 </button>
+                </>
+                )}  
                 <button className="hover:text-primary">
                   <svg
                     className="fill-current"
@@ -167,7 +179,10 @@ const CompleteAssessments: React.FC<Props> = ({assessment, backToParent}) => {
                 Title
               </th>
               <th className="py-4 px-4 font-medium text-black dark:text-white w-1/4">
-                Date
+                Submitted Date
+              </th>
+              <th className="py-4 px-4 font-medium text-black dark:text-white w-1/4">
+                Score
               </th>
               <th className="py-4 px-4 font-medium text-black dark:text-white w-1/4">
                 Actions
@@ -196,16 +211,17 @@ const CompleteAssessments: React.FC<Props> = ({assessment, backToParent}) => {
                 Title
               </th>
               <th className="py-4 px-4 font-medium text-black dark:text-white w-1/4">
-                Date
+                Submitted Date
+              </th>
+              <th className="py-4 px-4 font-medium text-black dark:text-white w-1/4">
+                Score
               </th>
               <th className="py-4 px-4 font-medium text-black dark:text-white w-1/4">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody>
-            <CompleteAssessments />
-          </tbody>
+          <CompleteAssessments />
         </table>
       </div>
     </div>

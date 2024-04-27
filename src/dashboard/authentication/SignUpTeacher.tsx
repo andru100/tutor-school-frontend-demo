@@ -42,7 +42,6 @@ const SignUpTeacher: React.FC = () => {
       navigate('teacherDash');
     } catch (error) {
       console.error("Error during signup:", error);
-      // The error message has already been displayed by handleFetchResponse
     }
   };
 

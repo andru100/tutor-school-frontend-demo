@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import Breadcrumb from './Breadcrumb';
 import CompleteAssessment from './CompleteAssessments';
 import SubmittedAssessment from "./SubmittedAssessments";
@@ -10,34 +10,26 @@ import Exam from "./Exam";
 import {CalendarEvent, Student, StudentAssessmentAssignment} from './types'
 import { BackButton } from "./BackButton";
 import { useNavigate, useLocation } from 'react-router-dom';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 
-interface Props {
-  assessments: StudentAssessmentAssignment[]
-  students: Student[]
-  goBackToDash: string; 
-  searchTerm: string;
-}
+
 
 const ViewTeacherAssessments: React.FC = () => {
-  const location = useLocation();
-  const { students, assessments, searchTerm, goBackToDash } = location.state as Props;
+  const { teacherData, searchTerm, goBackToDash, setGoBackToDash } = useContext(UniversalContext);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
 
   const [filteredAssessment, setFilteredAssessment] = useState<StudentAssessmentAssignment[]>([]);
 
+  const students = teacherData.students
+  const assessments = teacherData.assessments
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    setFilteredAssessment(assessments.filter(assessment => assessment.title && assessment.title.toLowerCase().includes(searchTerm.toLowerCase())));
+    setFilteredAssessment(assessments?.filter(assessment => assessment.title && assessment.title.toLowerCase().includes(searchTerm.toLowerCase())));
   }, [searchTerm, assessments]);
   
 
-
-  if (!students) {
-    return <p>Loading assessment data...</p>; // Or a loading indicator
-  }
-
-  
   const assignedAssessments = selectedStudent
   ? filteredAssessment?.filter(assessment => 
       assessment.isAssigned && 
@@ -76,7 +68,7 @@ const completedAssessments = selectedStudent
     ) ?? null;
 
     const handleNavigateCreate = () => {
-      navigate('/create-assessment', { state: { handleUpdateAssessment } });
+      navigate('/create-assessment', { state: { selectedStudent, backToParent: '/view-teacher-assessments' } });
     };
   
 
@@ -100,17 +92,17 @@ const completedAssessments = selectedStudent
     
           {/* Row 2 for AssignedAssessments */}
           <div className="row-start-2 col-span-full">
-            <AssignedAssessment assessment={assignedAssessments} handleUpdateAssessment={handleUpdateAssessment} handleDeleteAssessment={handleDeleteAssessment} backToParent={'/view-teacher-assessments'} />
+            <AssignedAssessment assessment={assignedAssessments} backToParent={'/view-teacher-assessments'} />
           </div>
     
           {/* Row 3 for SubmittedAssessments */}
           <div className="row-start-3 col-span-full">
-            <SubmittedAssessment assessment={submittedAssessments} handleUpdateAssessment={handleUpdateAssessment} handleDeleteAssessment={handleDeleteAssessment} backToParent={'/view-teacher-assessments'} />
+            <SubmittedAssessment assessment={submittedAssessments} backToParent={'/view-teacher-assessments'} />
           </div>
     
           {/* Row 4 for CompleteAssessments */}
           <div className="row-start-4 col-span-full">
-            <CompleteAssessment assessment={completedAssessments} handleUpdateAssessment={handleUpdateAssessment} handleDeleteAssessment={handleDeleteAssessment} backToParent={'/view-teacher-assessments'} />
+            <CompleteAssessment assessment={completedAssessments} backToParent={'/view-teacher-assessments'} />
           </div>
         </div>
       </>

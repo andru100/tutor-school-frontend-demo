@@ -4,30 +4,29 @@ import { Student, StudentAssessmentAssignment, CalendarEvent } from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { teacherHandleUpdateAssessment } from '/src/dashboard/UpdateTeacher.tsx';
+
 
 
 interface Props {
-  student: Student;
+  selectedStudent: Student;
   backToParent: string;
 }
 
 const AssignAssessment: React.FC = () => {
 
-  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
-
-  const { handleUpdateAssessment } = context;
+  const { role, setTeacherData }  = useContext(UniversalContext);
   
   const location = useLocation();
-  const { student, backToParent } = location.state as Props;
+  const { selectedStudent, backToParent } = location.state as Props;
 
   const [assessmentData, setAssessmentData] = useState<StudentAssessmentAssignment>({ 
     id: null,
     title: "",
     description: null,
     assessmentId: 0,
-    studentId: student.studentId,
+    studentId: selectedStudent.studentId,
     teacherId: null, // server will get from auth token
     isAssigned: true,
     isSubmitted: false,
@@ -41,7 +40,6 @@ const AssignAssessment: React.FC = () => {
   });
 
   const navigate = useNavigate();
- 
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -66,7 +64,7 @@ const AssignAssessment: React.FC = () => {
 
       const result = await response.json();
       console.log('Mutation response:', result);
-      handleUpdateAssessment(result.assessments, result.calendarEvents)
+      teacherHandleUpdateAssessment(result.assessments, result.calendarEvents, setTeacherData);
       toast.success('Assessment assigned successfully');
       navigate(backToParent)
     } catch (error) {
@@ -88,7 +86,7 @@ const AssignAssessment: React.FC = () => {
     let updatedValue = value; 
 
     if (camelCaseName === "teacherId" || camelCaseName === "studentId"  || camelCaseName === "assessmentId") {
-      updatedValue = parseInt(value, 10); // Parse the value to an integer
+      updatedValue = parseInt(value, 10);
     }
 
     setAssessmentData((prevData) => ({
@@ -129,7 +127,6 @@ const AssignAssessment: React.FC = () => {
                         <select
                           name="assessmentId"
                           className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                          //value={assessmentData.assessmentId || ""}
                           onChange={handleInputChange}
                         >
                           <option value={0}>Select</option>

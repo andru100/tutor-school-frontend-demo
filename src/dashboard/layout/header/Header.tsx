@@ -4,29 +4,25 @@ import DropdownMessage from './DropdownMessage';
 import DropdownNotification from './DropdownNotification';
 import DropdownUser from './DropdownUser';
 import { useNavigate } from 'react-router-dom';
+import {useContext} from 'react'
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+
 
 
   interface Props {
     sidebarOpen: string | boolean | undefined;
     setSidebarOpen: (arg0: boolean) => void;
-    updateSearchTerm: (page: string) => void;
-    searchTerm: string;
-    userProfileInfo: { role: string; name: string; profileImgUrl: string | null };
     
   }
 
-const Header: React.FC<Props> = ({sidebarOpen, setSidebarOpen, updateSearchTerm, searchTerm, userProfileInfo}) => {
+const Header: React.FC<Props> = ({sidebarOpen, setSidebarOpen}) => {
+  const { role, setSearchTerm, searchTerm, userProfileInfo}  = useContext(UniversalContext);
 
   const navigate = useNavigate();
 
     
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateSearchTerm(event.target.value);
-    // Use searchTerm to filter and suggest users based on their names
-    // const filteredUsers = students.filter((student) =>
-    //   student.name.toLowerCase().includes(searchTerm.toLowerCase())
-    // );
-    // Do something with the filteredUsers, such as displaying suggestions
+    setSearchTerm(event.target.value);
   }
     
   return (

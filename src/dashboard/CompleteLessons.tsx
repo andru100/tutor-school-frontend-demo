@@ -3,8 +3,9 @@ import { LessonEvent, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { teacherHandleDeleteLesson} from '/src/dashboard/UpdateTeacher.tsx';
+
 
 interface Props {
     lessons: LessonEvent[];
@@ -14,10 +15,7 @@ interface Props {
 
 const CompleteLessons: React.FC<Props> = ({lessons, backToParent}) => {
 
-  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
-
-  const { handleUpdateLesson, handleDeleteLesson} = context;
-  
+  const { role, setTeacherData }  = useContext(UniversalContext);
 
   const [upcomingLessons, setUpcomingLessons] = useState(lessons);
 
@@ -28,7 +26,7 @@ const CompleteLessons: React.FC<Props> = ({lessons, backToParent}) => {
   const navigate = useNavigate();
 
   const handleEditLesson = ( lesson: LessonEvent) => {
-    navigate('/edit-lesson', { state: { lesson, handleUpdateLesson, backToParent } });
+    navigate('/edit-lesson', { state: { lesson, backToParent } });
   };
 
 
@@ -60,7 +58,11 @@ const CompleteLessons: React.FC<Props> = ({lessons, backToParent}) => {
       }
       console.log('Mutation response:', response);
       
-      handleDeleteLesson(lessonId)
+      if (role === 'Teacher') {
+        teacherHandleDeleteLesson(lessonId, setTeacherData);
+      } else {
+        throw new Error('unable to ascertain role, role is: ', role);
+      }
       toast.success('Lesson deleted successfully');
       
     } catch (error) {
@@ -81,16 +83,19 @@ const CompleteLessons: React.FC<Props> = ({lessons, backToParent}) => {
             <p className="text-sm">{event.description}</p>
           </td>
           <td className="py-5 px-4 dark:border-strokedark">
-            <p className="text-black dark:text-white">{new Date(event.date).toLocaleDateString('en-UK')}</p>
+            <p className="text-black dark:text-white">{new Date(event.dueDate).toLocaleDateString('en-UK')}</p>
           </td>
           <td className="py-5 px-4 dark:border-strokedark">
             <p className="inline-flex rounded-full bg-success bg-opacity-10 py-1 px-3 text-sm font-medium text-success">
-              {/* Status text */}
+              {/* TODO update to check if lesson was attended or missed */}
+              Complete
             </p>
           </td>
           <td className="py-5 px-4 dark:border-strokedark">
             <div className="flex items-center space-x-3.5">
               {/* Actions */}
+              {role === 'Teacher' && (
+              <>
                 <button className="hover:text-primary" onClick={() => handleEditLesson(event)}>
                   <svg
                     className="fill-current"
@@ -110,7 +115,7 @@ const CompleteLessons: React.FC<Props> = ({lessons, backToParent}) => {
                     />
                   </svg>
                 </button>
-                <button className="hover:text-primary" onClick={() => handleDelete(event.id ?? 0)}>
+                <button className="hover:text-primary" onClick={() => handleDelete(event.id ?? 0)} title="Delete">
                   <svg
                     className="fill-current"
                     width="18"
@@ -137,6 +142,8 @@ const CompleteLessons: React.FC<Props> = ({lessons, backToParent}) => {
                     />
                   </svg>
                 </button>
+                </>
+                )}
                 <button className="hover:text-primary">
                   <svg
                     className="fill-current"
@@ -168,7 +175,7 @@ const CompleteLessons: React.FC<Props> = ({lessons, backToParent}) => {
   if (upcomingLessons?.length === 0) {
     return (
       <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-      <Breadcrumb pageName="Upcoming" />
+      <Breadcrumb pageName="Previous" />
       <div className="max-w-full overflow-x-auto">
         <table className="w-full table-auto">
           <thead>
@@ -196,7 +203,7 @@ const CompleteLessons: React.FC<Props> = ({lessons, backToParent}) => {
 
 return (
   <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-    <Breadcrumb pageName="Complete" />
+    <Breadcrumb pageName="Previous" />
     <div className="max-w-full overflow-x-auto">
       <table className="w-full table-auto">
         <thead>
@@ -215,7 +222,9 @@ return (
             </th>
           </tr>
         </thead>
-        <PreviousEvents />
+        <tbody>
+          <PreviousEvents />
+        </tbody>
       </table>
     </div>
   </div>

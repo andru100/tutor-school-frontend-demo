@@ -228,10 +228,10 @@ const ForgotPasswordConfirm: React.FC = () => {
                   <input
                     name='email'
                     type="email"
-                    defaultValue={email} // Pre-fill with the email value
-                    readOnly // Make the field read-only
+                    defaultValue={email} 
+                    readOnly 
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                    style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed' }} // Additional styling to grey out the field
+                    style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed' }} 
                   />
 
                     <span className="absolute right-4 top-4">

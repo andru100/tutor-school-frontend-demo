@@ -2,8 +2,9 @@ import React, { useState, useContext } from 'react';
 import { HomeworkAssignment, HomeworkUploadTxtData, CalendarEvent } from './types';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { teacherHandleUpdateHomework } from '/src/dashboard/UpdateTeacher.tsx';
+import { studentHandleUpdateHomework } from '/src/dashboard/UpdateStudent.tsx';
 
 interface Props {
   homework: HomeworkAssignment;
@@ -11,9 +12,8 @@ interface Props {
 }
 
 const HomeworkStudio: React.FC = () => {
-  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
+  const { role, setTeacherData, setStudentData }  = useContext(UniversalContext);
 
-  const { handleUpdateHomework } = context;
   const location = useLocation();
   const { homework, backToParent } = location.state as Props;
   const navigate = useNavigate()
@@ -41,10 +41,9 @@ const HomeworkStudio: React.FC = () => {
       });
 
       if (response.ok) {
-        toast.success('Text submitted successfully');
-        // Update local state or refetch data as needed
+        toast.success('Homework submitted successfully');
+        navigate(backToParent)
       } else {
-        //TODO handle 401s unauthorized redirect to signin
         toast.error('Failed to submit text');
       }
     } catch (error) {
@@ -54,8 +53,6 @@ const HomeworkStudio: React.FC = () => {
   };
 
 
-  // Reuse handleUpload from AssignedHomework.tsx for file and image uploads
-  // Ensure handleUpload is modified to accept a parameter for endpoint URL
   const handleUploadDocument = async (id: number)  => {
     try {
       const accessToken = localStorage.getItem('accessToken') || null;
@@ -80,7 +77,14 @@ const HomeworkStudio: React.FC = () => {
   
           if (response.ok) {
             const updated = await response.json();
-            handleUpdateHomework(updated.homeworkAssignments, updated.calendarEvents )
+            if (role === 'Teacher') {
+              teacherHandleUpdateHomework(updated.homeworkAssignments, updated.calendarEvents, setTeacherData);
+            } else if (role === 'Student') {
+              studentHandleUpdateHomework(updated.homeworkAssignments, updated.calendarEvents, setStudentData);
+            } else {
+              throw new Error('unable to ascertain role, role is: ', role);
+            }
+            
             toast.success('Document uploaded successfully');
             navigate(backToParent)
           } else {

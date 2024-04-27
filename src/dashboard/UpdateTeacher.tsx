@@ -1,15 +1,10 @@
-import { LessonEvent, CalendarEvent, StudentAssessmentAssignment, HomeworkAssignment} from "./types.tsx"; 
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { Teacher, LessonEvent, CalendarEvent, StudentAssessmentAssignment, HomeworkAssignment} from "./types.tsx"; 
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 import React from "react";
 import {useContext } from "react"
- 
   
-
-
   
-export const handleUpdateHomework = (update: HomeworkAssignment[], calendarData: CalendarEvent[]) => {
-  const { setTeacherData } = useContext(TeacherUpdatesContext);
-  console.log("updated sent is: ", update)
+export const teacherHandleUpdateHomework = (update: HomeworkAssignment[], calendarData: CalendarEvent[], setTeacherData: React.Dispatch<React.SetStateAction<Teacher>>) => {
   setTeacherData(prevData => {
     const updatedAssignments = prevData?.homeworkAssignments?.map(assignment => {
       const matchingUpdate = update.find(updateAssignment => updateAssignment.id === assignment.id);
@@ -42,9 +37,8 @@ export const handleUpdateHomework = (update: HomeworkAssignment[], calendarData:
   });
 };
 
-export const handleDeleteHomework = async (id: number) => {
+export const teacherHandleDeleteHomework = async (id: number, setTeacherData: React.Dispatch<React.SetStateAction<Teacher>>) => {
   try {
-    const { setTeacherData } = useContext(TeacherUpdatesContext);
     setTeacherData(prevData => {
       const updatedAssignments = prevData?.homeworkAssignments?.filter(assignment => assignment.id !== id);
       const updatedCalendarEvents = prevData?.calendarEvents?.filter(event => event.eventId !== id);
@@ -62,8 +56,7 @@ export const handleDeleteHomework = async (id: number) => {
   }
 };
 
-export const handleUploadHomework = async (id: number) => {
-  const { setTeacherData } = useContext(TeacherUpdatesContext);
+export const teacherHandleUploadHomework = async (id: number, setTeacherData: React.Dispatch<React.SetStateAction<Teacher>>) => {
   setTeacherData(prevData => {
     const updatedAssignments = prevData?.homeworkAssignments?.map(assignment => {
       if (assignment.id === id) {
@@ -83,9 +76,7 @@ export const handleUploadHomework = async (id: number) => {
   });
 };
 
-export const handleUpdateAssessment = (update: StudentAssessmentAssignment[], calendarData: CalendarEvent[]) => {
-  console.log("TEAHEDASH updateassessment called  updated sent is: ", update)
-  const { setTeacherData } = useContext(TeacherUpdatesContext);
+export const teacherHandleUpdateAssessment = (update: StudentAssessmentAssignment[], calendarData: CalendarEvent[], setTeacherData: React.Dispatch<React.SetStateAction<Teacher>>) => {
   setTeacherData(prevData => {
     
     const updatedAssignments = prevData?.assessments?.map(assignment => {
@@ -123,9 +114,8 @@ export const handleUpdateAssessment = (update: StudentAssessmentAssignment[], ca
   });
 };
 
-export const handleDeleteAssessment = async (id: number) => {
+export const teacherHandleDeleteAssessment = async (id: number, setTeacherData: React.Dispatch<React.SetStateAction<Teacher>>) => {
   try {
-    const { setTeacherData } = useContext(TeacherUpdatesContext);
     setTeacherData(prevData => {
       const updatedAssignments = prevData?.assessments?.filter(assignment => assignment.id !== id);
       const updatedCalendarEvents = prevData?.calendarEvents?.filter(event => event.eventId !== id);
@@ -142,9 +132,7 @@ export const handleDeleteAssessment = async (id: number) => {
   }
 };
 
-export const handleUpdateLesson = (lessonData: LessonEvent[], calendarData: CalendarEvent[]) => {
-  console.log("in handleupdatelesson, lessonData sent is: ", lessonData)
-  const { setTeacherData } = useContext(TeacherUpdatesContext);
+export const teacherHandleUpdateLesson = (lessonData: LessonEvent[], calendarData: CalendarEvent[], setTeacherData: React.Dispatch<React.SetStateAction<Teacher>>) => {
   setTeacherData(prevData => {
     const updatedLessons = prevData?.lessonEvents?.map(lesson => {
       const matchingUpdate = lessonData.find(updateLesson => updateLesson.id === lesson.id);
@@ -176,9 +164,8 @@ export const handleUpdateLesson = (lessonData: LessonEvent[], calendarData: Cale
   });
 };
 
-export const handleDeleteLesson = async (id: number) => {
+export const teacherHandleDeleteLesson = async (id: number, setTeacherData: React.Dispatch<React.SetStateAction<Teacher>>) => {
   try {
-    const { setTeacherData } = useContext(TeacherUpdatesContext);
     setTeacherData(prevData => {
       const updatedLessons = prevData?.lessonEvents?.filter(lesson => lesson.id !== id);
       const updatedCalendarEvents = prevData?.calendarEvents?.filter(event => event.eventId !== id);
@@ -187,7 +174,7 @@ export const handleDeleteLesson = async (id: number) => {
         lessonEvents: updatedLessons,
         calendarEvents: updatedCalendarEvents
       };
-      console.log("handledelete triggered: have deleted lesson data from prop calendar, updated lessons:", updatedData.lessonEvents, "updated calendareEvents:",  updatedData.calendarEvents);
+      console.log("teacherHandledelete triggered: have deleted lesson data from prop calendar, updated lessons:", updatedData.lessonEvents, "updated calendareEvents:",  updatedData.calendarEvents);
       return updatedData;
     });
   } catch (error) {
@@ -195,23 +182,6 @@ export const handleDeleteLesson = async (id: number) => {
   }
 };
 
-
-export const updateTeacherStudentData = (updatedStudent: Student) => {
-  const { setTeacherData } = useContext(TeacherUpdatesContext);
-  setTeacherData(prevData => {
-    const updatedStudents = prevData?.students?.map(student => {
-      if (student.studentId === updatedStudent.studentId) {
-        return updatedStudent;
-      } else {
-        return student;
-      }
-    });
-    return {
-      ...prevData,
-      students: updatedStudents
-    };
-  });
-};
 
 
 

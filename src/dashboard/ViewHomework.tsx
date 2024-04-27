@@ -1,11 +1,12 @@
 import React from 'react'
 import { useState, useContext } from "react"
-import { HomeworkAssignment, CalendarEvent } from './types'
+import { HomeworkAssignment, CalendarEvent } from './types.tsx'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 import { teacherHandleUpdateHomework} from '/src/dashboard/UpdateTeacher.tsx';
+import { BackButton } from "./BackButton.tsx";
 
 
 
@@ -15,7 +16,7 @@ interface Props {
 }
 
 
-const EditHomework: React.FC = () => {
+const ViewHomework: React.FC = () => {
 
   const { role, setTeacherData }  = useContext(UniversalContext);
 
@@ -62,28 +63,6 @@ const EditHomework: React.FC = () => {
 
 
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-
-    setHomeworkData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleStreamInputChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
-
-    console.log('Name:', name);
-    console.log('Value:', value);
-    setHomeworkData((prevData) => ({
-      ...prevData,
-      [name]: HomeworkStream[value as keyof typeof HomeworkStream],
-    }));
-  };
-
-
-
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
             <div className="flex flex-col">  
@@ -93,7 +72,7 @@ const EditHomework: React.FC = () => {
                     View Homework
                   </h4>
                 </div>
-                <CancelButton backToParent={backToParent}/>
+                <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>
               </div>
             </div>
 
@@ -117,7 +96,7 @@ const EditHomework: React.FC = () => {
                           name="title"
                           type="text"
                           value={homeworkData.title || ""}
-                          onChange={handleInputChange}
+                          readOnly
                           placeholder="Enter your age"
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         />
@@ -131,7 +110,7 @@ const EditHomework: React.FC = () => {
                           rows={6}
                           name="description"
                           value={homeworkData.description || ""}
-                          onChange={handleInputChange}
+                          readOnly
                           placeholder="Type your message"
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         ></textarea>
@@ -145,7 +124,7 @@ const EditHomework: React.FC = () => {
                           name="dueDate"
                           type="datetime-local"
                           value={formattedDueDate|| ""}
-                          onChange={handleInputChange}
+                          readOnly
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         />
                       </div>
@@ -158,7 +137,7 @@ const EditHomework: React.FC = () => {
                           rows={6}
                           name="submissionContent"
                           value={homeworkData.submissionContent || ""}
-                          onChange={handleInputChange}
+                          readOnly
                           placeholder="Type your message"
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         ></textarea>
@@ -172,7 +151,7 @@ const EditHomework: React.FC = () => {
                           name="submissionDate"
                           type="datetime-local"
                           value={formattedSubmissionDate || ""}
-                          onChange={handleInputChange}
+                          readOnly
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         />
                       </div>
@@ -199,7 +178,7 @@ const EditHomework: React.FC = () => {
                           rows={6}
                           name="teacherFeedback"
                           value={homeworkData.teacherFeedback || ""}
-                          onChange={handleInputChange}
+                          readOnly
                           placeholder="Type your message"
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         ></textarea>
@@ -212,16 +191,10 @@ const EditHomework: React.FC = () => {
                             name="grade"
                             type="number"
                             value={homeworkData.grade || ""}
-                            onChange={handleInputChange}
+                            readOnly
                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                           />
                         </div>
-
-                      
-
-                      <button type="submit" className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray">
-                        Save Details
-                      </button>
                     </div>
                   </form>
                 </div>
@@ -231,4 +204,4 @@ const EditHomework: React.FC = () => {
   
 }
 
-export default EditHomework;
+export default ViewHomework;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoDark from './logo-dark.svg';
 import Logo from './logo.svg';
@@ -6,17 +6,14 @@ import { useGoogleLogin} from '@react-oauth/google';
 import { LoginData, GoogleTokenData} from "/src/dashboard/types.tsx";
 import toast from 'react-hot-toast';
 import { NavigateButtonAuth } from './NavigateButtonAuth';
+import {fetchStudentData, fetchTeacherData} from '/src/dashboard/FetchUserData.tsx'
 import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import {Teacher, Student} from '/src/dashboard/types.tsx'
 
-
-interface Props {
- 
-}
 
 const SignIn: React.FC = () => {
-
-
-
+  const { setRole, setTeacherData, setStudentData, setGoBackToDash}  = useContext(UniversalContext);
   const [email, setEmail] = useState("")
   const { handleFetchResponse } = useFetchWithErrorHandling();
 
@@ -37,8 +34,6 @@ const SignIn: React.FC = () => {
 
   const login = async (loginData: LoginData) => {
     try {
-      console.log("sending signinndata: ", loginData)
-  
       const response = await fetch( serverAddress + '/api/account/login', {
         method: 'POST',
         headers: {
@@ -61,19 +56,35 @@ const SignIn: React.FC = () => {
         }
       });
   
-      const roledata = await roleCheck.json();
-      console.log("role check response is", roledata);
+      const roleData = await roleCheck.json();
+      console.log("role check response is", roleData);
+
+      setRole(roleData.entrypoint);
   
-      // Updated part to handle the new responsefe
-      if (roledata.entrypoint === 'CreateRole') {
+      if (roleData.entrypoint === 'CreateRole') {
         navigate('/choose-subscription');
-      } else if (roledata.entrypoint === 'ConfirmEmail') {
+      } else if (roleData.entrypoint === 'ConfirmEmail') {
         navigate('/confirm-email', { state: { email: loginData.email } });
-      } else if (roledata.entrypoint === "Teacher") {
-        navigate('/teacher-dashboard');
-      } else if (roledata.entrypoint === "Student") {
-        navigate('/student-dashboard');
-      }
+      } else if (roleData.entrypoint === 'Teacher') {
+        const teacherData: Teacher = await fetchTeacherData()
+        if (teacherData) {
+          setTeacherData(teacherData);
+          setGoBackToDash('/teacher-dashboard')
+          navigate('/teacher-dashboard'); 
+        } else {
+          console.log('teacherdata is null', teacherData)
+          navigate('/signin');
+        }
+      } else if (roleData.entrypoint === 'Student') {
+        const studentData: Student = await fetchStudentData()
+        if (studentData) {
+          setStudentData(studentData);
+          setGoBackToDash('/student-dashboard')
+          navigate('/student-dashboard'); 
+        } else {
+          navigate('/signin');
+        }
+      } 
   
     } catch (error) {
       console.error("Error during signup:", error);
@@ -116,8 +127,6 @@ const SignIn: React.FC = () => {
       const roledata = await roleCheck.json();
       console.log("role check response is", roledata);
   
-      // Updated part to handle the new responsefe
-
       if (roledata.entrypoint === 'CreateRole') {
         navigate('/choose-subscription');
       }  else if (roledata.entrypoint === "Teacher") {

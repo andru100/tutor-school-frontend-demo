@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from "/src/dashboard/layout/header/Header.tsx";
 import SignIn from '/src/dashboard/authentication/SignIn.tsx';
 import SignUp from '/src/dashboard/authentication/SignUp.tsx';
@@ -29,6 +29,8 @@ import EditAssessment from '/src/dashboard/EditAssessment.tsx';
 import EditHomework from '/src/dashboard/EditHomework.tsx';
 import EditLesson from '/src/dashboard/EditLesson.tsx';
 import HomeworkStudio from '/src/dashboard/HomeworkStudio.tsx';
+import HomeworkGrader from '/src/dashboard/HomeworkGrader.tsx';
+import ViewHomework from '/src/dashboard/ViewHomework.tsx'
 import Exam from '/src/dashboard/Exam.tsx';
 import { CreateRole } from '/src/dashboard/authentication/CreateRole.tsx';
 import ProtectedRoutes from './ProtectedRoutes';
@@ -36,29 +38,20 @@ import ProtectedRoutes from './ProtectedRoutes';
 
 const DefaultLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [userProfileInfo, setUserProfileInfo] = useState({ role: '', name: '' });
-
-  const updateSearchTerm = (newSearchTerm: string) => {
-    setSearchTerm(newSearchTerm);
-  };
-
-  const updateUserProfileInfo = (newUserInfo: { role: string, name: string, profileImgUrl: string }) => {
-    setUserProfileInfo(newUserInfo);
-  };
-
+  const noAuthRoutes = ["/signin", "/signup", "/forgot-password", "/forgot-password-confirm", "/confirm-email", "/choose-subscription", "/teacher-signup", "/student-signup"];
+  const location = useLocation();
+  const showHeader = !noAuthRoutes.includes(location.pathname);
 
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">
       <div className="flex h-screen overflow-hidden">
         <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-          <Header
-            sidebarOpen={sidebarOpen}
-            setSidebarOpen={setSidebarOpen}
-            updateSearchTerm={updateSearchTerm}
-            searchTerm={searchTerm}
-            userProfileInfo={userProfileInfo}
-          />
+          {showHeader && (
+            <Header
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
+            />
+          )}
           <main>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <ProtectedRoutes>
@@ -73,11 +66,11 @@ const DefaultLayout: React.FC = () => {
                   <Route path="/teacher-signup" element={<SignUpTeacher />} />
                   <Route path="/student-signup" element={<SignUpStudent />} />
 
-                  <Route path="/teacher-dashboard" element={<TeacherDash searchTerm={searchTerm} updateUserProfileInfo={updateUserProfileInfo} />} />
-                  <Route path="/student-dashboard" element={<StudentDash searchTerm={searchTerm} updateUserProfileInfo={updateUserProfileInfo} />} />
-                  <Route path="/teacher-student-dash" element={<ViewTeacherStudentDash />} />
+                  <Route path="/teacher-dashboard" element={<TeacherDash  />} />
+                  <Route path="/student-dashboard" element={<StudentDash  />} />
+                  <Route path="/teacher-student-dashboard" element={<ViewTeacherStudentDash />} />
 
-                  <Route path="/settings" element={<Settings updateUserProfileInfo={updateUserProfileInfo} userProfileInfo={userProfileInfo} />} />
+                  <Route path="/settings" element={<Settings />} />
 
 
                   <Route path="/view-students" element={<ViewStudents />} />
@@ -101,6 +94,8 @@ const DefaultLayout: React.FC = () => {
                   <Route path="/edit-lesson" element={<EditLesson />} />
 
                   <Route path="/homework-studio" element={<HomeworkStudio />} />
+                  <Route path="/grade-homework" element={<HomeworkGrader />} />
+                  <Route path="/view-homework" element={<ViewHomework/>} />
                   <Route path="/exam-studio" element={<Exam />} />
                 </Routes>
                 

@@ -75,13 +75,9 @@ const AreaMultipleOverall:  React.FC<Props> = ({ assessments, setSubjectAndAssig
       },
       events: {
         click: function(event, chartContext, config) {
-            // The last parameter config contains additional information like `seriesIndex` and `dataPointIndex` for cartesian charts
             const { seriesIndex, dataPointIndex } = config;
             const selectedAssessment = assessmentsRef.current[config.dataPointIndex];
             const assignmentId = selectedAssessment?.id;
-   
-              //console.log("in onclick subject is", subjectAndAssignmentId.subject,  "subjectAndAssignmentId.id is", subjectAndAssignmentId.assignmentId, "filtered assessments is", assessments,  "selected assignment id is: ", assignmentId, "selectedassessment is: ", selectedAssessment);
-              console.log("in onclick subject is", subjectRef.current,  "assessments is", assessmentsRef.current) 
               setSubjectAndAssignmentId({
               subject: subjectRef.current,
               assignmentId: assignmentId ,

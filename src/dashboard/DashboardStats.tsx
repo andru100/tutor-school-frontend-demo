@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import AreaMultipleTopic from './AreaMultipleTopic.tsx'
 import StatsNavigation from './StatsNavigation.tsx'
 import AreaMultipleOverall from './AreaMultipleOverall.tsx'
@@ -9,15 +9,18 @@ import BarChartTopics from './BarChartTopics.tsx';
 import { Student, StudentAssessmentAssignment } from "./types.tsx";
 import { BackButton } from './BackButton.tsx';
 import { useLocation } from 'react-router-dom';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+
 
 
 interface Props {
   student: Student;
-  searchTerm: string;
 }
 
 
-const DashboardStats: React.FC<Props> = ({student, searchTerm }) => {
+const DashboardStats: React.FC<Props> = ({student }) => {
+
+  const { role, searchTerm }  = useContext(UniversalContext);
 
   if (!student.assessments || student.assessments.length === 0) {
     return <p>Student has no assessments. To get started take your first assessment</p>;

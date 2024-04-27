@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect, useContext } from "react"
 import { useNavigate, useLocation } from 'react-router-dom';
 import StudentLessonCard from './StudentLessonCard.tsx';
 import CalendarCard from './CalendarCard.tsx';
@@ -10,56 +10,60 @@ import ViewStudentAssessments from './ViewStudentAssessments.tsx'
 import ChartTwo from './ChartTwo.tsx';
 import ChatCard from './ChatCard.tsx';
 import TableOne from './TableOne.tsx';
-import ViewStudentLessons from './ViewStudentLessons.tsx'; // Import your edit components
+import ViewStudentLessons from './ViewStudentLessons.tsx'; 
 import { Student , LessonEvent, CalendarEvent, StudentAssessmentAssignment, HomeworkAssignment} from "./types.tsx";
 import Stats from './Stats.tsx'
 import Calendar from "./Calendar.tsx";
 import { BackButton } from "./BackButton.tsx";
 import DashboardStats from "./DashboardStats.tsx";
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 
-interface Props {
-  student: Student;
-  goBackToDash: string;
-  searchTerm: string;
-}
 
 
 const TeacherStudentDash: React.FC = () => {
-  const location = useLocation();
-  const { student, goBackToDash, searchTerm } = location.state as Props;
-  const [studentData, setStudentData] = useState<Student>(student);
-
+  const { studentData, role , searchTerm, goBackToDash, setGoBackToDash}  = useContext(UniversalContext);
+ 
   const navigate = useNavigate();
 
 
- 
+  useEffect(() => {
+    if (goBackToDash !== '/teacher-dashboard') {
+      setGoBackToDash('/teacher-dashboard');
+    }
+  }, []);
+  
   const handleViewLessons = () => {
     if (studentData) {
-      navigate('/view-student-lessons', { state: { searchTerm, student: studentData, goBackToDash: '/view-teacher-student-dash'} });
+      setGoBackToDash('/teacher-student-dashboard')
+      navigate('/view-student-lessons');
     }
   };
 
   const handleViewAssessments = () => {
     if (studentData) {
-      navigate('/view-student-assessments', { state: { searchTerm, student: studentData, goBackToDash: '/view-teacher-student-dash'} });
+      setGoBackToDash('/teacher-student-dashboard')
+      navigate('/view-student-assessments');
     }
   };
 
   const handleViewHomework = () => {
     if (studentData) {
-      navigate('/view-student-homework', { state: { searchTerm, student: studentData, goBackToDash: '/view-teacher-student-dash' } });
+      setGoBackToDash('/teacher-student-dashboard')
+      navigate('/view-student-homework');
     }
   };
 
   const handleViewStats = () => {
     if (studentData) {
+      setGoBackToDash('/teacher-student-dashboard')
       navigate('/stats', { state: { student: studentData } });
     }
   };
 
   const handleViewCalendar = () => {
     if (studentData?.calendarEvents) {
-      navigate('/calendar', { state: { events: studentData.calendarEvents, goBackToDash: '/view-teacher-student-dash', searchTerm} });
+      setGoBackToDash('/teacher-student-dashboard')
+      navigate('/calendar', { state: { events: studentData.calendarEvents} });
     }
   };
 

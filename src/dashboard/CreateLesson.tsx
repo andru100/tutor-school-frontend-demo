@@ -3,29 +3,28 @@ import { Student, LessonEvent, CalendarEvent } from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { teacherHandleUpdateLesson } from '/src/dashboard/UpdateTeacher.tsx';
+
+
 
 
 interface Props {
-  student: Student;
+  selectedStudent: Student;
   backToParent: string;
 }
 
-
 const CreateLesson: React.FC = () => {
 
-  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
-
-  const { handleUpdateLesson } = context;
+  const { role, setTeacherData }  = useContext(UniversalContext);
   
   const location = useLocation();
-  const { student, backToParent } = location.state as Props;
+  const { selectedStudent, backToParent } = location.state as Props;
 
   const [lessonData, seLessonData] = useState<LessonEvent>({
     id: null ,
     teacherId: null, // will get from auth
-    studentId: student.studentId,
+    studentId: selectedStudent.studentId,
     title: "",
     description: null,
     links: null,
@@ -59,8 +58,8 @@ const CreateLesson: React.FC = () => {
 
       const result = await response.json();
       console.log('Mutation response:', result);
-      handleUpdateLesson(result.lessonEvents, result.calendarEvents)
-      
+      teacherHandleUpdateLesson(result.lessonEvents, result.calendarEvents, setTeacherData)
+      toast.success('Lesson created successfully');
       navigate(backToParent)
 
     } catch (error) {

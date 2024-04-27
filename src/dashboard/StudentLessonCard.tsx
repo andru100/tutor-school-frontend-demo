@@ -41,7 +41,7 @@ const StudentLessonCard: React.FC<Props> = ({lessons}) => {
         <span className="flex items-center gap-1 text-sm font-medium text-meta-3">
           {lessons && lessons.length > 0 && (
             <p className="text-sm font-medium text-meta-3">
-              Next Lesson: {new Date(lessons[0].date).toLocaleDateString()}
+              Next Lesson: {new Date(lessons[0].dueDate).toLocaleDateString()}
             </p>
           )}
           

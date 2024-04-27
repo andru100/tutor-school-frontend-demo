@@ -2,8 +2,6 @@ import { toast } from 'react-hot-toast';
 import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
 
 
-
-// Utility function to resend the confirmation email
 export const sendEmailConfirmCode = async (email: string) => {
     const { handleFetchResponse } = useFetchWithErrorHandling();
     try {
@@ -19,7 +17,6 @@ export const sendEmailConfirmCode = async (email: string) => {
             body: JSON.stringify(resendRequest)
         });
 
-        // If the response is not ok, handleFetchResponse will throw an error
         await handleFetchResponse(response);
 
         console.log("Resend confirmation email successful:");

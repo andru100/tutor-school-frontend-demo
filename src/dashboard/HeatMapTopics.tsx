@@ -97,12 +97,12 @@ const HeatmapTopics:  React.FC<Props> = ({ assessments, studentsTopics, setSubje
 
   if (assessments ) {
     // Don't filter the topics array based on the selected topic
-    let topics = Object.keys(topicScores[0]).filter((field) => field !== '__typename');
+    let topics = Object.keys(topicScores[0]);
 
     for (const topic of topics) {
       let data = [];
 
-      // If a topic is selected, only generate data for that topic
+      // If a topic is selected, only get data for that topic
       if (!selectedTopic || topic === selectedTopic) {
         data = topicScores
           .map((scores, index) => {
@@ -122,9 +122,6 @@ const HeatmapTopics:  React.FC<Props> = ({ assessments, studentsTopics, setSubje
         name: topic,
       });
     }
-
-    console.log("series is, ", series)
-    //setState(series)
 
 
     return (

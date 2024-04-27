@@ -3,8 +3,9 @@ import { HomeworkAssignment, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';  
 import { useNavigate } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { teacherHandleDeleteHomework } from '/src/dashboard/UpdateTeacher.tsx';
+
 
 interface Props {
     homework: HomeworkAssignment[];
@@ -13,20 +14,20 @@ interface Props {
 
 const AssignedHomework: React.FC<Props> = ({homework, backToParent}) => {
 
-  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
+  const { role, setTeacherData }  = useContext(UniversalContext);
 
-  const { handleUpdateHomework, handleDeleteHomework, handleUploadHomework} = context;
+  console.log('role is', role)
   
   const [upcomingHomework, setUpcomingHomework] = useState(homework);
 
   const navigate = useNavigate();
 
   const handleEditHomework = ( homework: HomeworkAssignment) => {
-    navigate('/edit-homework', { state: { homework, handleUpdateHomework, backToParent } });
+    navigate('/edit-homework', { state: { homework, backToParent } });
   };
 
-  const viewHomeworkStudio = ( homework: HomeworkAssignment) => {
-    navigate('/homework-studio', { state: { homework, handleUpdateHomework, backToParent } });
+  const handleViewHomeworkStudio = ( homework: HomeworkAssignment) => {
+    navigate('/homework-studio', { state: { homework, backToParent } });
   };
   
 
@@ -63,7 +64,11 @@ const AssignedHomework: React.FC<Props> = ({homework, backToParent}) => {
       }
       console.log('Mutation response:', response);
       
-      handleDeleteHomework(homeworkId)
+      if (role === 'Teacher') {
+        teacherHandleDeleteHomework(homeworkId, setTeacherData);
+      }  else {
+        throw new Error('unable to ascertain role, role is: ', role);
+      }
       toast.success('Homework assignment deleted successfully');
         
     } catch (error) {
@@ -91,7 +96,9 @@ const AssignedHomework: React.FC<Props> = ({homework, backToParent}) => {
             </td>
             <td className="py-5 px-4 dark:border-strokedark">
               <div className="flex items-center space-x-3.5">
-                <button className="hover:text-primary" onClick={() => handleEditHomework(event)}>
+              {role === 'Teacher' && (
+                <>
+                <button className="hover:text-primary" onClick={() => handleEditHomework(event)} title="Edit">
                   <svg
                     className="fill-current"
                     width="18"
@@ -110,7 +117,7 @@ const AssignedHomework: React.FC<Props> = ({homework, backToParent}) => {
                     />
                   </svg>
                 </button>
-                <button className="hover:text-primary" onClick={() => handleDelete(event.id ?? 0)}>
+                <button className="hover:text-primary" onClick={() => handleDelete(event.id ?? 0)} title="Delete">
                   <svg
                     className="fill-current"
                     width="18"
@@ -137,7 +144,9 @@ const AssignedHomework: React.FC<Props> = ({homework, backToParent}) => {
                     />
                   </svg>
                 </button>
-                <button className="hover:text-primary" onClick={() => viewHomeworkStudio(event)}>
+              </>
+              )}
+                <button className="hover:text-primary" onClick={() => handleViewHomeworkStudio(event)} title="Homework Studio">
                   <svg
                     className="fill-current"
                     width="18"
@@ -177,7 +186,7 @@ const AssignedHomework: React.FC<Props> = ({homework, backToParent}) => {
                   Title
                 </th>
                 <th className="py-4 px-4 font-medium text-black dark:text-white">
-                  Date
+                  Due Date
                 </th>
                 <th className="py-4 px-4 font-medium text-black dark:text-white">
                   Actions
@@ -202,7 +211,7 @@ const AssignedHomework: React.FC<Props> = ({homework, backToParent}) => {
                 Title
               </th>
               <th className="py-4 px-4 font-medium text-black dark:text-white">
-                Date
+                Due Date
               </th>
               <th className="py-4 px-4 font-medium text-black dark:text-white">
                 Actions

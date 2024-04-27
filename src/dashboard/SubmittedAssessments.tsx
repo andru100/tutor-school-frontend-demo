@@ -3,8 +3,9 @@ import { StudentAssessmentAssignment, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { teacherHandleDeleteAssessment } from '/src/dashboard/UpdateTeacher.tsx';
+
 
 interface Props {
     assessment: StudentAssessmentAssignment[];
@@ -13,16 +14,14 @@ interface Props {
 
 const SubmittedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
 
-  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
-
-  const { handleUpdateAssessment, handleDeleteAssessment } = context;
+  const { role, setTeacherData }  = useContext(UniversalContext);
   
   const [upcomingAssessment, setUpcomingAssessment] = useState(assessment);
 
   const navigate = useNavigate(); 
 
   const handleEditAssessment = ( assessment: StudentAssessmentAssignment) => {
-    navigate('/edit-assessment', { state: { assessment, handleUpdateAssessment, backToParent } });
+    navigate('/edit-assessment', { state: { assessment, backToParent } });
   };
 
   useEffect(() => {
@@ -53,7 +52,11 @@ const SubmittedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
       });
 
       if (response.status === 200) {
-        handleDeleteAssessment(assessmentId)
+        if (role === 'Teacher') {
+          teacherHandleDeleteAssessment(assessmentId, setTeacherData);
+        } else {
+          throw new Error('unable to ascertain role, role is: ', role);
+        }
         toast.success("Delete successful");
         console.log("Delete successful, response code: ", response.status);
       } else {
@@ -78,10 +81,15 @@ const SubmittedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
             </h5>
           </td>
           <td className="py-5 px-4 dark:border-strokedark w-1/4">
-            <p className="text-black dark:text-white">{new Date(event.dueDate).toLocaleDateString('en-UK')}</p>
+            <p className="text-black dark:text-white">{new Date(event.submissionDate).toLocaleDateString('en-UK')}</p>
+          </td>
+          <td className="py-5 px-4 dark:border-strokedark w-1/4">
+            <p className="text-black dark:text-white">{event.score}</p>
           </td>
           <td className="py-5 px-4 dark:border-strokedark w-1/4">
             <div className="flex items-center space-x-3.5">
+            {role === 'Teacher' && (
+              <>
                 <button className="hover:text-primary" onClick={() => handleEditAssessment(event)}>
                   <svg
                     className="fill-current"
@@ -101,7 +109,7 @@ const SubmittedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
                     />
                   </svg>
                 </button>
-                <button className="hover:text-primary" onClick={() => handleDelete(event.id ?? 0)}>
+                <button className="hover:text-primary" onClick={() => handleDelete(event.id ?? 0)} title="Delete">
                   <svg
                     className="fill-current"
                     width="18"
@@ -128,6 +136,8 @@ const SubmittedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
                     />
                   </svg>
                 </button>
+                </>
+                )}
                 <button className="hover:text-primary">
                   <svg
                     className="fill-current"
@@ -168,7 +178,7 @@ const SubmittedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
                 Title
               </th>
               <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white w-1/4">
-                Title
+                Submitted Date
               </th>
               <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white w-1/4">
                 Score
@@ -199,11 +209,11 @@ const SubmittedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
               <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11 w-1/2">
                 Title
               </th>
-              <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white w-1/4">
-                Date
+              <th className="py-4 px-4 font-medium text-black dark:text-white">
+                Submitted Date
               </th>
-              <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white w/14">
-                Status
+              <th className="py-4 px-4 font-medium text-black dark:text-white">
+                Score
               </th>
               <th className="py-4 px-4 font-medium text-black dark:text-white">
                 Actions
@@ -212,9 +222,7 @@ const SubmittedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
           </thead>
         </table>
       </div>
-      <tbody>
         <SubmittedAssessments />
-      </tbody>
     </div>
     
   );

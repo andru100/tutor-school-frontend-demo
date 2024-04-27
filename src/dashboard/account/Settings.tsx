@@ -1,24 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import Breadcrumb from '/src/dashboard/Breadcrumb.tsx';
 import UserOne from '/src/dashboard/images/user/user-01.png';
 import {ApplicationUser, InfoRequest} from '/src/dashboard/types.tsx'
 import toast from 'react-hot-toast';
-import { NavigateButtonAuth } from "/src/dashboard/authentication/NavigateButtonAuth.tsx";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { BackButton } from "/src/dashboard/BackButton.tsx";
+import { useNavigate, useLocation} from 'react-router-dom';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+//import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
 
-interface Props {
-  userProfileInfo: { role: string; name: string; profileImgUrl: string | null };
-  updateUserProfileInfo: (newUserInfo: { role: string, name: string, profileImgUrl: string | null }) => void;
-}
 
-const Settings: React.FC<Props> = ({ userProfileInfo, updateUserProfileInfo }) => {
-
+const Settings: React.FC = () => {
+  const { userProfileInfo, setUserProfileInfo, goBackToDash } = useContext(UniversalContext);
   const [adminUserData, setAdminUserData] = useState<ApplicationUser>({} as ApplicationUser);
   const [role, setRole] = useState<string>('')
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const navigate = useNavigate();
+  //const { handleFetchResponse } = useFetchWithErrorHandling();
 
 
   useEffect(() => {
@@ -119,6 +118,7 @@ const Settings: React.FC<Props> = ({ userProfileInfo, updateUserProfileInfo }) =
       if (response.ok) {
         const data = await response.json();
         console.log("secure update response is: ", data);
+        toast('Successfully updated details')
         setAdminUserData(data);
       } else {
         const errorData = await response.json();
@@ -181,10 +181,8 @@ const Settings: React.FC<Props> = ({ userProfileInfo, updateUserProfileInfo }) =
   
       if (response.ok) {
         const data = await response.json();
-        const uploadedImageUrl = data.fileUrl; // Access the fileUrl property from the JSON response
-  
-        // Update the user's profile image URL in the state or perform any other necessary actions
-        updateUserProfileInfo({ ...userProfileInfo, profileImgUrl: uploadedImageUrl });
+        const uploadedImageUrl = data.fileUrl; 
+        setUserProfileInfo({ ...userProfileInfo, profileImgUrl: uploadedImageUrl });
       } else {
         const errorData = await response.json();
         console.error('Error uploading file:', errorData);
@@ -217,8 +215,8 @@ const Settings: React.FC<Props> = ({ userProfileInfo, updateUserProfileInfo }) =
     <>
       <div className="mx-auto max-w-270">
         <Breadcrumb pageName="Settings"/>
-        <div style={{ marginBottom: '20px' }}>
-          <NavigateButtonAuth page={role === 'Teacher' ? 'teacherDash' : 'studentDash' } />
+        <div className="flex flex-col sm:flex-row justify-between items-center">
+          <div className="sm:flex-1"><BackButton goBackToDash={goBackToDash} /></div>
         </div>
         <div className="grid grid-cols-5 gap-8">
           <div className="col-span-5 xl:col-span-3">
@@ -567,7 +565,6 @@ const Settings: React.FC<Props> = ({ userProfileInfo, updateUserProfileInfo }) =
                       <button
                         className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:shadow-1"
                         type="submit"
-                        //onClick={fireToast}
                       >
                         Save
                       </button>

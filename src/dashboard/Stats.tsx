@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import AreaMultipleTopic from './AreaMultipleTopic.tsx'
 import StatsNavigation from './StatsNavigation.tsx'
 import AreaMultipleOverall from './AreaMultipleOverall.tsx'
@@ -9,20 +9,14 @@ import BarChartTopics from './BarChartTopics.tsx';
 import { Student, StudentAssessmentAssignment } from "./types.tsx";
 import { BackButton } from './BackButton.tsx';
 import { useLocation } from 'react-router-dom';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 
-
-interface Props {
-  student: Student;
-  goBackToDash: string; 
-  searchTerm: string;
-}
 
 
 const Stats: React.FC = () => {
-  const location = useLocation();
-  const { student, goBackToDash, searchTerm } = location.state as Props;
+  const { studentData, role , searchTerm, goBackToDash }  = useContext(UniversalContext);
 
-  if (!student.assessments || student.assessments.length === 0) {
+  if (!studentData.assessments || studentData.assessments.length === 0) {
     return <p>Student has no assessments. To get started take your first assessment</p>;
   }
 
@@ -38,14 +32,14 @@ const Stats: React.FC = () => {
   let [studentsTopics, setStudentsTopics] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log("stats prop passed is:  ", student)
-  }, [student])
+    console.log("stats prop passed is:  ", studentData)
+  }, [studentData])
   
   
   useEffect(() => {
   
      //get rid off assigments not completed
-    const filteredAssessments = student.assessments.filter(assessment => assessment.submissionDate !== null);
+    const filteredAssessments = studentData?.assessments.filter(assessment => assessment.submissionDate !== null);
 
     setFilteredAssessments(filteredAssessments)
 
@@ -67,7 +61,7 @@ const Stats: React.FC = () => {
     const topics = Array.from(new Set(filteredAssessments.map(item => item.title)))
     setStudentsTopics(topics);
   
-  }, [student]);
+  }, [studentData]);
 
   
  
@@ -131,8 +125,8 @@ const Stats: React.FC = () => {
             }
             break;
         default:
-          if (!student) {
-            return <p>Loading...</p>; // Or a loading indicator
+          if (!studentData) {
+            return <p>Loading...</p>;// TODO change to loading indicator
           }
           return (
             // can loose this as viewing.chart is set areamultiple so defualt never triggered. 

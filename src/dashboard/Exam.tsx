@@ -4,14 +4,14 @@ import BarChartTopicsResult from './BarChartTopicsResult.tsx';
 import RadialResult from './RadialResult.tsx';
 import toast from 'react-hot-toast';
 import { CancelButton } from './CancelButton.tsx';
-import { useLocation } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import {teacherHandleUpdateAssessment } from '/src/dashboard/UpdateTeacher.tsx';
+import { studentHandleUpdateAssessment } from '/src/dashboard/UpdateStudent.tsx';
 
 interface Props {
   assignment: StudentAssessmentAssignment;
   backToParent: string; 
-  //goBackToDash: () => string;
 }
 
 function useInterval(callback, delay) {
@@ -37,10 +37,8 @@ function useInterval(callback, delay) {
 
 const ExamPage: React.FC = () => {
 
-  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
-
-  const {  handleUpdateAssessment } = context;
-  
+  const { role , goBackToDash, setTeacherData, setStudentData}  = useContext(UniversalContext);
+  const navigate = useNavigate();
   const location = useLocation();
   const { assignment, backToParent } = location.state as Props;
   const [assessment, setAssessment] = useState<Assessment>();
@@ -231,8 +229,13 @@ const ExamPage: React.FC = () => {
   };
 
   const handleExit = () => {
-    // TODO need to send .calendarevents to..
-    handleUpdateAssessment (updatedStudent.assessments, updatedStudent.calendarEvents)
+    if (role === 'Teacher') {
+      teacherHandleUpdateAssessment(updatedStudent.assessments, updatedStudent.calendarEvents, setTeacherData);
+    } else if (role === 'Student') {
+      studentHandleUpdateAssessment(updatedStudent.assessments, updatedStudent.calendarEvents, setStudentData);
+    } else {
+      throw new Error('unable to ascertain role, role is: ', role);
+    }
     navigate(backToParent)
   };
 

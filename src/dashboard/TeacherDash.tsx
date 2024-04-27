@@ -4,7 +4,7 @@ import TeacherHomeworkCard from './TeacherHomeworkCard.tsx';
 import StudentAssessmentCard from './StudentAssessmentCard.tsx'
 import StudentLessonCard from './StudentLessonCard.tsx';
 import CalendarCard from './CalendarCard.tsx';
-import ViewStudents from './ViewStudents.tsx'; // Import your edit components
+import ViewStudents from './ViewStudents.tsx'; 
 import { Teacher, Student, HomeworkAssignment, StudentAssessmentAssignment, LessonEvent, CalendarEvent } from "./types.tsx"
 import ViewTeacherHomework from './ViewTeacherHomework.tsx';
 import ViewTeacherAssessments from './ViewTeacherAssessments.tsx';
@@ -19,17 +19,14 @@ import Header from'/src/dashboard/layout/header/Header.tsx'
 import { Button } from "flowbite-react";
 import { HiOutlineArrowRight } from "react-icons/hi";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
-
-interface Props {
-  searchTerm: string;
-  updateUserProfileInfo: (newUserInfo: { role: string, name: string, profileImgUrl: string | null }) => void;
-}
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import DashboardStats from './DashboardStats.tsx';
 
 
-const TeacherDash: React.FC<Props> = ({ searchTerm, updateUserProfileInfo }) => {
 
-  const { teacherData } = useContext(TeacherUpdatesContext);
+const TeacherDash: React.FC = () => {
+
+  const { teacherData, searchTerm, setUserProfileInfo } = useContext(UniversalContext);
 
 
   const [student, setStudent] = useState<Student | undefined>();  
@@ -39,12 +36,12 @@ const TeacherDash: React.FC<Props> = ({ searchTerm, updateUserProfileInfo }) => 
 
 
   useEffect(() => {
-    updateUserProfileInfo({
+    setUserProfileInfo({
       role: 'teacher',
       name: teacherData?.name || '',
       profileImgUrl: teacherData?.profileImgUrl || ''
     });
-    if (teacherData.students.length > 0) {
+    if (teacherData?.students.length > 0) {
       setStudent(teacherData.students[0]);
     }
   }, [teacherData]);
@@ -62,37 +59,37 @@ const handleSelectStudent = (event: ChangeEvent<HTMLSelectElement>) => {
 
   const handleViewStudents = () => {
     if (teacherData?.students) {
-      navigate('/view-students', { state: { studentsData: teacherData.students, searchTerm, goBackToDash: '/teacher-dash' } });
+      navigate('/view-students');
     }
   };
 
   const handleViewHomework = () => {
     if (teacherData?.students && teacherData?.homeworkAssignments) {
-      navigate('/view-teacher-homework', { state: { homework: teacherData.homeworkAssignments, searchTerm, students: teacherData.students, goBackToDash: '/teacher-dash'} });
+      navigate('/view-teacher-homework');
     }
   };
 
   const handleViewAssessments = () => {
     if (teacherData?.students && teacherData?.assessments) {
-      navigate('/view-teacher-assessments', { state: { assessments: teacherData.assessments, searchTerm, students: teacherData.students, goBackToDash: '/teacher-dash'} });
+      navigate('/view-teacher-assessments');
     }
   };
 
   const handleViewLessons = () => {
     if (teacherData?.students && teacherData?.lessonEvents) {
-      navigate('/view-teacher-lessons', { state: { lessons: teacherData.lessonEvents, searchTerm, students: teacherData.students, goBackToDash: '/teacher-dash'} });
+      navigate('/view-teacher-lessons');
     }
   };
 
   const handleViewCalendar = () => {
     if (teacherData?.students && teacherData?.calendarEvents) {
-      navigate('/calendar', { state: { events: teacherData.calendarEvents, goBackToDash: '/teacher-dash', searchTerm } });
+      navigate('/calendar', { state: { events: teacherData.calendarEvents} });
     }
   };
 
   const handlePaymentCheckout = () => {
     if (teacherData?.students) {
-      navigate('/payment-checkout', { state: { goBackToDash: '/teacher-dash' } });
+      navigate('/payment-checkout');
     }
   };
 
@@ -137,7 +134,7 @@ const handleSelectStudent = (event: ChangeEvent<HTMLSelectElement>) => {
       </div>
         
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        {student?.assessments ? <Stats student={student}/> : <div>Student has no assessments</div>}
+        {student?.assessments ? <DashboardStats student={student}/> : <div>Student has no assessments</div>}
       </div>
     </>
     );

@@ -16,25 +16,20 @@ import Calendar from "./Calendar.tsx";
 import { BackButton } from "./BackButton.tsx";
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 
 
-interface Props {
-  searchTerm: string;
-  updateUserProfileInfo: (newUserInfo: { role: string, name: string, profileImgUrl: string | null }) => void;
-}
+const StudentDash: React.FC = ({  }) => {
 
-
-const StudentDash: React.FC<Props> = ({ searchTerm, updateUserProfileInfo }) => {
-
-  const { studentData } = useContext(StudentUpdatesContext);
+  const { studentData, searchTerm, setUserProfileInfo } = useContext(UniversalContext);
+  console.log('studentdash called data is:', studentData)
 
 
   const navigate = useNavigate();
 
 
   useEffect(() => {
-    updateUserProfileInfo({
+    setUserProfileInfo({
       role: 'student',
       name: studentData?.name || '',
       profileImgUrl: studentData?.profileImgUrl || ''
@@ -46,31 +41,31 @@ const StudentDash: React.FC<Props> = ({ searchTerm, updateUserProfileInfo }) => 
 
   const handleViewLessons = () => {
     if (studentData) {
-      navigate('/view-student-lessons', { state: { student: studentData, searchTerm, goBackToDash: '/student-dash'} });
+      navigate('/view-student-lessons');
     }
   };
 
   const handleViewAssessments = () => {
     if (studentData) {
-      navigate('/view-student-assessments', { state: { student: studentData, goBackToDash: '/student-dash', searchTerm} });
+      navigate('/view-student-assessments');
     }
   };
 
   const handleViewHomework = () => {
     if (studentData) {
-      navigate('/view-student-homework', { state: { student: studentData, goBackToDash: '/student-dash', searchTerm} });
+      navigate('/view-student-homework');
     }
   };
 
   const handleViewStats = () => {
     if (studentData) {
-      navigate('/stats', { state: { student: studentData, goBackToDash: '/student-dash', searchTerm } });
+      navigate('/stats', { state: { student: studentData } });
     }
   };
 
   const handleViewCalendar = () => {
     if (studentData?.calendarEvents) {
-      navigate('/calendar', { state: { events: studentData.calendarEvents, goBackToDash: '/student-dash', searchTerm } });
+      navigate('/calendar', { state: { events: studentData.calendarEvents} });
     }
   };
 
@@ -102,13 +97,9 @@ const StudentDash: React.FC<Props> = ({ searchTerm, updateUserProfileInfo }) => 
        
        
         <DashboardStats student={studentData} />
-        <ChartTwo />
+        {/* <ChartTwo /> */}
         {/* <ChartThree /> */}
         {/* <MapOne /> */}
-        <div className="col-span-12 xl:col-span-8">
-          <TableOne />
-        </div>
-        <ChatCard />
       </div>
     </>
     );

@@ -1,16 +1,12 @@
-import {Student} from './types'
-import { useLocation } from 'react-router-dom';
+import { useContext } from 'react';
+import {Teacher} from './types'
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 
 
-interface Props {
-  lessons: Student["lessonEvents"];
-}
 
 const Billing: React.FC = () => {
-  const location = useLocation();
-  const { lessons } = location.state as Props;
 
-
+  const { role, teacherData }  = useContext(UniversalContext);
   return (
     <div className="rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
@@ -42,7 +38,7 @@ const Billing: React.FC = () => {
       </div>
 
         <span className="flex items-center gap-1 text-sm font-medium text-meta-3">
-          {lessons && lessons.length > 0 && (
+          {teacherData.lessonEvents && teacherData.lessonEvents.length >= 0 && (
             <p className="text-sm font-medium text-meta-3">
               3 new payments
             </p>

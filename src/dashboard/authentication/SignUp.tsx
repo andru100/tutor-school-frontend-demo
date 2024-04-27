@@ -40,18 +40,15 @@ const SignUp: React.FC = () => {
         body: JSON.stringify(Data)
       });
   
-      // If the response is not ok, handleFetchResponse will throw an error
       await handleFetchResponse(response);
   
-      //toast.success("Please confirm your email");
+      toast.success("Please confirm your email");
       navigate('/confirm-email', { state: { email: email } });
     } catch (error) {
       console.error("Error during signup:", error);
-      // Check if the error message is related to a 400 status code
       if (error instanceof Error && error.message.includes("Bad Request")) {
         toast.error("Error in sign up. Please check that you have entered a valid email address and password. If you think you may have already registered, please try to sign in.");
       }
-      // The error message has already been displayed by handleFetchResponse for other errors
     }
   };
 
@@ -95,7 +92,6 @@ const SignUp: React.FC = () => {
     try{   
       let tokenData: GoogleTokenData = {
         Credential: idToken,
-        //Role: role, 
       };
 
       console.log("tokenData is: ", tokenData);
@@ -131,17 +127,6 @@ const SignUp: React.FC = () => {
   };   
           
 
-
-  // switch (page) {
-  //   case "confirmEmail":
-  //     return <EmailConfirm  goBackToSignUp={goBackToSignUp} setPage={setPage}  email={email}/>;
-  //   case "selectSubscription":
-  //     return <CreateRole  goBackToSignUp={goBackToSignUp} setPage={setPage} />;
-  //   case "addTeacher":
-  //       return <SignUpTeacher  goBackToSignUp={goBackToSignUp}  />;
-  //   case "addStudent":
-  //     return <SignUpStudent  goBackToSignUp={goBackToSignUp} />;
-    //default:
       return (
         <>
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

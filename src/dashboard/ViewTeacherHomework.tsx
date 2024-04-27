@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { useNavigate, useLocation } from 'react-router-dom';
 import Breadcrumb from './Breadcrumb';
 import CompleteHomework from './CompleteHomework';
@@ -12,31 +12,27 @@ import { Button } from "flowbite-react";
 import { HiOutlineArrowRight } from "react-icons/hi";
 import {Student, HomeworkAssignment, CalendarEvent} from './types'
 import { BackButton } from "./BackButton.tsx";
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 
-interface Props {
-  homework: HomeworkAssignment[]
-  students: Student[]
-  goBackToDash: string; 
-  searchTerm: string;
-}
 
 const ViewTeacherHomework: React.FC = () => {
-  const location = useLocation();
-  const { homework, students, searchTerm, goBackToDash} = location.state as Props;
-  const [homeworkId, setHomeworkId] = useState(0)
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
 
   const [filteredHomework, setFilteredHomework] = useState<HomeworkAssignment[]>([]);
 
+  const { teacherData, searchTerm, goBackToDash, setGoBackToDash } = useContext(UniversalContext);
+  const students = teacherData.students
+  const homework = teacherData.homeworkAssignments
+
   useEffect(() => {
-    setFilteredHomework(homework.filter(homework => homework.title && homework.title.toLowerCase().includes(searchTerm.toLowerCase())));
+    setFilteredHomework(homework?.filter(homework => homework.title && homework.title.toLowerCase().includes(searchTerm.toLowerCase())));
   }, [searchTerm, homework]);
 
   const navigate = useNavigate();
 
    
   const handleNavigateCreate = () => {
-    navigate('/create-homework', { state: { handleUpdateHomework } });
+    navigate('/create-homework', { state: { selectedStudent, backToParent: '/view-teacher-homework' } });
   };
 
   
@@ -106,17 +102,17 @@ const ViewTeacherHomework: React.FC = () => {
       
             {/* Row 2 for AssignedHomework */}
             <div className="row-start-2 col-span-full">
-              <AssignedHomework homework={assignedHomework} handleUpdateHomework={handleUpdateHomework} handleDeleteHomework={handleDeleteHomework} backToParent={'/view-teacher-homework'} />
+              <AssignedHomework homework={assignedHomework} backToParent={'/view-teacher-homework'} />
             </div>
       
             {/* Row 3 for SubmittedHomework */}
             <div className="row-start-3 col-span-full">
-              <SubmittedHomework homework={submittedHomework} handleUpdateHomework={handleUpdateHomework} handleDeleteHomework={handleDeleteHomework} backToParent={'/view-teacher-homework'} />
+              <SubmittedHomework homework={submittedHomework} backToParent={'/view-teacher-homework'} />
             </div>
       
             {/* Row 4 for CompleteHomework */}
             <div className="row-start-4 col-span-full">
-              <CompleteHomework homework={completedHomework} handleUpdateHomework={handleUpdateHomework}  handleDeleteHomework={handleDeleteHomework} backToParent={'/view-teacher-homework'} />
+              <CompleteHomework homework={completedHomework} backToParent={'/view-teacher-homework'} />
             </div>
           </div>
         </>

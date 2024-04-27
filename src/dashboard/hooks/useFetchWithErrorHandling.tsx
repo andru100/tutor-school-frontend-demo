@@ -28,7 +28,6 @@ const useFetchWithErrorHandling = () => {
       case 500:
         errorMessage = "Internal Server Error. Please try again later.";
         break;
-      // Add more cases as needed
     }
 
     toast.error(errorMessage);

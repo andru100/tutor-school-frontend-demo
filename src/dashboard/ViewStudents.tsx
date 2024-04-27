@@ -1,22 +1,24 @@
 import React from 'react'
 import TeacherStudentDash from "./ViewTeacherStudentDash"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { Student} from "./types";
 import { BackButton } from './BackButton';
 import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 
-interface Props {
-  studentsData: Student[];
-}
 
 const ViewStudents: React.FC = () => {
-  const location = useLocation();
-  const { studentsData} = location.state as Props;
+  const [page, setPage] = useState('default')
+  const { teacherData, searchTerm , setStudentData, goBackToDash} = useContext(UniversalContext);
+  const studentsData = teacherData?.students
   const [studentID, setStudentID] = useState("");
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    setFilteredStudents(studentsData.filter(student => student.name && student.name.toLowerCase().includes(searchTerm.toLowerCase())));
+    setFilteredStudents(studentsData?.filter(student => student.name && student.name.toLowerCase().includes(searchTerm.toLowerCase())));
   }, [searchTerm]);
 
 
@@ -33,7 +35,8 @@ const ViewStudents: React.FC = () => {
       const student = filteredStudents.find(student => student.studentId === studentID);
       if (student) {
         console.log("found student sending too viewstudentdash", student)
-        return <TeacherStudentDash searchTerm={searchTerm} student={student} goBackToDash={goBackToDash}/>;
+        setStudentData(student)
+        navigate('/teacher-student-dashboard');
       }
     break;
     

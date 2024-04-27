@@ -4,8 +4,9 @@ import { StudentAssessmentAssignment, CalendarEvent } from './types'
 import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { StudentUpdatesContext } from '/src/dashboard/context/StudentContext.tsx';
-import { TeacherUpdatesContext } from '/src/dashboard/context/TeacherContext.tsx';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { teacherHandleUpdateAssessment } from '/src/dashboard/UpdateTeacher.tsx';
+
 
 
 interface Props {
@@ -15,9 +16,7 @@ interface Props {
 
 const EditAssessment: React.FC = () => {
 
-  const context = useContext(StudentUpdatesContext) || useContext(TeacherUpdatesContext);
-
-  const { handleUpdateAssessment } = context;
+  const { role, setTeacherData }  = useContext(UniversalContext);
   
   const location = useLocation();
   const { assessment, backToParent } = location.state as Props;
@@ -47,8 +46,8 @@ const EditAssessment: React.FC = () => {
 
       const result = await response.json();
       console.log('Mutation response:', result);
-      handleUpdateAssessment(result.assessments, result.calendarEvents)
-      
+      teacherHandleUpdateAssessment(result.assessments, result.calendarEvents, setTeacherData)
+      toast.success('Assessment successfully updated');
       navigate(backToParent)
       } catch (error) {
       console.error('Error creating assessment:', error);

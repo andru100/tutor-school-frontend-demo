@@ -1,5 +1,5 @@
-
-import { useState, useEffect } from "react"
+  
+import { useState, useEffect, useContext } from "react"
 import Breadcrumb from './Breadcrumb';
 import CompleteAssessment from './CompleteAssessments';
 import SubmittedAssessment from "./SubmittedAssessments";
@@ -10,27 +10,19 @@ import Exam from "./Exam";
 import { BackButton } from "./BackButton";
 import {Student, StudentAssessmentAssignment, CalendarEvent} from './types'
 import { useLocation } from 'react-router-dom';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 
-interface Props {
-  student: Student;
-  goBackToDash: string; 
-  searchTerm: string;
-}
 
 const ViewStudentAssessments: React.FC = () => {
-  const location = useLocation();
-  const { student, goBackToDash, searchTerm} = location.state as Props;
+
+  const { studentData, searchTerm, goBackToDash, setGoBackToDash } = useContext(UniversalContext);
+
 
   const [filteredAssessment, setFilteredAssessment] = useState<Student["assessments"]>([]);
 
   useEffect(() => {
-      setFilteredAssessment(student.assessments.filter(assessment => assessment.title && assessment.title.toLowerCase().includes(searchTerm.toLowerCase())));
-  }, [searchTerm, student]);
-
-
-  if (!student) {
-    return <p>Loading assessment data...</p>; 
-  }
+      setFilteredAssessment(studentData?.assessments.filter(assessment => assessment.title && assessment.title.toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [searchTerm, studentData]);
  
 
   const assignedAssessments = filteredAssessment?.filter(assessment => assessment.isAssigned && !assessment.isSubmitted && !assessment.isGraded) ?? null;

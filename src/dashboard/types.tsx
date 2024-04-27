@@ -185,6 +185,7 @@ export interface HomeworkAssignment extends Event {
     isAssigned: boolean;
     isSubmitted: boolean;
     isGraded: boolean;
+    gradedDate?: Date;
     grade?: number;
     aiFeedback?: string;
     teacherFeedback?: string;
@@ -218,6 +219,7 @@ export interface StudentAssessmentAssignment extends Event {
     duration: number | null;
     score: number | null;
     submissionDate: Date | null;
+    gradedDate?: Date;
     topicScores: TopicScores | null;
     answers: ExamAnswer[] | null;
     // student: Student | null;
@@ -427,4 +429,10 @@ export interface Score {
 export interface CombinedTopicScoresMap {
     dataKey: string | null;
     colour: string | null;
+}
+
+export interface UserProfileInfo {
+  role: string;
+  name: string;
+  profileImgUrl: string | null;
 }

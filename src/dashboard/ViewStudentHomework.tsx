@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext} from "react"
 import Breadcrumb from './Breadcrumb';
 import CompleteHomework from './CompleteHomework';
 import SubmittedHomework from "./SubmittedHomework";
@@ -10,27 +10,18 @@ import HomeworkStudio from "./HomeworkStudio.tsx"
 import {Student, HomeworkAssignment, CalendarEvent} from './types'
 import { BackButton } from "./BackButton.tsx";
 import { useLocation } from 'react-router-dom';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 
-interface Props {
-  student: Student;
-  goBackToDash: string; 
-  searchTerm: string;
-}
 
 const ViewStudentHomework: React.FC = () => {
-  const location = useLocation();
-  const { student, goBackToDash, searchTerm} = location.state as Props;
+
+  const { studentData, searchTerm, goBackToDash, setGoBackToDash } = useContext(UniversalContext);
   const [filteredHomework, setFilteredHomework] = useState<HomeworkAssignment[]>([]);
 
   useEffect(() => {
-    setFilteredHomework(student.homeworkAssignments.filter(homework => homework.title && homework.title.toLowerCase().includes(searchTerm.toLowerCase())));
-  }, [searchTerm, student]);
+    setFilteredHomework(studentData?.homeworkAssignments.filter(homework => homework.title && homework.title.toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [searchTerm, studentData]);
 
-
-
-  if (!student) {
-    return <p>Loading homework data...</p>; 
-  }
 
   const assignedHomework = filteredHomework?.filter(homework => homework.isAssigned && !homework.isSubmitted && !homework.isGraded) ?? null;
   const submittedHomework = filteredHomework?.filter(homework => homework.isAssigned && homework.isSubmitted && !homework.isGraded) ?? null;

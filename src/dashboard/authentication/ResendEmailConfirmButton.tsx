@@ -1,5 +1,5 @@
 import React from 'react';
-import { sendEmailConfirmCode } from '/src/dashboard/authentication/SendEmailConfirmCode.tsx'; // Adjust the import path as necessary
+import { sendEmailConfirmCode } from '/src/dashboard/authentication/SendEmailConfirmCode.tsx';
 
 interface Props {
     email: string;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { useNavigate, useLocation } from 'react-router-dom';
 import Breadcrumb from './Breadcrumb';
 import AssignedLessons from './Assignedlessons';
@@ -8,30 +8,26 @@ import EditLesson from "./EditLesson";
 import { BackButton } from "./BackButton";
 import { CreateButton } from "./CreateButton";
 import {Teacher, Student, LessonEvent, CalendarEvent} from './types';
+import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 
-interface Props {
-  lessons: LessonEvent[];
-  students: Student[];
-  goBackToDash: string;
-  searchTerm: string;
-}
 
 const ViewTeacherLessons: React.FC = () => {
-  const location = useLocation();
-  const { lessons, students, searchTerm, goBackToDash } = location.state as Props;
 
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [filteredLessons, setFilteredLessons] = useState<LessonEvent[]>([]);
+  const { teacherData, searchTerm, goBackToDash, setGoBackToDash } = useContext(UniversalContext);
+  const students = teacherData.students
+  const lessons = teacherData.lessonEvents
 
   const navigate = useNavigate();
 
   
   const handleNavigateCreate = () => {
-    navigate('/create-lesson', { state: { handleUpdateLesson } });
+    navigate('/create-lesson', { state: { selectedStudent, backToParent: '/view-teacher-lessons' } });
   };
 
   useEffect(() => {
-    setFilteredLessons(lessons.filter(lesson => lesson.title && lesson.title.toLowerCase().includes(searchTerm.toLowerCase())));
+    setFilteredLessons(lessons?.filter(lesson => lesson.title && lesson.title.toLowerCase().includes(searchTerm.toLowerCase())));
   }, [searchTerm, lessons]);
 
 
@@ -83,12 +79,12 @@ const ViewTeacherLessons: React.FC = () => {
       
             {/* Row 2 for AssignedLessons */}
             <div className="row-start-2 col-span-full">
-              <AssignedLessons lessons={assignedLessons} handleDeleteLesson={handleDeleteLesson} handleUpdateLesson={handleUpdateLesson} backToParent={'/view-teacher-lessons'} />
+              <AssignedLessons lessons={assignedLessons}  backToParent={'/view-teacher-lessons'} />
             </div>
       
             {/* Row 3 for CompleteLessons */}
             <div className="row-start-3 col-span-full">
-              <CompleteLessons lessons={completedLessons} handleDeleteLesson={handleDeleteLesson} handleUpdateLesson={handleUpdateLesson} backToParent={'/view-teacher-lessons'} />
+              <CompleteLessons lessons={completedLessons} backToParent={'/view-teacher-lessons'} />
             </div>
           </div>
         </>
