@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import TeacherViewStudentsCard from './TeacherViewStudentsCard.tsx';
 import TeacherHomeworkCard from './TeacherHomeworkCard.tsx';
-import StudentAssessmentCard from './StudentAssessmentCard.tsx'
-import StudentLessonCard from './StudentLessonCard.tsx';
+import AssessmentCard from './AssessmentCard.tsx'
+import LessonCard from './LessonCard.tsx';
 import CalendarCard from './CalendarCard.tsx';
 import ViewStudents from './ViewStudents.tsx'; 
 import { Teacher, Student, HomeworkAssignment, StudentAssessmentAssignment, LessonEvent, CalendarEvent } from "./types.tsx"
@@ -14,7 +14,7 @@ import Stats from './Stats.tsx';
 import HumanVerifyMath from './HumanVerifyMath.tsx';
 import toast from 'react-hot-toast';
 import { CheckoutForm, Return } from './PaymentScreen.tsx';
-import Billing from './Billing.tsx';
+import BillingCard from './BillingCard.tsx';
 import Header from'/src/dashboard/layout/header/Header.tsx'
 import { Button } from "flowbite-react";
 import { HiOutlineArrowRight } from "react-icons/hi";
@@ -50,9 +50,7 @@ const TeacherDash: React.FC = () => {
   
 const handleSelectStudent = (event: ChangeEvent<HTMLSelectElement>) => {
   const selectedStudentId = event.target.value;
-  console.log("handleSelectStudent studentid is", selectedStudentId, typeof( selectedStudentId))
   const selectedStudent = teacherData?.students?.find(student => student.studentId.toString() === selectedStudentId);
-  console.log("student found is ", selectedStudent)
   setStudent(selectedStudent);
 };
   
@@ -87,9 +85,9 @@ const handleSelectStudent = (event: ChangeEvent<HTMLSelectElement>) => {
     }
   };
 
-  const handlePaymentCheckout = () => {
+  const handleViewBilling = () => {
     if (teacherData?.students) {
-      navigate('/payment-checkout');
+      navigate('/view-billing');
     }
   };
 
@@ -107,10 +105,10 @@ const handleSelectStudent = (event: ChangeEvent<HTMLSelectElement>) => {
           <TeacherHomeworkCard homework={teacherData.homeworkAssignments} />
         </div>
         <div onClick={handleViewAssessments}>
-          <StudentAssessmentCard assessment={teacherData.assessments} />
+          <AssessmentCard assessment={teacherData.assessments} />
         </div>
         <div onClick={handleViewLessons}>
-          <StudentLessonCard lessons={teacherData.lessonEvents} />
+          <LessonCard lessons={teacherData.lessonEvents} />
         </div>
         <div onClick={handleViewCalendar}>
           <CalendarCard events={teacherData?.calendarEvents} />
@@ -118,8 +116,8 @@ const handleSelectStudent = (event: ChangeEvent<HTMLSelectElement>) => {
         {/* <div onClick={() => navigate('/human-feedback')}>
           <ExamMaker lessons={teacherData.lessonEvents} />
         </div> */}
-        <div onClick={handlePaymentCheckout}>
-          <Billing lessons={teacherData.lessonEvents} />
+        <div onClick={handleViewBilling}>
+          <BillingCard lessons={teacherData.lessonEvents} />
         </div>
       </div>
 

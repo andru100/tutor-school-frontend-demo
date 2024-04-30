@@ -38,11 +38,6 @@ const DashboardStats: React.FC<Props> = ({student }) => {
   let [studentsTopics, setStudentsTopics] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log("stats prop passed is:  ", student)
-  }, [student])
-  
-  
-  useEffect(() => {
   
      //get rid off assigments not completed
     const filteredAssessments = student.assessments.filter(assessment => assessment.submissionDate !== null);
@@ -60,7 +55,6 @@ const DashboardStats: React.FC<Props> = ({student }) => {
 
     const assessmentsBySubject = filteredAssessments.filter(assessment => assessment.title === latestAssessment.title);
 
-    console.log("latest assessment in initial useeffect: ", latestAssessment)
     setAssessments(assessmentsBySubject)
 
     //get topics of assignments
@@ -87,7 +81,6 @@ const DashboardStats: React.FC<Props> = ({student }) => {
         return (prev.submissionDate > current.submissionDate) ? prev : current;
       });
 
-      console.log("latest assessment in update phase2 useeffect: ", latestAssessment)
       setSubjectAndAssignmentId(prevState => ({
         ...prevState,
         assignmentId: latestAssessment.id

@@ -13,15 +13,11 @@ const RadialResult:  React.FC<Props> = ({ selectedAssessment }) => {
       let selectedScores : Score []
       //let overallScore = 0  // may use in future
 
-      console.log("selectedAssessment is: ", selectedAssessment);
-
       if (selectedAssessment) {
         topics = Object.keys(selectedAssessment.topicScores[selectedAssessment.title]);
         selectedScores = topics.map((item) => selectedAssessment.topicScores[selectedAssessment.title][item].score)
         //overallScore = selectedAssessment.score
       
-
-        console.log("series is: ", selectedScores, " labels are: ", topics)
 
         // sort selectedScores by largest to smallest and also sort topics using same index as they are linked.
         const sortedScores = selectedScores.slice().sort((a, b) => b - a);

@@ -13,6 +13,8 @@ import { HiOutlineArrowRight } from "react-icons/hi";
 import {Student, HomeworkAssignment, CalendarEvent} from './types'
 import { BackButton } from "./BackButton.tsx";
 import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import toast from 'react-hot-toast';
+
 
 
 const ViewTeacherHomework: React.FC = () => {
@@ -32,6 +34,10 @@ const ViewTeacherHomework: React.FC = () => {
 
    
   const handleNavigateCreate = () => {
+    if (!selectedStudent) {
+      toast.error('You must select a student first');
+      return
+    } 
     navigate('/create-homework', { state: { selectedStudent, backToParent: '/view-teacher-homework' } });
   };
 

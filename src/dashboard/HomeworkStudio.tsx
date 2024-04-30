@@ -41,6 +41,16 @@ const HomeworkStudio: React.FC = () => {
       });
 
       if (response.ok) {
+        
+        const result = await response.json();
+        console.log('reesponse is', result)
+        if (role === 'Teacher') {
+          teacherHandleUpdateHomework(result.homeworkAssignments, result.calendarEvents, setTeacherData )
+        } else if (role === 'Student') {
+          studentHandleUpdateHomework(result.homeworkAssignments, result.calendarEvents, setStudentData);
+        } else {
+          throw new Error('unable to ascertain role, role is: ', role);
+        }
         toast.success('Homework submitted successfully');
         navigate(backToParent)
       } else {

@@ -38,16 +38,9 @@ const AreaMultipleTopic: React.FC<Props> = ({ assessments, studentsTopics, setSu
   useEffect(() => {
     assessmentsRef.current = assessments;
   }, [assessments]);
-  
-  console.log("AreaMultipleTopic called. assessments passed in by prop is: ", assessments, " and subjectAndAssignmentId.subject is ", subjectAndAssignmentId.subject);
-  
-
-
 
   const topicScores = assessments.map(item => item.topicScores[subjectAndAssignmentId.subject]);
-
-  console.log("filtered topicscores subject and by subject  is", subjectAndAssignmentId.subject, topicScores)
-
+  
   let topics = Object.keys(topicScores[0])
 
   const [selectedTopic, setSelectedTopic] = useState<string | null>(topics[0]);

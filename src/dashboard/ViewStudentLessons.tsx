@@ -2,8 +2,8 @@
 import { useState, useEffect, useContext } from "react"
 import Breadcrumb from './Breadcrumb';
 import TableThree from './TableThree';
-import AssignedLessons from './Assignedlessons';
-import CompleteLessons from './CompleteLessons';
+import UpcomingLessons from './UpcomingLessons';
+import PreviousLessons from './PreviousLessons';
 import CreateLesson from "./CreateLesson";
 import EditLesson from "./EditLesson";
 import {Student , LessonEvent, CalendarEvent} from './types'
@@ -21,8 +21,8 @@ const Lessons: React.FC = () => {
     }, [searchTerm, studentData]);
 
 
-    const assignedLessons = filteredLessons?.filter(lessonEvent => lessonEvent.isAssigned && !lessonEvent.isComplete) ?? null;
-    const completedLessons = filteredLessons?.filter(lessonEvent => lessonEvent.isComplete) ?? null;
+    const upcomingLessons = filteredLessons?.filter(lessonEvent => lessonEvent.isAssigned && !lessonEvent.isComplete && lessonEvent.dueDate && new Date(lessonEvent.dueDate) > new Date()) ?? null;
+    const previousLessons = filteredLessons?.filter(lessonEvent => lessonEvent.isAssigned && lessonEvent.dueDate && new Date(lessonEvent.dueDate) <= new Date()) ?? null;
 
     return (
       <>
@@ -33,11 +33,11 @@ const Lessons: React.FC = () => {
           </div>
     
           <div className="row-start-2 col-span-full">
-            <AssignedLessons lessons={assignedLessons}  backToParent={'/view-student-lessons'} />
+            <UpcomingLessons lessons={upcomingLessons}  backToParent={'/view-student-lessons'} />
           </div>
     
           <div className="row-start-3 col-span-full">
-            <CompleteLessons lessons={completedLessons}  backToParent={'/view-student-lessons'} />
+            <PreviousLessons lessons={previousLessons}  backToParent={'/view-student-lessons'} />
           </div>
         </div>
       </>

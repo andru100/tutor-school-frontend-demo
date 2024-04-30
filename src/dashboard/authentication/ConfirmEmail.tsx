@@ -7,7 +7,7 @@ import { NavigateCancelButton } from './NavigateCancelButton';
 import { NavigateButtonAuth } from './NavigateButtonAuth';
 import { sendEmailConfirmCode } from '/src/dashboard/authentication/SendEmailConfirmCode.tsx';
 import {ResendEmailConfirmButton} from '/src/dashboard/authentication/ResendEmailConfirmButton.tsx'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 
@@ -17,12 +17,13 @@ interface Props {
 
 const ConfirmEmail: React.FC = () => {
   const location = useLocation();
-  const { email } = location.state as Props;
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
-      console.log("requesting initial confirm email code ")
-      sendEmailConfirmCode(email);
-  }, []);
+    const { email } = location.state as Props;
+    setEmail(email);
+    sendEmailConfirmCode(email);
+  }, [location.state]);
 
   const navigate = useNavigate();
 
@@ -30,7 +31,6 @@ const ConfirmEmail: React.FC = () => {
   const confirmEmail = async (loginData: LoginData) => {
 
     try{
-      console.log('sending code comfirm.. data is:', loginData);
       const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
       const response = await fetch(`${serverAddress}/api/account/confirmEmail?code=${loginData.code}&email=${loginData.email}`, {
         method: 'GET',
@@ -41,13 +41,11 @@ const ConfirmEmail: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("signin response is: ", data)
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken);
-        navigate('/selectSubscription')
+        navigate('/create-role')
       } else {
         const error = await response.json();
-        console.log("Error confirming email address, response status code:", response.status);
         console.error("Response data:", error);
         toast.error("Unable to confirm email address, please try again.");
       }
@@ -81,7 +79,7 @@ const ConfirmEmail: React.FC = () => {
               </span>
 
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Sign In
+                Tutoring Platform Demo
               </h2>
 
               <span className="mt-15 inline-block">
@@ -232,21 +230,7 @@ const ConfirmEmail: React.FC = () => {
                     />
 
                     <span className="absolute right-4 top-4">
-                      <svg
-                        className="fill-current"
-                        width="22"
-                        height="22"
-                        viewBox="0 0 22 22"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g opacity="0.5">
-                          <path
-                            d="M19.2516 3.30005H2.75156C1.58281 3.30005 0.585938 4.26255 0.585938 5.46567V16.6032C0.585938 17.7719 1.54844 18.7688 2.75156 18.7688H19.2516C20.4203 18.7688 21.4172 17.8063 21.4172 16.6032V5.4313C21.4172 4.26255 20.4203 3.30005 19.2516 3.30005ZM19.2516 4.84692C19.2859 4.84692 19.3203 4.84692 19.3547 4.84692L11.0016 10.2094L2.64844 4.84692C2.68281 4.84692 2.71719 4.84692 2.75156 4.84692H19.2516ZM19.2516 17.1532H2.75156C2.40781 17.1532 2.13281 16.8782 2.13281 16.5344V6.35942L10.1766 11.5157C10.4172 11.6875 10.6922 11.7563 10.9672 11.7563C11.2422 11.7563 11.5172 11.6875 11.7578 11.5157L19.8016 6.35942V16.5688C19.8703 16.9125 19.5953 17.1532 19.2516 17.1532Z"
-                            fill=""
-                          />
-                        </g>
-                      </svg>
+                    <svg className="fill-current" xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm320-280L160-640v400h640v-400L480-440Zm0-80 320-200H160l320 200ZM160-640v-80 480-400Z"/></svg>
                     </span>
                   </div>
                 </div>
@@ -264,21 +248,7 @@ const ConfirmEmail: React.FC = () => {
                     />
 
                     <span className="absolute right-4 top-4">
-                      <svg
-                        className="fill-current"
-                        width="22"
-                        height="22"
-                        viewBox="0 0 22 22"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g opacity="0.5">
-                          <path
-                            d="M19.2516 3.30005H2.75156C1.58281 3.30005 0.585938 4.26255 0.585938 5.46567V16.6032C0.585938 17.7719 1.54844 18.7688 2.75156 18.7688H19.2516C20.4203 18.7688 21.4172 17.8063 21.4172 16.6032V5.4313C21.4172 4.26255 20.4203 3.30005 19.2516 3.30005ZM19.2516 4.84692C19.2859 4.84692 19.3203 4.84692 19.3547 4.84692L11.0016 10.2094L2.64844 4.84692C2.68281 4.84692 2.71719 4.84692 2.75156 4.84692H19.2516ZM19.2516 17.1532H2.75156C2.40781 17.1532 2.13281 16.8782 2.13281 16.5344V6.35942L10.1766 11.5157C10.4172 11.6875 10.6922 11.7563 10.9672 11.7563C11.2422 11.7563 11.5172 11.6875 11.7578 11.5157L19.8016 6.35942V16.5688C19.8703 16.9125 19.5953 17.1532 19.2516 17.1532Z"
-                            fill=""
-                          />
-                        </g>
-                      </svg>
+                    <svg className='fill-current' xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22"><path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z"/></svg>
                     </span>
                   </div>
                 </div>

@@ -30,14 +30,9 @@ const BarChartTopics:  React.FC<Props> = ({ assessments, topicType, assignmentId
       let data = {}
 
       if (selectedAssessment) {
-        console.log("selected assessment is", selectedAssessment)
         topics = Object.keys(selectedAssessment.topicScores[topicType]);
-        console.log("topics are is", topics)
         selectedScores = topics.map((item) => selectedAssessment.topicScores[topicType][item].score)
-        console.log("Selected Scores:", selectedScores);
         overallScore = selectedAssessment.score
-        console.log("Overall Score:", overallScore);
-        
       }
 
       data = [{ name: "Series 1", data: selectedScores}]

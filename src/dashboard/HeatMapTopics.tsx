@@ -49,8 +49,6 @@ const HeatmapTopics:  React.FC<Props> = ({ assessments, studentsTopics, setSubje
 
    const topicScores = assessments.map(item => item.topicScores[subjectAndAssignmentId.subject]);
 
-  console.log("filtered is", topicScores)
-
   const [selectedTopic, setSelectedTopic] = useState<string | null>();
 
 

@@ -31,6 +31,8 @@ import EditLesson from '/src/dashboard/EditLesson.tsx';
 import HomeworkStudio from '/src/dashboard/HomeworkStudio.tsx';
 import HomeworkGrader from '/src/dashboard/HomeworkGrader.tsx';
 import ViewHomework from '/src/dashboard/ViewHomework.tsx'
+import ViewAssessment from '/src/dashboard/ViewAssessment.tsx'
+import ViewLesson from '/src/dashboard/ViewLesson.tsx'
 import Exam from '/src/dashboard/Exam.tsx';
 import { CreateRole } from '/src/dashboard/authentication/CreateRole.tsx';
 import ProtectedRoutes from './ProtectedRoutes';
@@ -38,7 +40,7 @@ import ProtectedRoutes from './ProtectedRoutes';
 
 const DefaultLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const noAuthRoutes = ["/signin", "/signup", "/forgot-password", "/forgot-password-confirm", "/confirm-email", "/choose-subscription", "/teacher-signup", "/student-signup"];
+  const noAuthRoutes = ["/signin", "/signup", "/forgot-password", "/forgot-password-confirm", "/confirm-email", "/create-role", "/teacher-signup", "/student-signup"];
   const location = useLocation();
   const showHeader = !noAuthRoutes.includes(location.pathname);
 
@@ -62,7 +64,7 @@ const DefaultLayout: React.FC = () => {
                   
                   <Route path="/signup" element={<SignUp />} />
                   <Route path="/confirm-email" element={<ConfirmEmail />} />
-                  <Route path="/choose-subscription" element={<CreateRole />} />
+                  <Route path="/create-role" element={<CreateRole />} />
                   <Route path="/teacher-signup" element={<SignUpTeacher />} />
                   <Route path="/student-signup" element={<SignUpStudent />} />
 
@@ -78,12 +80,15 @@ const DefaultLayout: React.FC = () => {
                   <Route path="/view-teacher-assessments" element={<ViewTeacherAssessments />} />
                   <Route path="/view-teacher-lessons" element={<ViewTeacherLessons />} />
                   <Route path="/calendar" element={<Calendar />} />
-                  <Route path="/billing" element={<Billing />} />
 
                   <Route path="/view-student-lessons" element={<ViewStudentLessons />} />
                   <Route path="/view-student-assessments" element={<ViewStudentAssessments />} />
                   <Route path="/view-student-homework" element={<ViewStudentHomework />} />
                   <Route path="/stats" element={<Stats />} />
+
+                  <Route path="/view-homework" element={<ViewHomework/>} />
+                  <Route path="/view-assessment" element={<ViewAssessment/>} />
+                  <Route path="/view-lesson" element={<ViewLesson/>} />
 
                   <Route path="/create-assessment" element={<CreateAssessment />} />
                   <Route path="/create-homework" element={<CreateHomework />} />
@@ -95,8 +100,7 @@ const DefaultLayout: React.FC = () => {
 
                   <Route path="/homework-studio" element={<HomeworkStudio />} />
                   <Route path="/grade-homework" element={<HomeworkGrader />} />
-                  <Route path="/view-homework" element={<ViewHomework/>} />
-                  <Route path="/exam-studio" element={<Exam />} />
+                  <Route path="/assessment" element={<Exam />} />
                 </Routes>
                 
               </ProtectedRoutes>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useContext } from "react"
 import { LessonEvent, CalendarEvent } from './types'
-import { CancelButton } from './CancelButton.tsx';
+import { BackButton } from './BackButton';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
@@ -30,7 +30,6 @@ const EditLesson: React.FC = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     
-    console.log('in edit lesson, sending: lessonData', lessonData);
     try {
       const accessToken = localStorage.getItem('accessToken') || null;
     
@@ -48,7 +47,6 @@ const EditLesson: React.FC = () => {
       });
 
       const result = await response.json();
-      console.log('Mutation response:', result);
       teacherHandleUpdateLesson(result.lessonEvents, result.calendarEvents, setTeacherData)
       toast.success('Lesson successfully updated');
       navigate(backToParent)
@@ -69,18 +67,24 @@ const EditLesson: React.FC = () => {
     }));
   };
 
-
+  const handleCheckboxChange = (event) => {
+    setLessonData((prevData) => ({
+      ...prevData,
+      isComplete: event.target.checked,
+    }));
+  };
+  
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+          <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>  
             <div className="flex flex-col">  
               <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6">  
                 <div className="p-2.5 xl:p-5">
                   <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-                    Create Lesson
+                    Edit Lesson
                   </h4>
                 </div>
-                <CancelButton backToParent={backToParent}/>
               </div>
             </div>
 
@@ -146,6 +150,23 @@ const EditLesson: React.FC = () => {
                           onChange={handleInputChange}
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         />
+                      </div>
+
+                      <div className="mb-4.5">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          Lesson Completed
+                        </label>
+                        <label className={`relative m-0 block h-7.5 w-14 rounded-full ${lessonData.isComplete ? 'bg-primary' : 'bg-stroke'}`}>
+                          <input
+                            type="checkbox"
+                            checked={lessonData.isComplete || false}
+                            onChange={handleCheckboxChange}
+                            className="dur absolute top-0 z-50 m-0 h-full w-full cursor-pointer opacity-0"
+                          />
+                          <span className={`absolute top-1/2 left-[3px] flex h-6 w-6 -translate-y-1/2 translate-x-0 items-center justify-center rounded-full bg-white shadow-switcher duration-75 ease-linear ${lessonData.isComplete ? '!right-[3px] !translate-x-full' : ''}`}>
+                            {/* Optional: Add icons or text inside the span to indicate state */}
+                          </span>
+                        </label>
                       </div>
 
                       

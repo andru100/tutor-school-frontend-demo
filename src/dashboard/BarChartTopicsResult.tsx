@@ -19,7 +19,6 @@ const BarChartTopicsResult:  React.FC<Props> = ({ selectedAssessment }) => {
       let data = {}
 
       if (selectedAssessment && selectedAssessment.topicScores) {
-        console.log("selected assessment is", selectedAssessment)
         topics = Object.keys(selectedAssessment.topicScores[selectedAssessment.title]);
         selectedScores = topics.map((item) => selectedAssessment.topicScores[selectedAssessment.title][item].score)
         data = [{data: selectedScores}]  

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useContext } from "react"
 import { HomeworkAssignment, CalendarEvent } from './types.tsx'
-import { CancelButton } from './CancelButton.tsx';
+import { BackButton } from './BackButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
@@ -33,7 +33,6 @@ const HomeworkGrader: React.FC = () => {
     event.preventDefault();
     homeworkData.isGraded = true;
     homeworkData.gradedDate = new Date();
-    console.log("sending: ", homeworkData)
     try {
       const accessToken = localStorage.getItem('accessToken') || null;
     
@@ -51,7 +50,6 @@ const HomeworkGrader: React.FC = () => {
       });
 
       const result = await response.json();
-      console.log('Mutation response:', result);
       teacherHandleUpdateHomework(result.homeworkAssignments, result.calendarEvents, setTeacherData )
       toast.success('Homework successfully updated');
       navigate(backToParent)
@@ -83,7 +81,7 @@ const HomeworkGrader: React.FC = () => {
                     Grade Homework
                   </h4>
                 </div>
-                <CancelButton backToParent={backToParent}/>
+                <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>
               </div>
             </div>
 

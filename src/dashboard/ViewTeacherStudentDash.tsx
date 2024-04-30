@@ -1,11 +1,11 @@
 import { useState, useEffect, useContext } from "react"
 import { useNavigate, useLocation } from 'react-router-dom';
-import StudentLessonCard from './StudentLessonCard.tsx';
+import LessonCard from './LessonCard.tsx';
 import CalendarCard from './CalendarCard.tsx';
 import StatsCard from "./StatsCard.tsx";
 import StudentHomeworkCard from './StudentHomeworkCard.tsx';
 import ViewStudentHomework from './ViewStudentHomework.tsx'
-import StudentAssessmentCard from './StudentAssessmentCard.tsx'
+import AssessmentCard from './AssessmentCard.tsx'
 import ViewStudentAssessments from './ViewStudentAssessments.tsx'
 import ChartTwo from './ChartTwo.tsx';
 import ChatCard from './ChatCard.tsx';
@@ -76,13 +76,13 @@ const TeacherStudentDash: React.FC = () => {
       <BackButton goBackToDash={goBackToDash} />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <div onClick={handleViewLessons}>
-          <StudentLessonCard lessons={studentData.lessonEvents} />
+          <LessonCard lessons={studentData.lessonEvents} />
         </div>
         <div onClick={handleViewHomework}>
           <StudentHomeworkCard homework={studentData.homeworkAssignments} />
         </div>
         <div onClick={handleViewAssessments}>
-          <StudentAssessmentCard assessment={studentData.assessments} />
+          <AssessmentCard assessment={studentData.assessments} />
         </div>
         <div onClick={handleViewStats}>
           <StatsCard assessment={studentData.assessments} />
@@ -96,13 +96,6 @@ const TeacherStudentDash: React.FC = () => {
        
        
         <DashboardStats student={studentData} searchTerm={searchTerm} />
-        <ChartTwo />
-        {/* <ChartThree /> */}
-        {/* <MapOne /> */}
-        <div className="col-span-12 xl:col-span-8">
-          <TableOne />
-        </div>
-        <ChatCard />
       </div>
     </>
     );

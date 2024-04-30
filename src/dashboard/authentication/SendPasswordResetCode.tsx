@@ -8,7 +8,6 @@ const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS;
 export async function sendPasswordResetCode(resendRequest: ResendRequest): Promise<boolean> {
   const { handleFetchResponse } = useFetchWithErrorHandling();
   try {
-    console.log("sending reset request. logindata in sendPasswordResetCode is: " + resendRequest.email) 
     const response = await fetch(`${serverAddress}/api/account/forgotPassword`, {
       method: 'POST',
       headers: {

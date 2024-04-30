@@ -30,11 +30,6 @@ const Stats: React.FC = () => {
   });
 
   let [studentsTopics, setStudentsTopics] = useState<string[]>([]);
-
-  useEffect(() => {
-    console.log("stats prop passed is:  ", studentData)
-  }, [studentData])
-  
   
   useEffect(() => {
   
@@ -54,7 +49,6 @@ const Stats: React.FC = () => {
 
     const assessmentsBySubject = filteredAssessments.filter(assessment => assessment.title === latestAssessment.title);
 
-    console.log("latest assessment in initial useeffect: ", latestAssessment)
     setAssessments(assessmentsBySubject)
 
     //get topics of assignments
@@ -81,7 +75,6 @@ const Stats: React.FC = () => {
         return (prev.submissionDate > current.submissionDate) ? prev : current;
       });
 
-      console.log("latest assessment in update phase2 useeffect: ", latestAssessment)
       setSubjectAndAssignmentId(prevState => ({
         ...prevState,
         assignmentId: latestAssessment.id
@@ -95,6 +88,7 @@ const Stats: React.FC = () => {
           if (assessments !== null){
             return (
               <>
+                <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
                 <AreaMultipleOverall   setSubjectAndAssignmentId={setSubjectAndAssignmentId} subjectAndAssignmentId={subjectAndAssignmentId} assessments={assessments} studentsTopics={studentsTopics} setViewing={setViewing} viewing ={viewing.chart}/>
                 <RadialTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
                 <BarChartTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
@@ -106,6 +100,7 @@ const Stats: React.FC = () => {
           if (assessments !== null){
             return (
               <>
+                <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
                 <AreaMultipleTopic   assessments={assessments}  setSubjectAndAssignmentId={setSubjectAndAssignmentId} subjectAndAssignmentId={subjectAndAssignmentId} studentsTopics={studentsTopics}  setViewing={setViewing} viewing ={viewing.chart} />
                 <RadialTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
                 <BarChartTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
@@ -117,6 +112,7 @@ const Stats: React.FC = () => {
           if (filteredAssessments){
             return (
               <>
+                <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
                 <HeatMapTopics  assessments={assessments}  setSubjectAndAssignmentId={setSubjectAndAssignmentId} subjectAndAssignmentId={subjectAndAssignmentId} studentsTopics={studentsTopics}  setViewing={setViewing} viewing ={viewing.chart}/>
                 <RadialTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
                 <BarChartTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
@@ -132,6 +128,7 @@ const Stats: React.FC = () => {
             // can loose this as viewing.chart is set areamultiple so defualt never triggered. 
             // TODO make it default or remove duplicate
             <>
+                <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
                 <AreaMultipleOverall   setSubjectAndAssignmentId={setSubjectAndAssignmentId} subjectAndAssignmentId={subjectAndAssignmentId} assessments={assessments} studentsTopics={studentsTopics} setViewing={setViewing} viewing ={viewing.chart}/>
                 <RadialTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
                 <BarChartTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />

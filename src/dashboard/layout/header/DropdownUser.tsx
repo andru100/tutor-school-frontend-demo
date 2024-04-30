@@ -61,7 +61,7 @@ const DropdownUser: React.FC<Props> = ({userProfileInfo}) => {
         console.log('Logout successful');
         navigate('/signin')
       } else {
-        console.log('Error in backend session termination, user has been signed out locally:', await response.text());
+        console.error('Error in backend session termination, user has been signed out locally:', await response.text());
       }
     } catch (error) {
       toast.error('A  n error occurred, please try again. If thhe problem persists, please contact support')

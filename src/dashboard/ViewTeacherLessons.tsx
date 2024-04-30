@@ -1,14 +1,16 @@
 import { useState, useEffect, useContext } from "react"
 import { useNavigate, useLocation } from 'react-router-dom';
 import Breadcrumb from './Breadcrumb';
-import AssignedLessons from './Assignedlessons';
-import CompleteLessons from './CompleteLessons';
+import UpcomingLessons from '/src/dashboard/UpcomingLessons.tsx';
+import PreviousLessons from './PreviousLessons';
 import CreateLesson from "./CreateLesson";
 import EditLesson from "./EditLesson";
 import { BackButton } from "./BackButton";
 import { CreateButton } from "./CreateButton";
 import {Teacher, Student, LessonEvent, CalendarEvent} from './types';
 import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import toast from 'react-hot-toast';
+
 
 
 const ViewTeacherLessons: React.FC = () => {
@@ -23,6 +25,10 @@ const ViewTeacherLessons: React.FC = () => {
 
   
   const handleNavigateCreate = () => {
+    if (!selectedStudent) {
+      toast.error('You must select a student first');
+      return
+    }
     navigate('/create-lesson', { state: { selectedStudent, backToParent: '/view-teacher-lessons' } });
   };
 
@@ -35,20 +41,21 @@ const ViewTeacherLessons: React.FC = () => {
     return <p>Loading lesson data...</p>; 
   }
 
-  const assignedLessons = selectedStudent
-    ? filteredLessons?.filter(lesson =>
-        lesson.isAssigned &&
-        !lesson.isComplete &&
-        lesson.studentId === selectedStudent.studentId
-      ) ?? null
-    : filteredLessons?.filter(lesson => lesson.isAssigned && !lesson.isComplete) ?? null;
+  const upcomingLessons = selectedStudent
+  ? filteredLessons?.filter(lesson =>
+      lesson.isAssigned &&
+      lesson.dueDate && new Date(lesson.dueDate) > new Date() &&
+      lesson.studentId === selectedStudent.studentId
+    ) ?? null
+  : filteredLessons?.filter(lesson => lesson.isAssigned && lesson.dueDate && new Date(lesson.dueDate) > new Date()) ?? null;
 
-  const completedLessons = selectedStudent
-    ? filteredLessons?.filter(lesson =>
-        lesson.isComplete &&
-        lesson.studentId === selectedStudent.studentId
-      ) ?? null
-    : filteredLessons?.filter(lesson => lesson.isComplete) ?? null;
+  const previousLessons = selectedStudent
+  ? filteredLessons?.filter(lesson =>
+      lesson.isAssigned &&
+      lesson.dueDate && new Date(lesson.dueDate) <= new Date() &&
+      lesson.studentId === selectedStudent.studentId
+    ) ?? null
+  : filteredLessons?.filter(lesson => lesson.isAssigned && lesson.dueDate && new Date(lesson.dueDate) <= new Date()) ?? null; 
 
    
 
@@ -77,14 +84,14 @@ const ViewTeacherLessons: React.FC = () => {
          
             </div>
       
-            {/* Row 2 for AssignedLessons */}
+            {/* Row 2 for UpcomingLessons */}
             <div className="row-start-2 col-span-full">
-              <AssignedLessons lessons={assignedLessons}  backToParent={'/view-teacher-lessons'} />
+              <UpcomingLessons lessons={upcomingLessons}  backToParent={'/view-teacher-lessons'} />
             </div>
       
-            {/* Row 3 for CompleteLessons */}
+            {/* Row 3 for PreviousLessons */}
             <div className="row-start-3 col-span-full">
-              <CompleteLessons lessons={completedLessons} backToParent={'/view-teacher-lessons'} />
+              <PreviousLessons lessons={previousLessons} backToParent={'/view-teacher-lessons'} />
             </div>
           </div>
         </>

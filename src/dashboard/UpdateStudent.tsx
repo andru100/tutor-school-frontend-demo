@@ -29,7 +29,6 @@ import {useContext } from "react"
   //       lessonEvents: [...updatedLessons, ...newLessons],
   //       calendarEvents: [...updatedCalendarEvents, ...newCalendarEvents]
   //     };
-  //     console.log("updated lessons:", updatedData.lessonEvents);
   //     return updatedData;
   //   });
   // };
@@ -45,7 +44,6 @@ import {useContext } from "react"
   //         lessonEvents: updatedLessons,
   //         calendarEvents: updatedCalendarEvents
   //       };
-  //       //console.log("updated lessons:", updatedData.lessonEvents);
   //       return updatedData;
   //     });
   //   } catch (error) {
@@ -163,7 +161,6 @@ import {useContext } from "react"
   //         assessments: updatedAssignments,
   //         calendarEvents: updatedCalendarEvents
   //       };
-  //       //console.log("updated deleted assessments in student dash:", updatedData.assessments);
   //       return updatedData;
   //     });
   //   } catch (error) {

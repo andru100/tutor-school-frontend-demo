@@ -8,14 +8,18 @@ import { NavigateCancelButton } from './NavigateCancelButton.tsx';
 import {LoginData} from "/src/dashboard/types.tsx";
 import {sendPasswordResetCode} from './SendPasswordResetCode.tsx'
 import { useNavigate } from 'react-router-dom';
+import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
 
-interface Props {
-}
+
+
 const ForgotPassword: React.FC = () => {
 
   const [email, setEmail] = useState("");
-
   const navigate = useNavigate();
+  const { handleFetchResponse } = useFetchWithErrorHandling();
+
+  const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS;
+
   
 
 
@@ -27,13 +31,21 @@ const ForgotPassword: React.FC = () => {
     const resendRequest = {
       email: emailAddress
     };
-    const requestSuccess = await sendPasswordResetCode(resendRequest);
+
+    const response = await fetch(`${serverAddress}/api/account/forgotPassword`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(resendRequest)
+    });
+
+    const requestSuccess = await handleFetchResponse(response);
   
-    if (requestSuccess) {
-      navigate('/forgot-password-confirm');
-    } else {
-    console.log("Unable to send request. User needs to try signing up or contact support.");
-    }
+    toast.success("If an account exists, a reset code will be sent to the email address you provided.");
+    navigate('/forgot-password-confirm', { state: { email: emailAddress } });
+   
+      
   };
 
 
@@ -198,21 +210,7 @@ const ForgotPassword: React.FC = () => {
                     />
 
                     <span className="absolute right-4 top-4">
-                      <svg
-                        className="fill-current"
-                        width="22"
-                        height="22"
-                        viewBox="0 0 22 22"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g opacity="0.5">
-                          <path
-                            d="M19.2516 3.30005H2.75156C1.58281 3.30005 0.585938 4.26255 0.585938 5.46567V16.6032C0.585938 17.7719 1.54844 18.7688 2.75156 18.7688H19.2516C20.4203 18.7688 21.4172 17.8063 21.4172 16.6032V5.4313C21.4172 4.26255 20.4203 3.30005 19.2516 3.30005ZM19.2516 4.84692C19.2859 4.84692 19.3203 4.84692 19.3547 4.84692L11.0016 10.2094L2.64844 4.84692C2.68281 4.84692 2.71719 4.84692 2.75156 4.84692H19.2516ZM19.2516 17.1532H2.75156C2.40781 17.1532 2.13281 16.8782 2.13281 16.5344V6.35942L10.1766 11.5157C10.4172 11.6875 10.6922 11.7563 10.9672 11.7563C11.2422 11.7563 11.5172 11.6875 11.7578 11.5157L19.8016 6.35942V16.5688C19.8703 16.9125 19.5953 17.1532 19.2516 17.1532Z"
-                            fill=""
-                          />
-                        </g>
-                      </svg>
+                    <svg className="fill-current" xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm320-280L160-640v400h640v-400L480-440Zm0-80 320-200H160l320 200ZM160-640v-80 480-400Z"/></svg>
                     </span>
                   </div>
                 </div>

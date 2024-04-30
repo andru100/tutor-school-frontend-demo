@@ -10,7 +10,6 @@ export const BackButton: React.FC<Props> = ({ goBackToDash }) => {
   const navigate = useNavigate();
 
   const handleBackToDash = () => {
-    console.log('handlebacktodash button nav called', goBackToDash)
     navigate(goBackToDash)
   };
 

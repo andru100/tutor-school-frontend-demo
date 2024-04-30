@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from "react"
-import StudentLessonCard from './StudentLessonCard.tsx';
+import LessonCard from './LessonCard.tsx';
 import CalendarCard from './CalendarCard.tsx';
 import StatsCard from "./StatsCard.tsx";
 import StudentHomeworkCard from './StudentHomeworkCard.tsx';
 import ViewStudentHomework from './ViewStudentHomework.tsx'
-import StudentAssessmentCard from './StudentAssessmentCard.tsx'
+import AssessmentCard from './AssessmentCard.tsx'
 import ViewStudentAssessments from './ViewStudentAssessments.tsx'
 import ChartTwo from './ChartTwo.tsx';
 import ChatCard from './ChatCard.tsx';
@@ -22,7 +22,6 @@ import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 const StudentDash: React.FC = ({  }) => {
 
   const { studentData, searchTerm, setUserProfileInfo } = useContext(UniversalContext);
-  console.log('studentdash called data is:', studentData)
 
 
   const navigate = useNavigate();
@@ -77,13 +76,13 @@ const StudentDash: React.FC = ({  }) => {
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <div onClick={handleViewLessons}>
-          <StudentLessonCard lessons={studentData.lessonEvents} />
+          <LessonCard lessons={studentData.lessonEvents} />
         </div>
         <div onClick={handleViewHomework}>
           <StudentHomeworkCard homework={studentData.homeworkAssignments} />
         </div>
         <div onClick={handleViewAssessments}>
-          <StudentAssessmentCard assessment={studentData.assessments} />
+          <AssessmentCard assessment={studentData.assessments} />
         </div>
         <div onClick={handleViewStats}>
           <StatsCard />

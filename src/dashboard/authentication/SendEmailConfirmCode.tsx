@@ -1,9 +1,7 @@
 import { toast } from 'react-hot-toast';
-import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
 
 
 export const sendEmailConfirmCode = async (email: string) => {
-    const { handleFetchResponse } = useFetchWithErrorHandling();
     try {
         const resendRequest = {
             email: email
@@ -17,9 +15,11 @@ export const sendEmailConfirmCode = async (email: string) => {
             body: JSON.stringify(resendRequest)
         });
 
-        await handleFetchResponse(response);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(`Failed to resend confirmation email: ${error.message}`);
+        }
 
-        console.log("Resend confirmation email successful:");
         toast.success("If the email exists, a confirmation code has been sent.");
     } catch (error) {
         console.error("Unexpected error in resending confirmation email:", error);

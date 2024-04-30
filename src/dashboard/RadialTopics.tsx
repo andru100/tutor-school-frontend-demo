@@ -18,16 +18,12 @@ const RadialTopics:  React.FC<Props> = ({ assessments, topicType, assignmentId }
       setSelectedDateId(assignmentId); // Set selectedTopic to the first topic
     }, [assessments, assignmentId]);
 
-    console.log("in radial assignmentId is", assignmentId, "selectedId: ", selectedDateId)
-
-
       let topics: string[]
       let selectedScores: Score[]
       let overallScore = 0
 
     if (assessments ) {
 
-      console.log("assessmentid before search", selectedDateId)
       const selectedAssessment = assessments.find(assessment => assessment.id === selectedDateId);
 
       if (selectedAssessment) {

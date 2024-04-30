@@ -1,8 +1,8 @@
 import toast from 'react-hot-toast';
 
 export const fetchTeacherData = async () => {
+  console.log('fetchTeacherData called');
   try {
-    console.log('fetchTeacher called');
     const accessToken = localStorage.getItem('accessToken') || null;
     const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS;
 

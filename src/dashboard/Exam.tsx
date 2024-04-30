@@ -3,11 +3,13 @@ import { Student, Assessment, StudentAssessmentAssignment, CalendarEvent } from 
 import BarChartTopicsResult from './BarChartTopicsResult.tsx';
 import RadialResult from './RadialResult.tsx';
 import toast from 'react-hot-toast';
-import { CancelButton } from './CancelButton.tsx';
+import { BackButton } from './BackButton.tsx';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 import {teacherHandleUpdateAssessment } from '/src/dashboard/UpdateTeacher.tsx';
 import { studentHandleUpdateAssessment } from '/src/dashboard/UpdateStudent.tsx';
+import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
+  
 
 interface Props {
   assignment: StudentAssessmentAssignment;
@@ -48,9 +50,9 @@ const ExamPage: React.FC = () => {
   const [isAnswerSelected, setIsAnswerSelected] = useState(false);
   const [gradedAssessment, setGradedAssessment] = useState<StudentAssessmentAssignment>();
   const [updatedStudent, setUpdatedStudent] = useState<Student>();
-  const [timerDisplay, setTimerDisplay] = useState<string>('02:00:00'); // Initialize timer display as 2 hours
-  const [elapsedTime, setElapsedTime] = useState(120 * 60); // 2 hours in seconds
-
+  const [timerDisplay, setTimerDisplay] = useState<string>('02:00:00'); 
+  const [elapsedTime, setElapsedTime] = useState(120 * 60); 
+  const { handleFetchResponse } = useFetchWithErrorHandling();
 
   useInterval(() => {
     if (elapsedTime > 0) {
@@ -83,11 +85,12 @@ const ExamPage: React.FC = () => {
             },
           });
 
+          await handleFetchResponse(response)
+
           const result = await response.json();
 
           setAssessment(result);
           toast.success('Generation successful!');
-          console.log("use effect assessment got data: ", result);
         } catch (error) {
           toast.error('An error occurred while updating the homework');
           console.error("Error fetching assessment:", error);
@@ -151,7 +154,6 @@ const ExamPage: React.FC = () => {
     } else {
       // If the student is answering the question for the first time, add a new answer
       setAnswers([...answers, { questionId, answerId }]);
-      console.log('New answers:', [...answers, { questionId, answerId }]); // Log the new answers
     }
   
     // Check if an answer is selected for the current question
@@ -185,10 +187,6 @@ const ExamPage: React.FC = () => {
     // Stop the timer when the exam is submitted
     setElapsedTime(0);
 
-    // The elapsed time in seconds is stored in the elapsedTime state
-    if (elapsedTime !== null) {
-      console.log(`Elapsed Time: ${elapsedTime} seconds`);
-    }
   
     const assignmentToSend = { ...assignment }; 
     assignmentToSend.duration = elapsedTime; 
@@ -206,8 +204,6 @@ const ExamPage: React.FC = () => {
 
       const apiUrl = serverAddress + '/api/mutation/SubmitAssessment';
 
-      console.log('assignmentToSend is', assignmentToSend);
-
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -218,7 +214,6 @@ const ExamPage: React.FC = () => {
       });
 
       const result = await response.json();
-      console.log(" returned data: ", result);
       setUpdatedStudent(result.updatedStudent);
       setGradedAssessment(result.gradedAssignment);
     } catch (error) {
@@ -278,7 +273,7 @@ const ExamPage: React.FC = () => {
         ) : (
           
           <div>
-             <CancelButton backToParent={backToParent}/>
+             <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>
           {/* Display the timer */}
           {/* <h3 className="text-xl">Time Remaining: {timerDisplay}</h3> */}
             {currentQuestionIndex === 0 ? (

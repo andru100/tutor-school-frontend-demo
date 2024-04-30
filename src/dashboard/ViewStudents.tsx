@@ -1,118 +1,79 @@
-import React from 'react'
-import TeacherStudentDash from "./ViewTeacherStudentDash"
-import { useState, useEffect, useContext } from "react"
-import { Student} from "./types";
-import { BackButton } from './BackButton';
-import { useLocation } from 'react-router-dom';
+import React from 'react';
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
+import { Student } from "./types";
+import { BackButton } from './BackButton';
+import Breadcrumb from '/src/dashboard/Breadcrumb'
 import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 
-
 const ViewStudents: React.FC = () => {
-  const [page, setPage] = useState('default')
-  const { teacherData, searchTerm , setStudentData, goBackToDash} = useContext(UniversalContext);
-  const studentsData = teacherData?.students
-  const [studentID, setStudentID] = useState("");
+  const { teacherData, searchTerm, setStudentData, goBackToDash } = useContext(UniversalContext);
+  const studentsData = teacherData?.students;
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
-
   const navigate = useNavigate();
 
   useEffect(() => {
-    setFilteredStudents(studentsData?.filter(student => student.name && student.name.toLowerCase().includes(searchTerm.toLowerCase())));
-  }, [searchTerm]);
-
-
+    setFilteredStudents(studentsData?.filter(student => student.name.toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [searchTerm, studentsData]);
 
   const handleViewButtonClick = (id: string) => {
-    setStudentID(id);
-    setPage('view');
+    const student = filteredStudents.find(student => student.studentId === id);
+    if (student) {
+      setStudentData(student);
+      navigate('/teacher-student-dashboard');
+    }
   };
 
-  switch (page) {
-    case "create":
-      break;
-    case 'view':
-      const student = filteredStudents.find(student => student.studentId === studentID);
-      if (student) {
-        console.log("found student sending too viewstudentdash", student)
-        setStudentData(student)
-        navigate('/teacher-student-dashboard');
-      }
-    break;
-    
-    default :
-      return  (
-        <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-          <BackButton goBackToDash={goBackToDash}/>
-          <div className="flex flex-col">  
-            <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6">  
-              <div className="p-2.5 xl:p-5">
-                <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-                  Students
-                </h4>
-              </div>
+  return (
+    <>
+      <Breadcrumb pageName={"Students"} />
+      <div className="flex flex-col gap-10">
+        {/* Row 1 with 3 columns */}
+        <div className="flex flex-row justify-between items-center">
+          <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
+          <div className="flex-1 flex justify-center">
+          </div>
+          <div className="ml-auto"></div>
+        </div>
+
+        {/* Row 2 for Student Table */}
+        <div className="row-start-2 col-span-full">
+          <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+            <div className="max-w-full overflow-x-auto">
+              <table className="w-full table-auto">
+                <thead>
+                  <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                    <th className="py-4 px-4 font-medium text-black dark:text-white">Name</th>
+                    <th className="py-4 px-4 font-medium text-black dark:text-white">Stream</th>
+                    <th className="py-4 px-4 font-medium text-black dark:text-white">Ungraded</th>
+                    <th className="py-4 px-4 font-medium text-black dark:text-white">Last Score</th>
+                    <th className="py-4 px-4 font-medium text-black dark:text-white">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredStudents.map((student: Student) => (
+                    <tr key={student.studentId}>
+                      <td className="py-5 px-4">{student.name}</td>
+                      <td className="py-5 px-4">{student.stream}</td>
+                      <td className="py-5 px-4">{student.homeworkAssignments?.filter(h => h.isSubmitted && !h.isGraded).length}</td>
+                      <td className="py-5 px-4">4.8%</td>
+                      <td className="py-5 px-4">
+                        <button
+                          onClick={() => handleViewButtonClick(student.studentId)}
+                          className="inline-flex items-center justify-center rounded-full bg-primary py-2 px-6 text-center font-medium text-white hover:bg-opacity-90">
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-          {filteredStudents.map((student: Student) => 
-              <div key={student.studentId} className="flex flex-col">
-                
-                <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6">
-                  <div className="p-2.5 text-center xl:p-5">
-                    <h5 className="text-sm font-medium uppercase xsm:text-base">
-                      Name
-                    </h5>
-                  </div>
-                  <div className="p-2.5 text-center xl:p-5">
-                    <h5 className="text-sm font-medium uppercase xsm:text-base">
-                      Stream
-                    </h5>
-                  </div>
-                  <div className="hidden p-2.5 text-center sm:block xl:p-5">
-                    <h5 className="text-sm font-medium uppercase xsm:text-base">
-                      Ungraded
-                    </h5>
-                  </div>
-                  <div className="hidden p-2.5 text-center sm:block xl:p-5">
-                    <h5 className="text-sm font-medium uppercase xsm:text-base">
-                      Last Score
-                    </h5>
-                  </div> 
-                </div>
-
-                <div className="grid grid-cols-3 border-b border-stroke dark:border-strokedark sm:grid-cols-6">
-      
-                  <div className="flex items-center justify-center p-2.5 xl:p-5">
-                    <p className="text-black dark:text-white">{student.name}</p>
-                  </div>
-      
-                  <div className="flex items-center justify-center p-2.5 xl:p-5">
-                  `<p className="text-black dark:text-white">{student.stream}</p>
-                  </div>
-      
-                  <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-                    <p className="text-black dark:text-white">{filteredStudents.filter(student => student.homeworkAssignments?.some(homework => homework.isSubmitted && !homework.isGraded)).length}</p>
-                  </div>
-      
-                  <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-                    <p className="text-meta-5">4.8%</p>
-                  </div>
-                  <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-                    <button
-                      onClick={() => handleViewButtonClick(student.studentId)} 
-                      className="inline-flex items-center justify-center rounded-full bg-primary py-2 px-6 text-center font-medium text-white hover:bg-opacity-90 lg:px-4 xl:px-6">
-                      view
-                    </button>   
-                  </div>
-                    <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-                  </div>
-                </div>
-            </div>
-          )}
         </div>
-      );
-      
-  }
-}
+      </div>
+    </>
+  );
+};
 
 export default ViewStudents;
-

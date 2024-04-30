@@ -1,10 +1,10 @@
 import React, { useState, useContext } from "react"
 import { Student, LessonEvent, CalendarEvent } from './types'
-import { CancelButton } from './CancelButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
 import { teacherHandleUpdateLesson } from '/src/dashboard/UpdateTeacher.tsx';
+import { BackButton } from "./BackButton";
 
 
 
@@ -41,7 +41,6 @@ const CreateLesson: React.FC = () => {
     event.preventDefault();
 
     try {
-      console.log("sending: ", lessonData)
       const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
 
       const apiUrl = serverAddress + '/api/mutation/AddLessonEvent';
@@ -57,7 +56,6 @@ const CreateLesson: React.FC = () => {
       });
 
       const result = await response.json();
-      console.log('Mutation response:', result);
       teacherHandleUpdateLesson(result.lessonEvents, result.calendarEvents, setTeacherData)
       toast.success('Lesson created successfully');
       navigate(backToParent)
@@ -81,6 +79,7 @@ const CreateLesson: React.FC = () => {
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+            <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>
             <div className="flex flex-col">  
               <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6">  
                 <div className="p-2.5 xl:p-5">
@@ -88,7 +87,6 @@ const CreateLesson: React.FC = () => {
                     Create Lesson
                   </h4>
                 </div>
-                <CancelButton backToParent={backToParent}/>
               </div>
             </div>
 

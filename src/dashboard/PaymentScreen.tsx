@@ -29,8 +29,6 @@ export const CheckoutForm: React.FC = () => {
             method: "POST",
           });
           const data = await response.json();
-          console.log(data); // Log the data received
-          console.log(data.clientSecret); // Log the client secret
           return data.clientSecret;
         } catch (error) {
           console.error(error);

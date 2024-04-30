@@ -31,8 +31,6 @@ export const teacherHandleUpdateHomework = (update: HomeworkAssignment[], calend
       homeworkAssignments: [...updatedAssignments, ...newAssignments],
       calendarEvents: [...updatedCalendarEvents, ...newEvents]
     };
-    console.log("updated homework:", updatedData.homeworkAssignments);
-    console.log("updated calendar events:", updatedData.calendarEvents);
     return updatedData;
   });
 };
@@ -47,8 +45,6 @@ export const teacherHandleDeleteHomework = async (id: number, setTeacherData: Re
         homeworkAssignments: updatedAssignments,
         calendarEvents: updatedCalendarEvents
       };
-      console.log("updated homework:", updatedData.homeworkAssignments);
-      console.log("updated calendar events:", updatedData.calendarEvents);
       return updatedData;
     });
    } catch (error) {
@@ -96,20 +92,13 @@ export const teacherHandleUpdateAssessment = (update: StudentAssessmentAssignmen
         return event;
       }
     });
-    const newEvents = calendarData.filter(updateEvent => !prevData?.calendarEvents?.find(event => event.id === updateEvent.id));
-    console.log("updatedassignments is:", updatedAssignments);
-    console.log("newAssignments is:", newAssignments);
-    console.log("updatedCalendarEvents:", updatedCalendarEvents);
-    console.log("newEvents:", newEvents);     
+    const newEvents = calendarData.filter(updateEvent => !prevData?.calendarEvents?.find(event => event.id === updateEvent.id));    
     
     const updatedData = {
       ...prevData,
       assessments: [...updatedAssignments, ...newAssignments],
       calendarEvents: [...updatedCalendarEvents, ...newEvents]
     };
-    console.log("updated assessments:", updatedData.assessments);
-    console.log("updated calendar events:", updatedData.calendarEvents);
-    console.log("updatedData:", updatedData);
     return updatedData; 
   });
 };
@@ -124,7 +113,6 @@ export const teacherHandleDeleteAssessment = async (id: number, setTeacherData: 
         assessments: updatedAssignments,
         calendarEvents: updatedCalendarEvents
       };
-      console.log("updated assessments:", updatedData.assessments);
       return updatedData;
     });
   } catch (error) {
@@ -159,7 +147,6 @@ export const teacherHandleUpdateLesson = (lessonData: LessonEvent[], calendarDat
       lessonEvents: [...updatedLessons, ...newLessons],
       calendarEvents: [...updatedCalendarEvents, ...newCalendarEvents]
     };
-    console.log("updated lessons:", updatedData.lessonEvents);
     return updatedData;
   });
 };
@@ -174,7 +161,6 @@ export const teacherHandleDeleteLesson = async (id: number, setTeacherData: Reac
         lessonEvents: updatedLessons,
         calendarEvents: updatedCalendarEvents
       };
-      console.log("teacherHandledelete triggered: have deleted lesson data from prop calendar, updated lessons:", updatedData.lessonEvents, "updated calendareEvents:",  updatedData.calendarEvents);
       return updatedData;
     });
   } catch (error) {

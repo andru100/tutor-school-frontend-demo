@@ -24,7 +24,6 @@ const Calendar:  React.FC = () => {
   const [eventsByDate, setEventsByDate] = useState<{ [key: string]: CalendarEvent[] }>({});
 
   useEffect(() => {
-    console.log("in calendar have detected change to calendar events: ", events)
     if (Array.isArray(events)) {
       const eventsObj = events.reduce((acc, event) => {
         const eventDate = new Date(event.date);

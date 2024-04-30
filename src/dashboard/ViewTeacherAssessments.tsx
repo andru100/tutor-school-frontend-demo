@@ -11,6 +11,8 @@ import {CalendarEvent, Student, StudentAssessmentAssignment} from './types'
 import { BackButton } from "./BackButton";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import toast from 'react-hot-toast';
+
 
 
 
@@ -68,6 +70,10 @@ const completedAssessments = selectedStudent
     ) ?? null;
 
     const handleNavigateCreate = () => {
+      if (!selectedStudent) {
+        toast.error('You must select a student first');
+        return
+      }
       navigate('/create-assessment', { state: { selectedStudent, backToParent: '/view-teacher-assessments' } });
     };
   

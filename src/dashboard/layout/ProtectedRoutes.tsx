@@ -16,12 +16,8 @@ const ProtectedRoutes: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   const fetchTeacherData = async () => {
     try {
-      console.log('fetchTeacher called');
       const accessToken = localStorage.getItem('accessToken') || null;
       const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS;
-  
-      console.log('Access Token:', accessToken);
-      console.log('Server Address:', serverAddress);
   
       const response = await fetch(serverAddress + "/api/query/getTeacher", {
         method: 'GET',
@@ -30,8 +26,6 @@ const ProtectedRoutes: React.FC<ProtectedRouteProps> = ({ children }) => {
           'Authorization': `Bearer ${accessToken}`
         }
       });
-  
-      console.log('Fetch response received:', response);
   
       if (response.status === 200) {
         const data = await response.json();
@@ -70,9 +64,9 @@ const ProtectedRoutes: React.FC<ProtectedRouteProps> = ({ children }) => {
         const roleData = await roleCheck.json();
         console.log('role check response is', roleData);
         setRole(roleData.entrypoint);
-
+          
         if (roleData.entrypoint === 'CreateRole') {
-          navigate('/choose-subscription');
+          navigate('/create-role');
         } else if (roleData.entrypoint === 'ConfirmEmail') {
           navigate('/confirm-email');
         } else if (roleData.entrypoint === 'Teacher') {

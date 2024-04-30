@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useContext } from "react"
 import { HomeworkAssignment, CalendarEvent } from './types'
-import { CancelButton } from './CancelButton.tsx';
+import { BackButton } from "./BackButton";
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
@@ -32,7 +32,6 @@ const EditHomework: React.FC = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     
-    console.log("sending: ", homeworkData)
     try {
       const accessToken = localStorage.getItem('accessToken') || null;
     
@@ -50,7 +49,6 @@ const EditHomework: React.FC = () => {
       });
 
       const result = await response.json();
-      console.log('Mutation response:', result);
       teacherHandleUpdateHomework(result.homeworkAssignments, result.calendarEvents, setTeacherData )
       toast.success('Homework successfully updated');
       navigate(backToParent)
@@ -59,8 +57,6 @@ const EditHomework: React.FC = () => {
       console.error('Error updating homework:', error);
     }
   };
-
-
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -71,21 +67,10 @@ const EditHomework: React.FC = () => {
     }));
   };
 
-  const handleStreamInputChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
-
-    console.log('Name:', name);
-    console.log('Value:', value);
-    setHomeworkData((prevData) => ({
-      ...prevData,
-      [name]: HomeworkStream[value as keyof typeof HomeworkStream],
-    }));
-  };
-
-
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+            <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>
             <div className="flex flex-col">  
               <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6">  
                 <div className="p-2.5 xl:p-5">
@@ -93,7 +78,6 @@ const EditHomework: React.FC = () => {
                     View Homework
                   </h4>
                 </div>
-                <CancelButton backToParent={backToParent}/>
               </div>
             </div>
 
