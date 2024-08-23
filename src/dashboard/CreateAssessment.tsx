@@ -3,15 +3,13 @@ import { useState, useEffect, useContext } from "react"
 import { Student, StudentAssessmentAssignment, CalendarEvent } from './types'
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import { teacherHandleUpdateAssessment } from '/src/dashboard/UpdateTeacher.tsx';
-import { BackButton } from "./BackButton";
-
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
 
 
 interface Props {
   selectedStudent: Student;
-  backToParent: string;
 }
 
 const AssignAssessment: React.FC = () => {
@@ -19,8 +17,7 @@ const AssignAssessment: React.FC = () => {
   const { role, setTeacherData }  = useContext(UniversalContext);
   
   const location = useLocation();
-  const { selectedStudent, backToParent } = location.state as Props;
-
+  const { selectedStudent } = location.state as Props;
   const [assessmentData, setAssessmentData] = useState<StudentAssessmentAssignment>({ 
     id: null,
     title: "",
@@ -48,7 +45,6 @@ const AssignAssessment: React.FC = () => {
       const accessToken = localStorage.getItem('accessToken') || null;
     
       const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
-
       const apiUrl = serverAddress + '/api/mutation/AssignAssessment';
 
       const response = await fetch(apiUrl, {
@@ -56,15 +52,15 @@ const AssignAssessment: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`
-          
         },
-        body: JSON.stringify( assessmentData ),
+        body: JSON.stringify(assessmentData),
       });
 
-      const result = await response.json();
-      teacherHandleUpdateAssessment(result.assessments, result.calendarEvents, setTeacherData);
+      const jsonResponse = await response.json();
+
+      teacherHandleUpdateAssessment(jsonResponse.assessments, jsonResponse.calendarEvents, setTeacherData);
       toast.success('Assessment assigned successfully');
-      navigate(backToParent)
+      navigate(-1);
     } catch (error) {
       toast.error('An error occurred while creating the assessment');
       console.error('Error creating assessment:', error);
@@ -97,7 +93,7 @@ const AssignAssessment: React.FC = () => {
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-          <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>  
+          <div className="ml-auto"></div>  
             <div className="flex flex-col">  
               <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6">  
                 <div className="p-2.5 xl:p-5">

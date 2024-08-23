@@ -1,14 +1,10 @@
 import { useNavigate } from "react-router-dom";
-
-interface Props {
-    backToParent: string;
-  }
     
-export const CancelButton: React.FC<Props> = ({ backToParent }) => {
+export const CancelButton: React.FC<Props> = () => {
     const navigate = useNavigate()
 
     const handleCancel = () => {
-        navigate(backToParent)
+        navigate(-1)
     }
 
     return (

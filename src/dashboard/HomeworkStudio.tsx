@@ -1,24 +1,23 @@
 import React, { useState, useContext } from 'react';
-import { HomeworkAssignment, HomeworkUploadTxtData, CalendarEvent } from './types';
+import { HomeworkAssignment, HomeworkUploadTxtData } from './types';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import Breadcrumb from './Breadcrumb';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import { teacherHandleUpdateHomework } from '/src/dashboard/UpdateTeacher.tsx';
 import { studentHandleUpdateHomework } from '/src/dashboard/UpdateStudent.tsx';
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
 
 interface Props {
   homework: HomeworkAssignment;
-  backToParent: string;
 }
 
 const HomeworkStudio: React.FC = () => {
   const { role, setTeacherData, setStudentData }  = useContext(UniversalContext);
-
   const location = useLocation();
-  const { homework, backToParent } = location.state as Props;
-  const navigate = useNavigate()
+  const { homework } = location.state as Props;
+  const navigate = useNavigate();
   const [textSubmission, setTextSubmission] = useState('');
-
 
   const handleTextSubmit = async () => {
     const accessToken = localStorage.getItem('accessToken') || null;
@@ -40,28 +39,20 @@ const HomeworkStudio: React.FC = () => {
         body: JSON.stringify(data),
       });
 
-      if (response.ok) {
-        
-        const result = await response.json();
-        console.log('reesponse is', result)
-        if (role === 'Teacher') {
-          teacherHandleUpdateHomework(result.homeworkAssignments, result.calendarEvents, setTeacherData )
-        } else if (role === 'Student') {
-          studentHandleUpdateHomework(result.homeworkAssignments, result.calendarEvents, setStudentData);
-        } else {
-          throw new Error('unable to ascertain role, role is: ', role);
-        }
-        toast.success('Homework submitted successfully');
-        navigate(backToParent)
-      } else {
-        toast.error('Failed to submit text');
+      await handleFetchResponse(response, navigate);
+      const result = await response.json();
+      if (role === 'Teacher') {
+        teacherHandleUpdateHomework(result.homeworkAssignments, result.calendarEvents, setTeacherData);
+      } else if (role === 'Student') {
+        studentHandleUpdateHomework(result.homeworkAssignments, result.calendarEvents, setStudentData);
       }
+      toast.success('Homework submitted successfully');
+      navigate(-1);
     } catch (error) {
       toast.error('An error occurred during submission');
       console.error('Error submitting text:', error);
     }
   };
-
 
   const handleUploadDocument = async (id: number)  => {
     try {
@@ -84,22 +75,18 @@ const HomeworkStudio: React.FC = () => {
             },
             body: formData,
           });
-  
-          if (response.ok) {
-            const updated = await response.json();
-            if (role === 'Teacher') {
-              teacherHandleUpdateHomework(updated.homeworkAssignments, updated.calendarEvents, setTeacherData);
-            } else if (role === 'Student') {
-              studentHandleUpdateHomework(updated.homeworkAssignments, updated.calendarEvents, setStudentData);
-            } else {
-              throw new Error('unable to ascertain role, role is: ', role);
-            }
-            
-            toast.success('Document uploaded successfully');
-            navigate(backToParent)
-          } else {
-            toast.error('Error uploading document');
+
+          await handleFetchResponse(response, navigate);
+          const updated = await response.json();
+          if (role === 'Teacher') {
+            teacherHandleUpdateHomework(updated.homeworkAssignments, updated.calendarEvents, setTeacherData);
+          } else if (role === 'Student') {
+            studentHandleUpdateHomework(updated.homeworkAssignments, updated.calendarEvents, setStudentData);
           }
+          
+          toast.success('Document uploaded successfully');
+          navigate(-1);
+          
         } else {
           toast.error('No document selected');
         }
@@ -133,11 +120,9 @@ const HomeworkStudio: React.FC = () => {
             },
             body: formData,
           });
-          if (response.ok) {
-            toast.success('Image uploaded successfully');
-          } else {
-            toast.error('Error uploading image');
-          }
+
+          await handleFetchResponse(response, navigate);
+          toast.success('Image uploaded successfully');
         } else {
           toast.error('No image selected');
         }
@@ -149,63 +134,68 @@ const HomeworkStudio: React.FC = () => {
     }
   };
 
-  const handleCancel = () => {
-    navigate(backToParent)
-  }
-
-  const BackToHomeworkButton = () => {
-    return (
-      <button type="button" onClick={handleCancel} className="w-full flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 transition-colors duration-200 bg-white border rounded-lg gap-x-2 sm:w-auto dark:hover:bg-gray-800 dark:bg-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:border-gray-700">
-        <svg className="w-5 h-5 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
-        </svg>
-        <span>Go back</span>
-      </button>
-    );
-  };
-
+  
   return (
-    <>
-      <div>
-      <div className="mb-6">
-       
-        <h2 className="font-medium text-black dark:text-white">Title</h2>
-        <h2 >{homework.title}</h2>
-        <BackToHomeworkButton/>
+    <div className="container mx-auto px-4 py-8">
+      <div className="bg-white dark:bg-boxdark rounded-sm border border-stroke dark:border-strokedark shadow-default">
+        <div className="border-b border-stroke dark:border-strokedark py-4 px-6.5">
+          <Breadcrumb pageName={"Homework Studio"}/>
+        </div>
+        
+        <div className="p-6.5">
+          <div className="mb-4.5 bg-gray-2 dark:bg-meta-4 p-4 rounded-sm">
+            <h4 className="text-xl font-semibold text-black dark:text-white mb-2.5">
+              {homework.title}
+            </h4>
+            <h5 className="text-lg font-medium text-black dark:text-white mb-2.5">
+              Instructions:
+            </h5>
+            <p className="text-black dark:text-white">
+              {homework.description}
+            </p>
+          </div>
 
-        <h2 className="font-medium text-black dark:text-white">Instructions</h2>
-        <p>{homework.description}</p>
-      </div>
+          <div className="mb-4.5">
+            <h4 className="text-xl font-semibold text-black dark:text-white mb-2.5">
+              Submit Your Work
+            </h4>
+            <div className="flex flex-col sm:flex-row gap-3 mb-4.5">
+              <button 
+                onClick={() => handleUploadImage(homework.id ?? 0)}
+                className="flex-1 inline-flex items-center justify-center rounded-md bg-primary py-2 px-6 text-center font-medium text-white hover:bg-opacity-90"
+              >
+                Upload Image
+              </button>
+              <button 
+                onClick={() => handleUploadDocument(homework.id ?? 0)}
+                className="flex-1 inline-flex items-center justify-center rounded-md bg-primary py-2 px-6 text-center font-medium text-white hover:bg-opacity-90"
+              >
+                Upload Document
+              </button>
+            </div>
+          </div>
 
-      <div className="grid grid-cols-1 gap-4">
-        <div>
-          <button className="inline-flex items-center justify-centIer rounded-full bg-primary py-2 px-6 text-left font-medium text-white hover:bg-opacity-90 lg:px-4 xl:px-6" onClick={() => handleUploadImage(homework.id ?? 0)}>
-            Upload Document
-          </button>
-          <button className="inline-flex items-center justify-center rounded-full bg-primary py-2 px-6 text-left font-medium text-white hover:bg-opacity-90 lg:px-4 xl:px-6" onClick={() => handleUploadDocument(homework.id ?? 0)}>
-            Upload Image
-          </button>
-        </div>  
-        <div>
-          <label className="mb-2.5 block text-black dark:text-white">
-            Submission Content
-          </label>
-          <textarea
-            rows={6}
-            name="submissionContent"
-            value={textSubmission}
-            onChange={(e) => setTextSubmission(e.target.value)}
-            placeholder="Type your message"
-            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-          ></textarea>
-          <button onClick={handleTextSubmit} className="mt-2 p-2 text-white bg-primary rounded">
-            Submit Text
-          </button>
+          <div>
+            <label className="mb-2.5 block font-medium text-black dark:text-white">
+              Text Submission
+            </label>
+            <textarea
+              rows={6}
+              value={textSubmission}
+              onChange={(e) => setTextSubmission(e.target.value)}
+              placeholder="Type your homework submission here..."
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            ></textarea>
+            <button 
+              onClick={handleTextSubmit} 
+              className="mt-4.5 inline-flex items-center justify-center rounded-md bg-primary py-2 px-6 text-center font-medium text-white hover:bg-opacity-90"
+            >
+              Submit Text
+            </button>
+          </div>
         </div>
       </div>
     </div>
-    </>
-    
   );
 };
 

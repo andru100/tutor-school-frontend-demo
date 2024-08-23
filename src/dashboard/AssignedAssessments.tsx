@@ -2,18 +2,19 @@ import { useState, useEffect, useContext } from "react"
 import {  StudentAssessmentAssignment, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import { teacherHandleDeleteAssessment } from '/src/dashboard/UpdateTeacher.tsx';
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
+import { useNavigate } from 'react-router-dom';
+
 
 
 interface Props {
     assessment: StudentAssessmentAssignment[];
-    backToParent: string;
 };
 
 
-const AssignedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
+const AssignedAssessments: React.FC<Props> = ({assessment}) => {
   const [upcomingAssessments, setUpcomingAssessments] = useState(assessment);
 
   const { role }  = useContext(UniversalContext);
@@ -25,21 +26,20 @@ const AssignedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
   const navigate = useNavigate();
 
   const handleViewAssessment = ( assessment: StudentAssessmentAssignment) => {
-    navigate('/view-assessment', { state: { assessment, backToParent } });
+    navigate('/view-assessment', { state: { assessment } });
   };
 
   const handleEditAssessment = ( assessment: StudentAssessmentAssignment) => {
-    navigate('/edit-assessment', { state: { assessment, backToParent } });
+    navigate('/edit-assessment', { state: { assessment } });
   };
 
   const handleStartAssessment = ( assignment: StudentAssessmentAssignment) => {
-    navigate('/assessment', { state: { assignment, backToParent } });
+    navigate('/assessment', { state: { assignment } });
   };
 
 
 
   const handleDelete = async (assessmentId: number) => {
-
     try {
       const accessToken = localStorage.getItem('accessToken') || null;
     
@@ -48,32 +48,29 @@ const AssignedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
       }
       
       const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
-
       const apiUrl = serverAddress + '/api/mutation/DeleteAssessmentAssignment';
 
-      const response = await fetch(apiUrl, {
+      const response = await handleFetchResponse(apiUrl, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
-      },
-        body: JSON.stringify(input ),
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(input),
       });
 
-      if (!response.ok) {
-        toast.error('Failed to delete assessment assignment');
-        throw new Error('Failed to delete assessment assignment, response is ' + JSON.stringify(response));
-      }
+      await handleFetchResponse(response, navigate)
 
       if (role === 'Teacher') {
         teacherHandleDeleteAssessment(assessmentId);
       } else {
-        throw new Error('unable to ascertain role, role is: ', role);
+        throw new Error('unable to ascertain role, role is: ' + role);
       }
       toast.success('Assessment deleted successfully');
 
     } catch (error) {
       console.error('Error deleting assessment:', error);
+      toast.error('Failed to delete assessment assignment');
     }
   };
 

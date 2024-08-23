@@ -206,10 +206,10 @@ module.exports = {
         65: '.65',
       },
       backgroundImage: {
-        video: "url('/src/dashboard/images/video/video.png')",
+        video: "url('/src/images/video/video.png')",
       },
       content: {
-        'icon-copy': 'url("/src/dashboard/images/icon/icon-copy-alt.svg")',
+        'icon-copy': 'url("/src/images/icon/icon-copy-alt.svg")',
       },
       transitionProperty: { width: 'width', stroke: 'stroke' },
       borderWidth: {

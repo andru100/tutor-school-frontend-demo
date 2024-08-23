@@ -2,34 +2,33 @@ import { useState, useEffect, useContext} from "react"
 import { HomeworkAssignment, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';  
-import { useNavigate } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import { teacherHandleDeleteHomework } from '/src/dashboard/UpdateTeacher.tsx';
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
+import { useNavigate } from 'react-router-dom';
 
 
 interface Props {
     homework: HomeworkAssignment[];
-    backToParent: string;
 };
 
-const AssignedHomework: React.FC<Props> = ({homework, backToParent}) => {
+const AssignedHomework: React.FC<Props> = ({homework}) => {
 
   const { role, setTeacherData }  = useContext(UniversalContext);
-  
   const [upcomingHomework, setUpcomingHomework] = useState(homework);
 
   const navigate = useNavigate();
 
   const handleViewHomework = ( homework: HomeworkAssignment) => {
-    navigate('/view-homework', { state: { homework, backToParent } });
+    navigate('/view-homework', { state: { homework } });
   };
 
   const handleEditHomework = ( homework: HomeworkAssignment) => {
-    navigate('/edit-homework', { state: { homework, backToParent } });
+    navigate('/edit-homework', { state: { homework } });
   };
 
   const handleViewHomeworkStudio = ( homework: HomeworkAssignment) => {
-    navigate('/homework-studio', { state: { homework, backToParent } });
+    navigate('/homework-studio', { state: { homework } });
   };
   
 
@@ -39,7 +38,6 @@ const AssignedHomework: React.FC<Props> = ({homework, backToParent}) => {
 
 
   const handleDelete = async (homeworkId: number) => {
-
     try {
       const accessToken = localStorage.getItem('accessToken') || null;
     
@@ -48,32 +46,29 @@ const AssignedHomework: React.FC<Props> = ({homework, backToParent}) => {
       }
 
       const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
-
       const apiUrl = serverAddress + '/api/mutation/DeleteHomeworkAssignment';
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
-      },
-        body: JSON.stringify( input ),
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(input),
       });
 
-      if (!response.ok) {
-        toast.error('Failed to delete homework assignment');
-        throw new Error('Failed to delete homework response is ' + JSON.stringify(response));
-      }
+      await handleFetchResponse(response, navigate)
       
       if (role === 'Teacher') {
         teacherHandleDeleteHomework(homeworkId, setTeacherData);
-      }  else {
-        throw new Error('unable to ascertain role, role is: ', role);
+      } else {
+        throw new Error('unable to ascertain role, role is: ' + role);
       }
       toast.success('Homework assignment deleted successfully');
         
     } catch (error) {
       console.error('Error deleting homework:', error);
+      toast.error('Failed to delete homework assignment');
     }
   };
 

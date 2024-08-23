@@ -1,5 +1,5 @@
 import { Teacher, LessonEvent, CalendarEvent, StudentAssessmentAssignment, HomeworkAssignment} from "./types.tsx"; 
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import React from "react";
 import {useContext } from "react"
   

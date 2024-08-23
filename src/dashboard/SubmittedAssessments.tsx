@@ -3,17 +3,17 @@ import { StudentAssessmentAssignment, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import { teacherHandleDeleteAssessment } from '/src/dashboard/UpdateTeacher.tsx';
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
 
 
 
 interface Props {
     assessment: StudentAssessmentAssignment[];
-    backToParent: string;
 };
 
-const SubmittedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
+const SubmittedAssessments: React.FC<Props> = ({assessment}) => {
 
   const { role, setTeacherData }  = useContext(UniversalContext);
   
@@ -22,20 +22,15 @@ const SubmittedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
   const navigate = useNavigate(); 
 
   const handleViewAssessment = ( assessment: StudentAssessmentAssignment) => {
-    navigate('/view-assessment', { state: { assessment, backToParent } });
+    navigate('/view-assessment', { state: { assessment } });
   };
   
   const handleEditAssessment = ( assessment: StudentAssessmentAssignment) => {
-    navigate('/edit-assessment', { state: { assessment, backToParent } });
+    navigate('/edit-assessment', { state: { assessment } });
   };
 
-  useEffect(() => {
-    setUpcomingAssessment(assessment);
-  }, [assessment]);
-
-
+  
   const handleDelete = async (assessmentId: number) => {
-
     try {
       const accessToken = localStorage.getItem('accessToken') || null;
     
@@ -44,34 +39,40 @@ const SubmittedAssessments: React.FC<Props> = ({assessment, backToParent}) => {
       }
 
       const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
-
-      const apiUrl = serverAddress + '/api/mutation/DeleteAssessmentAssignmet';
+      const apiUrl = serverAddress + '/api/mutation/DeleteAssessmentAssignment';
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
-      },
-        body: JSON.stringify({ input }),
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(input),
       });
 
-      if (response.status === 200) {
-        if (role === 'Teacher') {
-          teacherHandleDeleteAssessment(assessmentId, setTeacherData);
-        } else {
-          throw new Error('unable to ascertain role, role is: ', role);
-        }
-        toast.success("Delete successful");
+      await handleFetchResponse(response, navigate)
+      
+      if (role === 'Teacher') {
+        teacherHandleDeleteAssessment(assessmentId);
       } else {
-        console.error("Error deleting assessment, response code: ", response.status);
-        toast.error("Unable to delete assessment");
+        throw new Error('unable to ascertain role, role is: ' + role);
       }
+
+      toast.success('Assessment deleted successfully');
+      
     } catch (error) {
-      toast.error('An error occurred during deletion');
-      console.error("Error occured in handleDelete:", error);
+      console.error('Error deleting assessment:', error);
+      toast.error('Failed to delete assessment');
     }
   };
+
+
+  useEffect(() => {
+    setUpcomingAssessment(assessment);
+  }, [assessment]);
+
+
+  
 
 
 

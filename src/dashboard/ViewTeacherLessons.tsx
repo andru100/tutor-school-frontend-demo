@@ -1,14 +1,13 @@
 import { useState, useEffect, useContext } from "react"
 import { useNavigate, useLocation } from 'react-router-dom';
 import Breadcrumb from './Breadcrumb';
-import UpcomingLessons from '/src/dashboard/UpcomingLessons.tsx';
-import PreviousLessons from './PreviousLessons';
+import AssignedLessons from '/src/dashboard/AssignedLessons.tsx';
+import CompleteLessons from '/src/dashboard/CompleteLessons.tsx';
 import CreateLesson from "./CreateLesson";
 import EditLesson from "./EditLesson";
-import { BackButton } from "./BackButton";
 import { CreateButton } from "./CreateButton";
 import {Teacher, Student, LessonEvent, CalendarEvent} from './types';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import toast from 'react-hot-toast';
 
 
@@ -17,7 +16,7 @@ const ViewTeacherLessons: React.FC = () => {
 
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [filteredLessons, setFilteredLessons] = useState<LessonEvent[]>([]);
-  const { teacherData, searchTerm, goBackToDash, setGoBackToDash } = useContext(UniversalContext);
+  const { teacherData, searchTerm} = useContext(UniversalContext);
   const students = teacherData.students
   const lessons = teacherData.lessonEvents
 
@@ -29,7 +28,7 @@ const ViewTeacherLessons: React.FC = () => {
       toast.error('You must select a student first');
       return
     }
-    navigate('/create-lesson', { state: { selectedStudent, backToParent: '/view-teacher-lessons' } });
+    navigate('/create-lesson', { state: {selectedStudent} });
   };
 
   useEffect(() => {
@@ -49,7 +48,7 @@ const ViewTeacherLessons: React.FC = () => {
     ) ?? null
   : filteredLessons?.filter(lesson => lesson.isAssigned && lesson.dueDate && new Date(lesson.dueDate) > new Date()) ?? null;
 
-  const previousLessons = selectedStudent
+  const completeLessons = selectedStudent
   ? filteredLessons?.filter(lesson =>
       lesson.isAssigned &&
       lesson.dueDate && new Date(lesson.dueDate) <= new Date() &&
@@ -71,9 +70,10 @@ const ViewTeacherLessons: React.FC = () => {
           <div className="flex flex-col gap-10">
             {/* Row 1 with 3 columns */}
             <div className="flex flex-row justify-between items-center">
-              <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
+              <div className="ml-auto"></div>
               <div className="flex-1 flex justify-center">
-                <select className="w-full max-w-xs" onChange={(e) => setSelectedStudent(students.find(student => student.studentId === e.target.value) || null)}>
+                <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/4 p-2.5"  
+                  onChange={(e) => setSelectedStudent(students.find(student => student.studentId === e.target.value) || null)}>
                   <option value="">Select a student</option>
                   {students?.map(student => (
                     <option key={student.studentId} value={student.studentId}>{student.name}</option>
@@ -86,12 +86,12 @@ const ViewTeacherLessons: React.FC = () => {
       
             {/* Row 2 for UpcomingLessons */}
             <div className="row-start-2 col-span-full">
-              <UpcomingLessons lessons={upcomingLessons}  backToParent={'/view-teacher-lessons'} />
+              <AssignedLessons lessons={upcomingLessons}/>
             </div>
       
-            {/* Row 3 for PreviousLessons */}
+            {/* Row 3 for CompleteLessons */}
             <div className="row-start-3 col-span-full">
-              <PreviousLessons lessons={previousLessons} backToParent={'/view-teacher-lessons'} />
+              <CompleteLessons lessons={completeLessons}/>
             </div>
           </div>
         </>

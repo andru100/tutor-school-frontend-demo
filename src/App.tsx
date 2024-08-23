@@ -1,12 +1,17 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { UniversalProvider } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalProvider } from '/src/context/UniversalContext.tsx';
+import Modal from 'react-modal';
 
-const DefaultLayout = lazy(() => import('./dashboard/layout/DefaultLayout.tsx'));
+const DefaultLayout = lazy(() => import('./layout/DefaultLayout.tsx'));
 
 function App() {
+  useEffect(() => {
+    Modal.setAppElement('#root');
+  }, []);
+
   return (
     <>
       <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
@@ -15,7 +20,6 @@ function App() {
             <Suspense fallback={<div>Loading...</div>}>
               <Routes>
                 <Route path="/*" element={<DefaultLayout />} />
-                {/* Add more routes as needed */}
               </Routes>
             </Suspense>
           </Router>

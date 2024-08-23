@@ -1,16 +1,15 @@
 import React from 'react'
 import { useState, useContext } from "react"
 import { StudentAssessmentAssignment, CalendarEvent } from './types'
-import { BackButton } from "./BackButton";
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import { teacherHandleUpdateAssessment } from '/src/dashboard/UpdateTeacher.tsx';
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
 
 
 
 interface Props {
-  backToParent: string;
   assessment: StudentAssessmentAssignment;
 }
 
@@ -19,7 +18,7 @@ const EditAssessment: React.FC = () => {
   const { role, setTeacherData }  = useContext(UniversalContext);
   
   const location = useLocation();
-  const { assessment, backToParent } = location.state as Props;
+  const { assessment } = location.state as Props;
   const [assessmentData, setAssessmentData] = useState<StudentAssessmentAssignment>(assessment);
   const navigate = useNavigate();
 
@@ -27,29 +26,29 @@ const EditAssessment: React.FC = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     try {
       const accessToken = localStorage.getItem('accessToken') || null;
     
       const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
-
       const apiUrl = serverAddress + '/api/mutation/UpdateAssignment';
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
-      },
-        body: JSON.stringify( assessmentData ),
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(assessmentData),
       });
 
-      const result = await response.json();
-      teacherHandleUpdateAssessment(result.assessments, result.calendarEvents, setTeacherData)
+      const jsonResponse = await response.json();
+      teacherHandleUpdateAssessment(jsonResponse.assessments, jsonResponse.calendarEvents, setTeacherData);
       toast.success('Assessment successfully updated');
-      navigate(backToParent)
-      } catch (error) {
-      console.error('Error creating assessment:', error);
+      navigate(-1);
+    } catch (error) {
+      toast.error('Error updating assessment');
+      console.error('Error updating assessment:', error);
     }
   };
 
@@ -67,7 +66,7 @@ const EditAssessment: React.FC = () => {
 
     return (
       <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-            <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>  
+            <div className="ml-auto"></div>  
               <div className="flex flex-col">  
                 <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6">  
                   <div className="p-2.5 xl:p-5">

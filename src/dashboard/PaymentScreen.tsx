@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useLocation , useNavigate} from 'react-router-dom';
-import { BackButton } from "./BackButton";
 import {loadStripe} from '@stripe/stripe-js';
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
 import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout
@@ -13,7 +13,7 @@ interface Props {
  }
 
  
-
+//TODO delete whole component as is unused
 export const CheckoutForm: React.FC = () => {
     const location = useLocation();
     const { goBackToDash } = location.state as Props;
@@ -40,7 +40,6 @@ export const CheckoutForm: React.FC = () => {
   
     return (
         <>
-            <BackButton goBackToDash={goBackToDash}/>
             <div className="w-full max-w-full rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <div id="checkout">
                     <div >
@@ -78,7 +77,7 @@ export const Return: React.FC<Props> = ({goBackToDash}) => {
 
     if (status === 'open') {
         return (
-            navigate(goBackToDash)
+            navigate("/signin") // was back to dash but deleted. this whole page is unused so wont bother
           //setPage('paymentreturn')
         )
     }

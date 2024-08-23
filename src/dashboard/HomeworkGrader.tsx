@@ -1,16 +1,16 @@
 import React from 'react'
 import { useState, useContext } from "react"
 import { HomeworkAssignment, CalendarEvent } from './types.tsx'
-import { BackButton } from './BackButton.tsx';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import { teacherHandleUpdateHomework} from '/src/dashboard/UpdateTeacher.tsx';
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
+
 
 
 
 interface Props {
-  backToParent: string;
   homework: HomeworkAssignment;
 }
 
@@ -21,7 +21,7 @@ const HomeworkGrader: React.FC = () => {
 
   
   const location = useLocation();
-  const { backToParent, homework } = location.state as Props;
+  const {homework} = location.state as Props;
   const [homeworkData, setHomeworkData] = useState<HomeworkAssignment>(homework);
 
   const navigate = useNavigate();
@@ -34,32 +34,30 @@ const HomeworkGrader: React.FC = () => {
     homeworkData.isGraded = true;
     homeworkData.gradedDate = new Date();
     try {
-      const accessToken = localStorage.getItem('accessToken') || null;
-    
-      const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
+        const accessToken = localStorage.getItem('accessToken') || null;
+        const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS;
+        const apiUrl = serverAddress + '/api/mutation/UpdateHomework';
 
-      const apiUrl = serverAddress + '/api/mutation/UpdateHomework';
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(homeworkData),
+        });
 
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
-      },
-        body: JSON.stringify( homeworkData ),
-      });
-
-      const result = await response.json();
-      teacherHandleUpdateHomework(result.homeworkAssignments, result.calendarEvents, setTeacherData )
-      toast.success('Homework successfully updated');
-      navigate(backToParent)
+        await handleFetchResponse(response, navigate);
+        const jsonResponse = await response.json();
+        
+        teacherHandleUpdateHomework(jsonResponse.homeworkAssignments, jsonResponse.calendarEvents, setTeacherData);
+        toast.success('Homework successfully updated');
+        navigate(-1);
     } catch (error) {
-      toast.error('An error occurred while updating the homework');
-      console.error('Error updating homework:', error);
+        toast.error('An error occurred while updating the homework');
+        console.error('Error updating homework:', error);
     }
-  };
-
-
+};
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -81,7 +79,7 @@ const HomeworkGrader: React.FC = () => {
                     Grade Homework
                   </h4>
                 </div>
-                <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>
+                <div className="ml-auto"></div>
               </div>
             </div>
 

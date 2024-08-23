@@ -8,14 +8,13 @@ import CreateHomework from "./CreateHomework";
 import EditHomework from "./EditHomework";
 import HomeworkStudio from "./HomeworkStudio.tsx"
 import {Student, HomeworkAssignment, CalendarEvent} from './types'
-import { BackButton } from "./BackButton.tsx";
 import { useLocation } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 
 
 const ViewStudentHomework: React.FC = () => {
 
-  const { studentData, searchTerm, goBackToDash, setGoBackToDash } = useContext(UniversalContext);
+  const { studentData, searchTerm} = useContext(UniversalContext);
   const [filteredHomework, setFilteredHomework] = useState<HomeworkAssignment[]>([]);
 
   useEffect(() => {
@@ -35,22 +34,22 @@ const ViewStudentHomework: React.FC = () => {
       <div className="flex flex-col gap-10">
         {/* Row 1 with 3 columns */}
         <div className="flex flex-col sm:flex-row justify-between items-center">
-          <div className="sm:flex-1"><BackButton goBackToDash={goBackToDash} /></div>
+          <div className="sm:flex-1"></div>
         </div>
 
         {/* Row 2 for AssignedHomework */}
         <div className="row-start-2 col-span-full">
-          <AssignedHomework homework={assignedHomework} backToParent={'/view-student-homework'} />
+          <AssignedHomework homework={assignedHomework}/>
         </div>
 
         {/* Row 3 for SubmittedHomework */}
         <div className="row-start-3 col-span-full">
-          <SubmittedHomework homework={submittedHomework} backToParent={'/view-student-homework'} />
+          <SubmittedHomework homework={submittedHomework}/>
         </div>
 
         {/* Row 4 for CompleteHomework */}
         <div className="row-start-4 col-span-full">
-          <CompleteHomework homework={completedHomework} backToParent={'/view-student-homework'} />
+          <CompleteHomework homework={completedHomework}/>
         </div>
       </div>
     </>

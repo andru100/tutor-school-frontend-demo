@@ -1,19 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Student, Assessment, StudentAssessmentAssignment, CalendarEvent } from "./types.tsx"; // Import your data structures
-import BarChartTopicsResult from './BarChartTopicsResult.tsx';
-import RadialResult from './RadialResult.tsx';
+import BarChartTopicsResult from '../charts/BarChartTopicsResult.tsx';
+import RadialResult from '../charts/RadialResult.tsx';
 import toast from 'react-hot-toast';
-import { BackButton } from './BackButton.tsx';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import {teacherHandleUpdateAssessment } from '/src/dashboard/UpdateTeacher.tsx';
 import { studentHandleUpdateAssessment } from '/src/dashboard/UpdateStudent.tsx';
-import useFetchWithErrorHandling from '/src/dashboard/hooks/useFetchWithErrorHandling.tsx';
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
   
 
 interface Props {
   assignment: StudentAssessmentAssignment;
-  backToParent: string; 
 }
 
 function useInterval(callback, delay) {
@@ -39,10 +37,10 @@ function useInterval(callback, delay) {
 
 const ExamPage: React.FC = () => {
 
-  const { role , goBackToDash, setTeacherData, setStudentData}  = useContext(UniversalContext);
+  const { role, setTeacherData, setStudentData}  = useContext(UniversalContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const { assignment, backToParent } = location.state as Props;
+  const { assignment } = location.state as Props;
   const [assessment, setAssessment] = useState<Assessment>();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<StudentAssessmentAssignment["answers"]>([]);
@@ -52,7 +50,6 @@ const ExamPage: React.FC = () => {
   const [updatedStudent, setUpdatedStudent] = useState<Student>();
   const [timerDisplay, setTimerDisplay] = useState<string>('02:00:00'); 
   const [elapsedTime, setElapsedTime] = useState(120 * 60); 
-  const { handleFetchResponse } = useFetchWithErrorHandling();
 
   useInterval(() => {
     if (elapsedTime > 0) {
@@ -85,8 +82,7 @@ const ExamPage: React.FC = () => {
             },
           });
 
-          await handleFetchResponse(response)
-
+          await handleFetchResponse(response, navigate)
           const result = await response.json();
 
           setAssessment(result);
@@ -231,7 +227,7 @@ const ExamPage: React.FC = () => {
     } else {
       throw new Error('unable to ascertain role, role is: ', role);
     }
-    navigate(backToParent)
+    navigate(-1)
   };
 
   const currentQuestion = assessment.questionsWithAnswers[currentQuestionIndex];
@@ -273,7 +269,7 @@ const ExamPage: React.FC = () => {
         ) : (
           
           <div>
-             <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>
+             <div className="ml-auto"></div>
           {/* Display the timer */}
           {/* <h3 className="text-xl">Time Remaining: {timerDisplay}</h3> */}
             {currentQuestionIndex === 0 ? (

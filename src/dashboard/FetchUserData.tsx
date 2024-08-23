@@ -1,7 +1,7 @@
 import toast from 'react-hot-toast';
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
 
 export const fetchTeacherData = async () => {
-  console.log('fetchTeacherData called');
   try {
     const accessToken = localStorage.getItem('accessToken') || null;
     const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS;
@@ -13,15 +13,8 @@ export const fetchTeacherData = async () => {
         'Authorization': `Bearer ${accessToken}`
       }
     });
-
-    if (response.status === 200) {
-      const data = await response.json();
-      console.log("Successfully retrieved teacher data:", data);
-      return data;
-    } else {
-      toast.error("Unable to retrieve teacher data");
-      return null;
-    }
+ 
+    return response;
   } catch (error) {
     toast.error("Unable to retrieve teacher data");
     console.error("Error fetching teacher data:", error);
@@ -29,30 +22,24 @@ export const fetchTeacherData = async () => {
   }
 };
 
-  export const fetchStudentData = async () => {
-    try {
-      const accessToken = localStorage.getItem('accessToken') || null;
-      const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
+export const fetchStudentData = async () => {
 
-      const response = await fetch( serverAddress + "/api/query/GetStudent", {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`
-            }
-          });
+  try {
+    const accessToken = localStorage.getItem('accessToken') || null;
+    const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS;
 
-        if (response.status === 200) {
-          const data = await response.json();
-          console.log("Successfully retrieved student data: ", data);
-          return data
-        } else {
-          toast.error("Unable to retrieve student data, please sign in");
-          return null
-        }
-    } catch (error) {
-      toast.error("An error has occured, please sign in");
-      console.error("Error fetching student data:", error);
-      return null
-    }
+    const response = await fetch(serverAddress + "/api/query/GetStudent", {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    return response;
+  } catch (error) {
+    toast.error("An error has occurred, please sign in");
+    console.error("Error fetching student data:", error);
+    return null;
   }
+};

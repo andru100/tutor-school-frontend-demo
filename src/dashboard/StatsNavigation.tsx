@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 interface NavigationProps {
   viewing: string;
   setViewing: React.Dispatch<
@@ -13,25 +12,28 @@ interface NavigationProps {
 
 const StatsNavigation: React.FC<NavigationProps> = ({ viewing, setViewing }) => {
   return (
-    <>
-      <select
-        value={viewing}
-        onChange={(e) => {
-          const chart = e.target.value;
-          const subject = e.target.options[e.target.selectedIndex].getAttribute('data-subject');
-          setViewing({
-            chart,
-            subject,
-          });
-        }}
-        className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-      >
-        <option value="AreaMultipleOverall" data-subject="all">AreaMultipleOverall</option>
-        <option value="AreaTopicsOverTime" data-subject="all">AreaTopicsOverTime</option>
-        <option value="HeatMapTopics" data-subject="all">HeatMapTopics</option> 
-        
-      </select>
-    </>
+    <div className="w-full">
+      <div className="mb-4">
+      <h4 className="text-xl font-semibold text-black dark:text-white">Select Chart Type</h4>
+        <div className="mt-2">
+          <select
+            value={viewing}
+            onChange={(e) => {
+              const chart = e.target.value;
+              const subject = e.target.options[e.target.selectedIndex].getAttribute('data-subject');
+              setViewing({
+                chart,
+                subject,
+              });
+            }}
+          >
+            <option value="OverallScoresChart" data-subject="all">Overall Scores</option>
+            <option value="AreaTopicsOverTime" data-subject="all">Score Breakdown by Subject Topics</option>
+            <option value="HeatMapTopics" data-subject="all">Subject Topics HeatMap</option> 
+          </select>
+        </div>
+      </div>
+    </div>
   );
 };
 

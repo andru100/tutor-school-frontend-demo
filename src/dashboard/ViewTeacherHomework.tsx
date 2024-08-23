@@ -1,28 +1,22 @@
 
 import { useState, useEffect, useContext } from "react"
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import Breadcrumb from './Breadcrumb';
 import CompleteHomework from './CompleteHomework';
 import SubmittedHomework from "./SubmittedHomework";
-import AssignedHomework from './AssignedHomework';
-import CreateHomework from "./CreateHomework";
-import EditHomework from "./EditHomework";
-import HomeworkStudio from "./HomeworkStudio.tsx"
-import { Button } from "flowbite-react";
-import { HiOutlineArrowRight } from "react-icons/hi";
-import {Student, HomeworkAssignment, CalendarEvent} from './types'
-import { BackButton } from "./BackButton.tsx";
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import AssignedHomework from './AssignedHomework'
+import {Student, HomeworkAssignment} from './types'
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import toast from 'react-hot-toast';
 
 
 
 const ViewTeacherHomework: React.FC = () => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
-
   const [filteredHomework, setFilteredHomework] = useState<HomeworkAssignment[]>([]);
 
-  const { teacherData, searchTerm, goBackToDash, setGoBackToDash } = useContext(UniversalContext);
+  const { teacherData, searchTerm} = useContext(UniversalContext);
+  
   const students = teacherData.students
   const homework = teacherData.homeworkAssignments
 
@@ -38,7 +32,7 @@ const ViewTeacherHomework: React.FC = () => {
       toast.error('You must select a student first');
       return
     } 
-    navigate('/create-homework', { state: { selectedStudent, backToParent: '/view-teacher-homework' } });
+    navigate('/create-homework', { state: { selectedStudent} });
   };
 
   
@@ -94,9 +88,11 @@ const ViewTeacherHomework: React.FC = () => {
           <div className="flex flex-col gap-10">
             {/* Row 1 with 3 columns */}
             <div className="flex flex-row justify-between items-center">
-              <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
+              <div className="ml-auto"></div>
               <div className="flex-1 flex justify-center">
-                <select className="w-full max-w-xs" onChange={(e) => setSelectedStudent(students.find(student => student.studentId === e.target.value) || null)}>
+                <select 
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/4 p-2.5" 
+                  onChange={(e) => setSelectedStudent(students.find(student => student.studentId === e.target.value) || null)}>
                   <option value="">Select a student</option>
                   {students?.map(student => (
                     <option key={student.studentId} value={student.studentId}>{student.name}</option>
@@ -108,17 +104,17 @@ const ViewTeacherHomework: React.FC = () => {
       
             {/* Row 2 for AssignedHomework */}
             <div className="row-start-2 col-span-full">
-              <AssignedHomework homework={assignedHomework} backToParent={'/view-teacher-homework'} />
+              <AssignedHomework homework={assignedHomework}/>
             </div>
       
             {/* Row 3 for SubmittedHomework */}
             <div className="row-start-3 col-span-full">
-              <SubmittedHomework homework={submittedHomework} backToParent={'/view-teacher-homework'} />
+              <SubmittedHomework homework={submittedHomework}/>
             </div>
       
             {/* Row 4 for CompleteHomework */}
             <div className="row-start-4 col-span-full">
-              <CompleteHomework homework={completedHomework} backToParent={'/view-teacher-homework'} />
+              <CompleteHomework homework={completedHomework}/>
             </div>
           </div>
         </>

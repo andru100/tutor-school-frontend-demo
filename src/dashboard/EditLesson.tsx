@@ -1,17 +1,17 @@
 import React from 'react'
 import { useState, useContext } from "react"
 import { LessonEvent, CalendarEvent } from './types'
-import { BackButton } from './BackButton';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import { teacherHandleUpdateLesson } from '/src/dashboard/UpdateTeacher.tsx';
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
+
 
 
 
 interface Props {
   lesson: LessonEvent;
-  backToParent: string;
 }
 
 
@@ -19,9 +19,8 @@ interface Props {
 const EditLesson: React.FC = () => {
 
   const { role, setTeacherData }  = useContext(UniversalContext);
-  
   const location = useLocation();
-  const { lesson, backToParent } = location.state as Props;
+  const { lesson } = location.state as Props;
   const [lessonData, setLessonData] = useState<LessonEvent>(lesson);
   
   const navigate = useNavigate();
@@ -29,30 +28,29 @@ const EditLesson: React.FC = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     try {
       const accessToken = localStorage.getItem('accessToken') || null;
     
       const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
-
       const apiUrl = serverAddress + '/api/mutation/UpdateLessonEvent';
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
-      },
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
         body: JSON.stringify(lessonData),
       });
 
-      const result = await response.json();
-      teacherHandleUpdateLesson(result.lessonEvents, result.calendarEvents, setTeacherData)
+      const jsonResponse = await response.json();
+      teacherHandleUpdateLesson(jsonResponse.lessonEvents, jsonResponse.calendarEvents, setTeacherData);
       toast.success('Lesson successfully updated');
-      navigate(backToParent)
+      navigate(-1);
     } catch (error) {
-      toast.error('An error occurred while updating the homework');
-      console.error('Error creating lesson:', error);
+      toast.error('An error occurred while updating the lesson');
+      console.error('Error updating lesson:', error);
     }
   };
 
@@ -77,7 +75,7 @@ const EditLesson: React.FC = () => {
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-          <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>  
+          <div className="ml-auto"></div>  
             <div className="flex flex-col">  
               <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6">  
                 <div className="p-2.5 xl:p-5">

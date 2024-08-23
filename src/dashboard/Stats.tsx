@@ -1,23 +1,26 @@
 import React from 'react';
 import { useState, useEffect, useContext } from 'react';
-import AreaMultipleTopic from './AreaMultipleTopic.tsx'
+import ScoresByTopicChart from '../charts/ScoresByTopicChart.tsx'
 import StatsNavigation from './StatsNavigation.tsx'
-import AreaMultipleOverall from './AreaMultipleOverall.tsx'
-import RadialTopics from './RadialTopics.tsx';
-import HeatMapTopics from './HeatMapTopics.tsx';
-import BarChartTopics from './BarChartTopics.tsx';
+import OverallScoresChart from '../charts/OverallScoresChart.tsx'
+import RadialTopics from '../charts/RadialTopics.tsx';
+import HeatMapTopics from '../charts/TopicsHeatMapChart.tsx';
+import BarChartTopics from '../charts/BarChartTopics.tsx';
 import { Student, StudentAssessmentAssignment } from "./types.tsx";
-import { BackButton } from './BackButton.tsx';
 import { useLocation } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 
 
 
 const Stats: React.FC = () => {
-  const { studentData, role , searchTerm, goBackToDash }  = useContext(UniversalContext);
+  const { studentData, role , searchTerm}  = useContext(UniversalContext);
 
   if (!studentData.assessments || studentData.assessments.length === 0) {
-    return <p>Student has no assessments. To get started take your first assessment</p>;
+    return (
+      <h4 className="text-xl font-semibold text-black dark:text-white">
+        <span className="whitespace-nowrap">Initial assessment not started</span>
+      </h4>
+    );
   }
 
   const [subjectAndAssignmentId, setSubjectAndAssignmentId] = useState<{subject: string | null, assignmentId: number | null}>({subject: null, assignmentId: null});
@@ -25,7 +28,7 @@ const Stats: React.FC = () => {
   const [filteredAssessments, setFilteredAssessments] = useState<StudentAssessmentAssignment[] | null>(null);
 
   const [viewing, setViewing] = useState({
-    chart: 'AreaMultipleOverall',
+    chart: 'OverallScoresChart',
     subject: 'All'
   });
 
@@ -84,12 +87,12 @@ const Stats: React.FC = () => {
 
   if (assessments !== null){
       switch(viewing.chart){
-        case "AreaMultipleOverall":
+        case "OverallScoresChart":
           if (assessments !== null){
             return (
               <>
-                <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
-                <AreaMultipleOverall   setSubjectAndAssignmentId={setSubjectAndAssignmentId} subjectAndAssignmentId={subjectAndAssignmentId} assessments={assessments} studentsTopics={studentsTopics} setViewing={setViewing} viewing ={viewing.chart}/>
+                <div className="ml-auto"></div>
+                <OverallScoresChart   setSubjectAndAssignmentId={setSubjectAndAssignmentId} subjectAndAssignmentId={subjectAndAssignmentId} assessments={assessments} studentsTopics={studentsTopics} setViewing={setViewing} viewing ={viewing.chart}/>
                 <RadialTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
                 <BarChartTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
               </>
@@ -100,8 +103,8 @@ const Stats: React.FC = () => {
           if (assessments !== null){
             return (
               <>
-                <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
-                <AreaMultipleTopic   assessments={assessments}  setSubjectAndAssignmentId={setSubjectAndAssignmentId} subjectAndAssignmentId={subjectAndAssignmentId} studentsTopics={studentsTopics}  setViewing={setViewing} viewing ={viewing.chart} />
+                <div className="ml-auto"></div>
+                <ScoresByTopicChart   assessments={assessments}  setSubjectAndAssignmentId={setSubjectAndAssignmentId} subjectAndAssignmentId={subjectAndAssignmentId} studentsTopics={studentsTopics}  setViewing={setViewing} viewing ={viewing.chart} />
                 <RadialTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
                 <BarChartTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
               </>
@@ -112,7 +115,7 @@ const Stats: React.FC = () => {
           if (filteredAssessments){
             return (
               <>
-                <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
+                <div className="ml-auto"></div>
                 <HeatMapTopics  assessments={assessments}  setSubjectAndAssignmentId={setSubjectAndAssignmentId} subjectAndAssignmentId={subjectAndAssignmentId} studentsTopics={studentsTopics}  setViewing={setViewing} viewing ={viewing.chart}/>
                 <RadialTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
                 <BarChartTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
@@ -128,8 +131,8 @@ const Stats: React.FC = () => {
             // can loose this as viewing.chart is set areamultiple so defualt never triggered. 
             // TODO make it default or remove duplicate
             <>
-                <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
-                <AreaMultipleOverall   setSubjectAndAssignmentId={setSubjectAndAssignmentId} subjectAndAssignmentId={subjectAndAssignmentId} assessments={assessments} studentsTopics={studentsTopics} setViewing={setViewing} viewing ={viewing.chart}/>
+                <div className="ml-auto"></div>
+                <OverallScoresChart   setSubjectAndAssignmentId={setSubjectAndAssignmentId} subjectAndAssignmentId={subjectAndAssignmentId} assessments={assessments} studentsTopics={studentsTopics} setViewing={setViewing} viewing ={viewing.chart}/>
                 <RadialTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
                 <BarChartTopics  assessments={assessments} topicType={subjectAndAssignmentId.subject} assignmentId={subjectAndAssignmentId.assignmentId}  />
               </>

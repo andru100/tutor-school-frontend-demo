@@ -2,12 +2,11 @@ import React from 'react';
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Student } from "./types";
-import { BackButton } from './BackButton';
 import Breadcrumb from '/src/dashboard/Breadcrumb'
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 
 const ViewStudents: React.FC = () => {
-  const { teacherData, searchTerm, setStudentData, goBackToDash } = useContext(UniversalContext);
+  const { teacherData, searchTerm, setStudentData} = useContext(UniversalContext);
   const studentsData = teacherData?.students;
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
   const navigate = useNavigate();
@@ -30,7 +29,7 @@ const ViewStudents: React.FC = () => {
       <div className="flex flex-col gap-10">
         {/* Row 1 with 3 columns */}
         <div className="flex flex-row justify-between items-center">
-          <div className="ml-auto"><BackButton goBackToDash={goBackToDash}/></div>
+          <div className="ml-auto"></div>
           <div className="flex-1 flex justify-center">
           </div>
           <div className="ml-auto"></div>

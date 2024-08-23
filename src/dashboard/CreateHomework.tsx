@@ -3,25 +3,23 @@ import { useState, useContext } from "react"
 import { Student, HomeworkAssignment, CalendarEvent, HomeworkStream} from './types'
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import { teacherHandleUpdateLesson } from '/src/dashboard/UpdateTeacher.tsx';
 import { teacherHandleUpdateHomework } from './UpdateTeacher.tsx';
-import { BackButton } from './BackButton.tsx';
+import useFetchWithErrorHandling from '../hooks/useFetchWithErrorHandling.tsx'; 
 
 
 
 interface Props {
   selectedStudent: Student;
-  backToParent: string;
 }
 
 
 const CreateHomework: React.FC = () => {
 
   const { role, setTeacherData }  = useContext(UniversalContext);
-  
   const location = useLocation();
-  const { selectedStudent, backToParent } = location.state as Props;
+  const { selectedStudent } = location.state as Props;
   const navigate = useNavigate()
 
   const [homeworkData, setHomeworkData] = useState<HomeworkAssignment>({
@@ -46,35 +44,33 @@ const CreateHomework: React.FC = () => {
     student: null
 });
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+const handleSubmit = async (event) => {
+  event.preventDefault();
 
-    try {
-      const accessToken = localStorage.getItem('accessToken') || null;
-    
-      const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
+  try {
+    const accessToken = localStorage.getItem('accessToken') || null;
+  
+    const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
+    const apiUrl = serverAddress + '/api/mutation/AddHomework';
 
-      const apiUrl = serverAddress + '/api/mutation/AddHomework';
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`
       },
-        body: JSON.stringify(homeworkData ),
-      });
+      body: JSON.stringify(homeworkData),
+    });
 
-      // TODO make sure http responses outside 200 trigger error .. if not add condition for 400 404 etc
-      const result = await response.json();
-      teacherHandleUpdateHomework( result.homeworkAssignments, result.calendarEvents, setTeacherData);
-      toast.success('Homework created successfully');
-      navigate(backToParent)
-    } catch (error) {
-      toast.error('An error occurred while creating the homework');
-      console.error('Error creating homework:', error);
-    }
-  };
+    const jsonResponse = await response.json(); 
+    teacherHandleUpdateHomework(jsonResponse.homeworkAssignments, jsonResponse.calendarEvents, setTeacherData);
+    toast.success('Homework created successfully');
+    navigate(-1);
+  } catch (error) {
+    toast.error('An error occurred while creating the homework');
+    console.error('Error creating homework:', error);
+  }
+};
 
 
   const handleInputChange = (event) => {
@@ -99,7 +95,7 @@ const CreateHomework: React.FC = () => {
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-            <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>
+            <div className="ml-auto"></div>
             <div className="flex flex-col">  
               <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6">  
                 <div className="p-2.5 xl:p-5">

@@ -192,9 +192,6 @@ export interface HomeworkAssignment extends Event {
     submissionDate?: Date;
     submissionContent?: string;
     submissionContentType?: SubmissionContentType;
-    // teacher: Teacher | null;
-    // student: Student | null;
-    // calendarEvent: CalendarEvent | null;
 }
 
 export interface LessonEvent extends Event {
@@ -204,9 +201,6 @@ export interface LessonEvent extends Event {
     isAssigned: boolean;
     isComplete: boolean;
     completionDate: Date | null;
-    // teacher: Teacher | null;
-    // student: Student | null;
-    //calendarEvent: CalendarEvent | null;
 }
 
 export interface StudentAssessmentAssignment extends Event {

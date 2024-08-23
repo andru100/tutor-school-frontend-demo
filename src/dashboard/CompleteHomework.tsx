@@ -2,19 +2,19 @@ import { useState, useEffect, useContext } from "react"
 import { HomeworkAssignment, CalendarEvent } from "./types"
 import Breadcrumb from './Breadcrumb';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import {teacherHandleDeleteHomework } from '/src/dashboard/UpdateTeacher.tsx';
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
+import { useNavigate } from 'react-router-dom';
 
 
 interface Props {
-    homework: HomeworkAssignment[];
-    backToParent: string;
+  homework: HomeworkAssignment[];
 };
 
 
 
-const CompleteHomework: React.FC<Props> = ({homework,  backToParent}) => {
+const CompleteHomework: React.FC<Props> = ({homework}) => {
 
   const { role, setTeacherData }  = useContext(UniversalContext);
   
@@ -23,11 +23,11 @@ const CompleteHomework: React.FC<Props> = ({homework,  backToParent}) => {
   const navigate = useNavigate();
 
   const handleViewHomeworkGrader = ( homework: HomeworkAssignment) => {
-    navigate('/grade-homework', { state: { homework, backToParent } });
+    navigate('/grade-homework', { state: { homework } });
   };
 
   const handleViewHomework = ( homework: HomeworkAssignment) => {
-    navigate('/view-homework', { state: { homework, backToParent } });
+    navigate('/view-homework', { state: { homework } });
   };
 
   useEffect(() => {
@@ -44,34 +44,30 @@ const CompleteHomework: React.FC<Props> = ({homework,  backToParent}) => {
       }
 
       const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
-
       const apiUrl = serverAddress + '/api/account/DeleteHomeworkAssignment';
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
-      },
-        body: JSON.stringify( input ),
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(input),
       });
 
-      if (!response.ok) {
-        toast.error('Failed to delete homework');
-        throw new Error('Failed to delete homework response is ' + JSON.stringify(response));
-      }
-
-      
+      await handleFetchResponse(response, navigate)
 
       if (role === 'Teacher') {
         teacherHandleDeleteHomework(homeworkId, setTeacherData);
       } else {
-        throw new Error('unable to ascertain role, role is: ', role);
+        throw new Error('unable to ascertain role, role is: ' + role);
       }
+
       toast.success('Homework deleted successfully');
       
     } catch (error) {
       console.error('Error deleting homework:', error);
+      toast.error('Failed to delete homework');
     }
   };
 

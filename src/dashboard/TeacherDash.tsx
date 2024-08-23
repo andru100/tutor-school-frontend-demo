@@ -1,25 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import TeacherViewStudentsCard from './TeacherViewStudentsCard.tsx';
-import TeacherHomeworkCard from './TeacherHomeworkCard.tsx';
-import AssessmentCard from './AssessmentCard.tsx'
-import LessonCard from './LessonCard.tsx';
-import CalendarCard from './CalendarCard.tsx';
-import ViewStudents from './ViewStudents.tsx'; 
-import { Teacher, Student, HomeworkAssignment, StudentAssessmentAssignment, LessonEvent, CalendarEvent } from "./types.tsx"
-import ViewTeacherHomework from './ViewTeacherHomework.tsx';
-import ViewTeacherAssessments from './ViewTeacherAssessments.tsx';
-import ViewTeacherLessons from './ViewTeacherLessons.tsx';
-import Calendar from './Calendar.tsx';
-import Stats from './Stats.tsx';
-import HumanVerifyMath from './HumanVerifyMath.tsx';
-import toast from 'react-hot-toast';
-import { CheckoutForm, Return } from './PaymentScreen.tsx';
-import BillingCard from './BillingCard.tsx';
-import Header from'/src/dashboard/layout/header/Header.tsx'
-import { Button } from "flowbite-react";
-import { HiOutlineArrowRight } from "react-icons/hi";
-import { useNavigate, useLocation } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import TeacherViewStudentsCard from '/src/dashboard/cards/TeacherViewStudentsCard.tsx';
+import TeacherHomeworkCard from '/src/dashboard/cards/TeacherHomeworkCard.tsx';
+import AssessmentCard from '/src/dashboard/cards/AssessmentCard.tsx'
+import LessonCard from '/src/dashboard/cards/LessonCard.tsx';
+import CalendarCard from '/src/dashboard/cards/CalendarCard.tsx';
+import BillingCard from '/src/dashboard/cards/BillingCard.tsx';
+import { useNavigate } from 'react-router-dom';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import DashboardStats from './DashboardStats.tsx';
 
 
@@ -121,14 +108,24 @@ const handleSelectStudent = (event: ChangeEvent<HTMLSelectElement>) => {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <select onChange={handleSelectStudent} style={{ width: '100%' }}>
-          {teacherData && teacherData.students && teacherData.students.map(student => (
-            <option key={student.studentId} value={student.studentId}>
-              {student.name}
-            </option>
-          ))}
-        </select>
+      <div className=" md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
+        <div className="mb-4 w-full">
+          <h4 className="text-xl font-semibold text-black dark:text-white">View Student Insights</h4>
+          <form className="max-w-sm">
+            <select id="students" 
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/4 p-2.5 mt-3" 
+              onChange={handleSelectStudent} 
+              value={student?.name || ''}
+              style={{ width: '100%', minWidth: '150px' }}>
+              <option value="" disabled>Choose a student</option>
+              {teacherData && teacherData.students && teacherData.students.map(student => (
+                <option key={student.studentId} value={student.studentId}>
+                  {student.name}
+                </option>
+              ))}
+            </select>
+          </form>
+        </div>
       </div>
         
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">

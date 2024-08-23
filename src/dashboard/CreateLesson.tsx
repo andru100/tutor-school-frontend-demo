@@ -2,24 +2,23 @@ import React, { useState, useContext } from "react"
 import { Student, LessonEvent, CalendarEvent } from './types'
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { UniversalContext } from '/src/dashboard/context/UniversalContext.tsx';
+import { UniversalContext } from '/src/context/UniversalContext.tsx';
 import { teacherHandleUpdateLesson } from '/src/dashboard/UpdateTeacher.tsx';
-import { BackButton } from "./BackButton";
+import { handleFetchResponse } from '/src/handleErrors/FetchWithErrorHandling.tsx';
+
 
 
 
 
 interface Props {
   selectedStudent: Student;
-  backToParent: string;
 }
 
 const CreateLesson: React.FC = () => {
 
   const { role, setTeacherData }  = useContext(UniversalContext);
-  
   const location = useLocation();
-  const { selectedStudent, backToParent } = location.state as Props;
+  const { selectedStudent } = location.state as Props;
 
   const [lessonData, seLessonData] = useState<LessonEvent>({
     id: null ,
@@ -41,26 +40,28 @@ const CreateLesson: React.FC = () => {
     event.preventDefault();
 
     try {
-      const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
-
-      const apiUrl = serverAddress + '/api/mutation/AddLessonEvent';
       const accessToken = localStorage.getItem('accessToken') || null;
     
+      const serverAddress = import.meta.env.VITE_APP_BACKEND_ADDRESS
+      const apiUrl = serverAddress + '/api/mutation/AddLessonEvent';
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
         },
         body: JSON.stringify(lessonData),
       });
 
-      const result = await response.json();
-      teacherHandleUpdateLesson(result.lessonEvents, result.calendarEvents, setTeacherData)
+      await handleFetchResponse(response, navigate)
+      
+      const jsonResponse = await response.json();
+      teacherHandleUpdateLesson(jsonResponse.lessonEvents, jsonResponse.calendarEvents, setTeacherData);
       toast.success('Lesson created successfully');
-      navigate(backToParent)
-
+      navigate(-1);
     } catch (error) {
+      toast.error('An error occurred while creating the lesson');
       console.error('Error creating lesson:', error);
     }
   };
@@ -79,7 +80,7 @@ const CreateLesson: React.FC = () => {
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-            <div className="ml-auto"><BackButton goBackToDash={backToParent}/></div>
+            <div className="ml-auto"></div>
             <div className="flex flex-col">  
               <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6">  
                 <div className="p-2.5 xl:p-5">
