@@ -1,6 +1,11 @@
 devcontainer.env
 .vscode
 node_modules
-.env.example
 .env
 .vs
+
+# Local environment settings may contain credentials.
+.env
+.env.*
+!.env.example
+dist/

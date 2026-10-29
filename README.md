@@ -1,50 +1,78 @@
-# Tutoring App
+# Tutor School — public demo
 
-Tutoring App is an online learning and tutoring platform built with React and TypeScript. It provides a user-friendly interface for students and teachers to interact, create, assign, edit and delete lessons, homework, and assessments. Each user also has a calendar which displays all related events.
+A tutoring platform for managing lessons, homework and assessments, with separate teacher and student dashboards and charts for tracking progress by subject and topic.
 
-It also allows user's to track student performance with a variety of charts and graphs which are displayed in the user's dashboard.
+This repository contains an earlier public demonstration of a project I have continued developing privately. It shows the foundations of the platform; it is not the current commercial version.
 
-## Live Demo
+## Project repositories
 
-A live demo of the application is available at tutor-school-frontend-demo.westeurope.azurecontainer.io. The demo has pre-seeded test data, including teacher and student accounts with the following credentials:
+This project has two parts. **Start here for the project overview**, then follow the backend link for the API and data model.
 
-Email: teacher@example.com
-Password: Password123!
+| Component | Repository | Main technologies |
+| --- | --- | --- |
+| Frontend (this repository) | [tutor-school-frontend-demo](https://github.com/andru100/tutor-school-frontend-demo) | React 18, TypeScript, Vite, Tailwind CSS, ApexCharts |
+| Backend | [tutor-school-backend-demo](https://github.com/andru100/tutor-school-backend-demo) | C#, ASP.NET Core 8, Entity Framework Core, PostgreSQL |
 
-There is also a student account assigned to the teacher account
+## What the demo contains
 
-Email: student@example.com
-Password: Password123!
+- Teacher and student accounts, email/password authentication and Google sign-in integration.
+- Teacher workflows for creating, assigning and managing lessons, homework and assessments.
+- Student workflows for viewing lessons, submitting homework and completing assessments.
+- Automatic multiple-choice assessment scoring, including subject/topic results.
+- Performance charts and a calendar showing related events.
+- Optional AI homework feedback through OpenAI, aimed at helping students improve their work.
+- Upload integrations for Azure Blob Storage, plus image/document extraction services used by the feedback workflow.
+- Seeded fictional accounts and assessment history for exploring the dashboards.
 
-The seeded data includes simulated previous assessment results, allowing the charts and statistics to give a feel for how the app will appear whilst in use.
+Assessment scoring uses programmed answer checking. The AI integration provides homework feedback; these are separate features.
 
-## Features
-Users can do all of the usual account / authentication requirements including signup with email or Google SSO, passwword resets, updating account details. Each of these options requires MFA to maintain security.
+## Architecture
 
-Dependent on the user type selected during signup, users are displayed different dashboards. 
+The React frontend calls the ASP.NET Core API. The backend uses ASP.NET Core Identity for accounts and roles, and Entity Framework Core with PostgreSQL for application data. Optional integrations handle Google sign-in, email delivery, uploads and AI feedback. API secrets belong in the backend configuration.
 
-Students can see their past results in several charts and can access their upcoming and previous lessons, homework and assessments.
+## Run locally
 
-Teachers have a similar dashboard except they are able to view each student's results and stats by selecting from the dropdown list of their assigned students. The same applies when looking at their homework, lessons and assessments tabs. They are able to create, edit, delete and filter by selecting the student's name from the dropdown list or using the search bar.
+Prerequisites: Node.js 22, Yarn Classic (1.x), and the [backend](https://github.com/andru100/tutor-school-backend-demo) running locally with PostgreSQL. The backend README explains configuration and sample-data initialization.
 
-Teachers can view a student's dashboard by clicking the 'students' panel in the dashboard then clicking the view / eye icon. This will allow the teacher to view the student's dashboard as the student would. Lessons, homework, and assessments can still be created by teachers whilst in the student dashboard view.
+```bash
+git clone https://github.com/andru100/tutor-school-frontend-demo.git
+cd tutor-school-frontend-demo
+cp .env.example .env
+yarn install --frozen-lockfile
+yarn dev
+```
 
-All users also have a calendar which includes all upcoming events.
+Open the local URL printed by Vite, normally `http://localhost:5173`.
 
-I have included a GitHub Actions workflow for deploying to an Azure Container Instance.
+| Variable | Purpose |
+| --- | --- |
+| `VITE_APP_BACKEND_ADDRESS` | Backend URL, normally `http://localhost:5000` |
+| `VITE_APP_GOOGLE_CLIENT_ID` | Your Google OAuth client ID, if testing Google sign-in |
 
-## Installation
+Vite exposes `VITE_` settings to the browser. Do not put private keys or other server credentials in them. Restart Vite after changing `.env`.
 
-Clone the repository: git clone https://github.com/andru100/Tutoring-School-Frontend.git
-Navigate to the project directory: cd tutoring-app
-Install dependencies: yarn install
-Create a .env file by copying the .env.example file and providing the required environment variables. If deploying with github actions make sure each env variable is added to the repo github secrets.
-Start the development server: yarn run dev
+### Explore the seeded demo
 
-## Development Environment Setup
-I have included a `.devcontainer` folder so you can to set up your development environment quickly. 
+After following the backend's local seeding instructions, sign in with either fictional account:
 
-## TODO
+| Role | Email | Password |
+| --- | --- | --- |
+| Teacher | `teacher@example.com` | `Password123!` |
+| Student | `student@example.com` | `Password123!` |
 
-This is no where near finished so there's alot to do. :)
-Priorties are creating the messaging and notification pages, unit tests, refactoring, ui improvements and general useabilty changes.
+Start with the teacher dashboard to view the assigned student, charts, lessons, homework and assessments. Use the student account to explore the corresponding student experience. These shared credentials are for local sample data only.
+
+### Production bundle
+
+```bash
+yarn build
+yarn preview
+```
+
+This generates the frontend bundle; it does not start the backend or verify every application workflow. The existing build command uses Vite and does not perform a full TypeScript type check.
+
+## Scope and limitations
+
+This is an earlier development demo. Messaging, notifications and billing are unfinished or experimental. Google sign-in, email, uploads and AI feedback require your own service configuration. There is no verified hosted demo advertised here; use the local setup above.
+
+The interface uses the TailAdmin React template as its starting point. Existing license notices are retained in [LICENSE.md](LICENSE.md). The later private project, including its additional features and refactoring, is outside these repositories.

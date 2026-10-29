@@ -17,7 +17,6 @@ import ViewTeacherHomework from  '/src/dashboard/ViewTeacherHomework.tsx';
 import ViewTeacherAssessments from '/src/dashboard/ViewTeacherAssessments.tsx';
 import ViewTeacherLessons from '/src/dashboard/ViewTeacherLessons.tsx';
 import Calendar from '/src/dashboard/Calendar.tsx';
-import Billing from '/src/dashboard/Billing.tsx';
 import ViewStudentLessons from '/src/dashboard/ViewStudentLessons.tsx';
 import ViewStudentAssessments from '/src/dashboard/ViewStudentAssessments.tsx';
 import ViewStudentHomework from '/src/dashboard/ViewStudentHomework.tsx';
